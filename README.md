@@ -79,5 +79,6 @@ export default defineConfig([
 ```
 
 ### Related Repositories
+
 - [Cudeca Backend](https://github.com/rst-112/cudeca-backend)
 - [Cudeca Frontend](https://github.com/rst-112/cudeca-frontend)
