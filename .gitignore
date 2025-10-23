@@ -13,9 +13,10 @@ dist/
 dist-ssr/
 
 # Local environment variables
-.env
+.env*
 .env.*.local
 .env.local
+coverage/
 
 # Editor & system files
 .vscode/

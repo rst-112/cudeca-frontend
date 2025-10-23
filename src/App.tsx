@@ -1,10 +1,10 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './index.css'
+import { useState } from 'react';
+import reactLogo from './assets/react.svg';
+import viteLogo from '/vite.svg';
+import './index.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-br from-blue-500 to-indigo-600 text-white">
@@ -39,11 +39,9 @@ function App() {
         </p>
       </div>
 
-      <p className="mt-8 text-sm text-white/80">
-        Click on the logos to learn more ⚡
-      </p>
+      <p className="mt-8 text-sm text-white/80">Click on the logos to learn more ⚡</p>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
