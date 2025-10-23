@@ -1,10 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './index.css';
+import { testBackendConnection } from './services/api';
 
 function App() {
   const [count, setCount] = useState(0);
+  const [backendStatus, setBackendStatus] = useState<string>('Comprobando conexión...');
+
+  useEffect(() => {
+    testBackendConnection()
+      .then((data) => setBackendStatus(`${data.message}`))
+      .catch((err) => setBackendStatus(`Error al conectar con backend: ${err.message}`));
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-br from-blue-500 to-indigo-600 text-white">
@@ -40,6 +48,10 @@ function App() {
       </div>
 
       <p className="mt-8 text-sm text-white/80">Click on the logos to learn more ⚡</p>
+
+      <div className="mt-8 bg-black/20 px-4 py-2 rounded-lg text-center">
+        <p className="text-white/90">{backendStatus}</p>
+      </div>
     </div>
   );
 }
