@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from './App';
 import * as api from './services/api';
+import { act } from 'react';
 
 vi.mock('./services/api');
 
@@ -16,10 +17,12 @@ describe('App component', () => {
     expect(screen.getByText(/Comprobando conexión/i)).toBeInTheDocument();
   });
 
-  it('increments the counter when button is clicked', () => {
+  it('increments the counter when button is clicked', async () => {
     render(<App />);
     const button = screen.getByRole('button', { name: /count is/i });
-    fireEvent.click(button);
+    await act(async () => {
+      fireEvent.click(button);
+    });
     expect(button.textContent).toMatch(/count is 1/i);
   });
 
