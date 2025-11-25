@@ -27,22 +27,30 @@ const wrapper = ({ children }: { children: ReactNode }) => <AuthProvider>{childr
 
 /**
  * Mock de localStorage
+ * Implementa completamente la interfaz Storage para evitar errores de tipo.
  */
-const localStorageMock = (() => {
+const localStorageMock: Storage = (() => {
   let store: Record<string, string> = {};
 
   return {
-    getItem: (key: string) => store[key] || null,
-    setItem: (key: string, value: string) => {
-      store[key] = value.toString();
-    },
-    removeItem: (key: string) => {
-      delete store[key];
+    get length() {
+      return Object.keys(store).length;
     },
     clear: () => {
       store = {};
     },
-  };
+    getItem: (key: string) => (key in store ? store[key] : null),
+    key: (index: number) => {
+      const keys = Object.keys(store);
+      return keys[index] ?? null;
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    setItem: (key: string, value: string) => {
+      store[key] = value.toString();
+    },
+  } as Storage;
 })();
 
 // ============================================================================
@@ -572,6 +580,9 @@ describe('AuthContext', () => {
       act(() => {
         result.current.logout();
       });
+
+      // Esperar para garantizar timestamp diferente
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       // Segundo login con mismo usuario
       await act(async () => {
