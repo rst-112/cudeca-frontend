@@ -20,7 +20,10 @@ const MainLayout = () => {
             <Link to="/login" className="flex items-center gap-1 hover:text-green-200 transition">
               <LogIn size={18} /> Login
             </Link>
-            <Link to="/registro" className="bg-white text-green-700 px-4 py-2 rounded-full font-semibold hover:bg-green-50 transition flex items-center gap-1">
+            <Link
+              to="/registro"
+              className="bg-white text-green-700 px-4 py-2 rounded-full font-semibold hover:bg-green-50 transition flex items-center gap-1"
+            >
               <UserPlus size={18} /> Registro
             </Link>
           </div>

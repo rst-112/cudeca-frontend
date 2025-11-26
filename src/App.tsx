@@ -14,20 +14,18 @@ function App() {
       <Routes>
         {/* El MainLayout envuelve a todas las rutas públicas */}
         <Route path="/" element={<MainLayout />}>
-          
           {/* Ruta principal (Home) */}
           <Route index element={<Home />} />
-          
+
           {/* Rutas de autenticación */}
           <Route path="login" element={<Login />} />
           <Route path="registro" element={<Registro />} />
-          
+
           {/* Ruta dinámica: El ":id" permitirá cargar eventos distintos (ej: /evento/1, /evento/99) */}
           <Route path="evento/:id" element={<DetalleEvento />} />
-          
+
           {/* Ruta de pago */}
           <Route path="checkout" element={<Checkout />} />
-          
         </Route>
       </Routes>
     </BrowserRouter>
