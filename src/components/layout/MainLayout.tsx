@@ -1,5 +1,5 @@
 import { Outlet, Link } from 'react-router-dom';
-import { Home, LogIn, UserPlus, ShoppingCart } from 'lucide-react'; // Iconos
+import { Home, LogIn, UserPlus } from 'lucide-react'; // Iconos
 
 const MainLayout = () => {
   return (
