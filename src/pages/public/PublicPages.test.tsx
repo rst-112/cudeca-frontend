@@ -11,7 +11,7 @@ import DetallesEvento from './DetallesEvento';
 describe('Páginas Públicas (Cobertura)', () => {
   it('renderiza la página de Login', () => {
     render(<Login />);
-    expect(screen.getByText(/Inicio de sesión/i)).toBeInTheDocument();
+    expect(screen.getByText(/Acceso a Cuenta/i)).toBeInTheDocument();
   });
 
   it('renderiza la página de Registro', () => {
