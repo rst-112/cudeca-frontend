@@ -1,43 +1,21 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
 import App from './App';
-import * as api from './services/api';
-
-vi.mock('./services/api');
 
 describe('App component', () => {
-  beforeEach(() => {
-    vi.mocked(api.testBackendConnection).mockResolvedValue({ message: 'Mocked OK' });
-  });
-
-  it('renders the main heading and default text', () => {
+  it('renders the main layout and home page by default', () => {
     render(<App />);
-    expect(screen.getByText(/Vite \+ React/i)).toBeInTheDocument();
-    expect(screen.getByText(/Comprobando conexión/i)).toBeInTheDocument();
-  });
 
-  it('increments the counter when button is clicked', () => {
-    render(<App />);
-    const button = screen.getByRole('button', { name: /count is/i });
-    fireEvent.click(button);
-    expect(button.textContent).toMatch(/count is 1/i);
-  });
+    // CORRECCIÓN: Usamos getAllByText porque el texto aparece 2 veces (Navbar y Footer)
+    // Esto devuelve una lista (array) y comprobamos que tenga longitud mayor a 0
+    const elementosCudeca = screen.getAllByText(/FUNDACIÓN CUDECA/i);
+    expect(elementosCudeca.length).toBeGreaterThan(0);
 
-  it('shows success message when backend connection succeeds', async () => {
-    vi.mocked(api.testBackendConnection).mockResolvedValueOnce({
-      message: 'Backend operativo',
-    });
+    // 2. Comprobamos que el botón de Login existe en el menú
+    expect(screen.getByText(/Login/i)).toBeInTheDocument();
 
-    render(<App />);
-    await waitFor(() => expect(screen.getByText(/Backend operativo/i)).toBeInTheDocument());
-  });
-
-  it('shows error message when backend connection fails', async () => {
-    vi.mocked(api.testBackendConnection).mockRejectedValueOnce(new Error('Server down'));
-
-    render(<App />);
-    await waitFor(() =>
-      expect(screen.getByText(/Error al conectar con backend/i)).toBeInTheDocument(),
-    );
+    // 3. Comprobamos que se carga la página de Inicio por defecto
+    // (Busca el título h1 que pusiste en Home.tsx)
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
   });
 });
