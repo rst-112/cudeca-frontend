@@ -15,10 +15,15 @@
 
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import type { User } from '../types/auth.types';
 
-export const PrivateRoute = () => {
+interface PrivateRouteProps {
+  requiredRole?: User['rol'];
+}
+
+export const PrivateRoute = ({ requiredRole }: PrivateRouteProps) => {
   // Obtener estado de autenticación del contexto
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   // Obtener ubicación actual para guardarla si redirigimos
   const location = useLocation();
@@ -44,7 +49,16 @@ export const PrivateRoute = () => {
   }
 
   /**
-   * PASO 3: Usuario Autenticado - Permitir Acceso
+   * PASO 3: Verificación de Rol
+   *
+   * Si se requiere un rol específico y el usuario no lo tiene, redirigir al home.
+   */
+  if (requiredRole && user?.rol !== requiredRole) {
+    return <Navigate to="/" replace />;
+  }
+
+  /**
+   * PASO 4: Usuario Autenticado y Autorizado - Permitir Acceso
    */
   return <Outlet />;
 };

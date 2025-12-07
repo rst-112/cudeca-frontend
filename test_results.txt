@@ -1,0 +1,157 @@
+﻿
+> cudeca-frontend@0.0.0 coverage
+> vitest run --coverage
+
+
+[1m[46m RUN [49m[22m [36mv4.0.1 [39m[90mC:/Cudeca/cudeca-frontend[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+ [32mÔ£ô[39m src/services/api.test.ts [2m([22m[2m66 tests[22m[2m)[22m[32m 91[2mms[22m[39m
+node.exe : [90mstderr[2m | 
+src/context/AuthContext.test.tsx[2m > 
+[22m[2mAuthContext[2m > [22m[2mInicializaci├│n[2m > 
+[22m[2mdebe limpiar sesi├│n si localStorage tiene datos 
+inv├ílidos
+En línea: 1 Carácter: 1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([90mstderr[2 
+   m...atos inv├ílidos:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[22m[39mError restaurando sesi├│n: Error: Usuario 
+inv├ílido
+    at initAuth (C:/Cudeca/cudeca-frontend/src/context/AuthC
+ontext.tsx:200:17)
+    at 
+C:/Cudeca/cudeca-frontend/src/context/AuthContext.tsx:225:5
+    at Object.react_stack_bottom_frame [90m(C:\Cudeca\cudec
+a-frontend\[39mnode_modules\[4mreact-dom[24m\cjs\react-do
+m-client.development.js:25989:20[90m)[39m
+    at runWithFiberInDEV [90m(C:\Cudeca\cudeca-frontend\[3
+9mnode_modules\[4mreact-dom[24m\cjs\react-dom-client.devel
+opment.js:874:13[90m)[39m
+    at commitHookEffectListMount [90m(C:\Cudeca\cudeca-fron
+tend\[39mnode_modules\[4mreact-dom[24m\cjs\react-dom-clie
+nt.development.js:13249:29[90m)[39m
+    at commitHookPassiveMountEffects [90m(C:\Cudeca\cudeca-
+frontend\[39mnode_modules\[4mreact-dom[24m\cjs\react-dom-
+client.development.js:13336:11[90m)[39m
+    at commitPassiveMountOnFiber [90m(C:\Cudeca\cudeca-fron
+tend\[39mnode_modules\[4mreact-dom[24m\cjs\react-dom-clie
+nt.development.js:15484:13[90m)[39m
+    at recursivelyTraversePassiveMountEffects [90m(C:\Cudec
+a\cudeca-frontend\[39mnode_modules\[4mreact-dom[24m\cjs\r
+eact-dom-client.development.js:15439:11[90m)[39m
+    at commitPassiveMountOnFiber [90m(C:\Cudeca\cudeca-fron
+tend\[39mnode_modules\[4mreact-dom[24m\cjs\react-dom-clie
+nt.development.js:15476:11[90m)[39m
+    at recursivelyTraversePassiveMountEffects [90m(C:\Cudec
+a\cudeca-frontend\[39mnode_modules\[4mreact-dom[24m\cjs\r
+eact-dom-client.development.js:15439:11[90m)[39m
+
+ [32mÔ£ô[39m src/App.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 247[2mms[22m[39m
+ [32mÔ£ô[39m src/components/PrivateRoute.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[32m 196[2mms[22m[39m
+[90mstderr[2m | src/context/AuthContext.test.tsx[2m > 
+[22m[2mAuthContext[2m > [22m[2mValidaci├│n de token 
+fallida durante inicializaci├│n[2m > [22m[2mdebe manejar 
+error de red en validateToken
+[22m[39mError validando token: Error: Network Error
+    at C:/Cudeca/cudeca-frontend/src/context/AuthContext.tes
+t.tsx:953:54
+    at [90mfile:///C:/Cudeca/cudeca-frontend/[39mnode_modu
+les/[4m@vitest/runner[24m/dist/index.js:157:11
+    at [90mfile:///C:/Cudeca/cudeca-frontend/[39mnode_modu
+les/[4m@vitest/runner[24m/dist/index.js:753:26
+    at [90mfile:///C:/Cudeca/cudeca-frontend/[39mnode_modu
+les/[4m@vitest/runner[24m/dist/index.js:1636:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///C:/Cudeca/cudeca-fronten
+d/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:16
+02:10[90m)[39m
+    at runTest [90m(file:///C:/Cudeca/cudeca-frontend/[39m
+node_modules/[4m@vitest/runner[24m/dist/index.js:1309:12[
+90m)[39m
+[90m    at runNextTicks 
+(node:internal/process/task_queues:64:5)[39m
+[90m    at processTimers (node:internal/timers:538:9)[39m
+    at runSuite [90m(file:///C:/Cudeca/cudeca-frontend/[39
+mnode_modules/[4m@vitest/runner[24m/dist/index.js:1468:8[
+90m)[39m
+
+ [31mÔØ»[39m src/context/AuthContext.test.tsx [2m([22m[2m37 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 1009[2mms[22m[39m
+       [32mÔ£ô[39m debe inicializar con valores por defecto (sin sesi├│n)[32m 56[2mms[22m[39m
+       [32mÔ£ô[39m debe restaurar sesi├│n v├ílida desde localStorage[32m 71[2mms[22m[39m
+       [32mÔ£ô[39m debe limpiar sesi├│n si localStorage tiene datos inv├ílidos[32m 26[2mms[22m[39m
+       [32mÔ£ô[39m debe manejar JSON inv├ílido en localStorage[32m 8[2mms[22m[39m
+       [32mÔ£ô[39m debe manejar localStorage sin token[32m 7[2mms[22m[39m
+     [32mÔ£ô[39m debe manejar error en validateToken y retornar false[32m 65[2mms[22m[39m
+       [32mÔ£ô[39m debe hacer login exitosamente[32m 18[2mms[22m[39m
+       [32mÔ£ô[39m debe lanzar error si falta email[32m 17[2mms[22m[39m
+       [32mÔ£ô[39m debe lanzar error si falta password[32m 14[2mms[22m[39m
+       [32mÔ£ô[39m debe guardar datos correctamente en localStorage[32m 9[2mms[22m[39m
+     [32mÔ£ô[39m debe lanzar error si mockResponse no tiene token[32m 15[2mms[22m[39m
+       [32mÔ£ô[39m debe cerrar sesi├│n correctamente[32m 19[2mms[22m[39m
+       [32mÔ£ô[39m debe limpiar localStorage al hacer logout[32m 15[2mms[22m[39m
+     [32mÔ£ô[39m debe llamar logout si validateToken retorna false[32m 81[2mms[22m[39m
+       [32mÔ£ô[39m debe lanzar error si se usa fuera de AuthProvider[32m 7[2mms[22m[39m
+       [32mÔ£ô[39m debe completar el ciclo: login ÔåÆ persistencia ÔåÆ logout[32m 87[2mms[22m[39m
+       [32mÔ£ô[39m debe manejar error en validateToken (simular fallo de red)[32m 79[2mms[22m[39m
+       [32mÔ£ô[39m debe manejar usuario sin campo id en localStorage[32m 16[2mms[22m[39m
+       [32mÔ£ô[39m debe manejar usuario sin campo email en localStorage[32m 16[2mms[22m[39m
+       [32mÔ£ô[39m debe manejar usuario sin campo rol en localStorage[32m 7[2mms[22m[39m
+       [32mÔ£ô[39m debe manejar m├║ltiples logins consecutivos[32m 37[2mms[22m[39m
+       [32mÔ£ô[39m debe preservar isAuthenticated como false durante el login si falla[32m 15[2mms[22m[39m
+       [32mÔ£ô[39m debe generar tokens ├║nicos en cada login[32m 33[2mms[22m[39m
+       [32mÔ£ô[39m debe limpiar completamente el estado despu├®s de un login fallido[32m 15[2mms[22m[39m
+       [32mÔ£ô[39m debe manejar localStorage.setItem que falla[32m 10[2mms[22m[39m
+       [32mÔ£ô[39m debe limpiar sesi├│n si validateToken rechaza el token[32m 76[2mms[22m[39m
+       [32mÔ£ô[39m debe manejar error de red en validateToken[32m 66[2mms[22m[39m
+       [32mÔ£ô[39m debe manejar respuesta sin token del servidor[32m 6[2mms[22m[39m
+       [32mÔ£ô[39m debe validar estructura de respuesta del login[32m 16[2mms[22m[39m
+       [32mÔ£ô[39m debe propagar error si localStorage.setItem falla durante login[32m 14[2mms[22m[39m
+       [32mÔ£ô[39m debe mantener consistencia si falla el guardado[32m 15[2mms[22m[39m
+       [32mÔ£ô[39m debe actualizar isLoading durante inicializaci├│n[32m 15[2mms[22m[39m
+       [32mÔ£ô[39m debe actualizar m├║ltiples estados durante login[32m 7[2mms[22m[39m
+       [32mÔ£ô[39m debe limpiar todos los estados durante logout[32m 9[2mms[22m[39m
+       [32mÔ£ô[39m debe registrar usuario exitosamente y hacer login autom├ítico[32m 16[2mms[22m[39m
+[31m       [31m├ù[31m debe activar modo demo si el backend no est├í disponible[39m[32m 18[2mms[22m[39m
+       [32mÔ£ô[39m debe guardar datos correctamente en localStorage al registrar en modo demo[32m 5[2mms[22m[39m
+
+[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m[1m[41m Failed Tests 1 
+[49m[22m[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+
+[41m[1m FAIL [22m[49m 
+src/context/AuthContext.test.tsx[2m > [22mAuthContext[2m 
+> [22mRegister[2m > [22mdebe activar modo demo si el 
+backend no est├í disponible
+[31m[1mAssertionError[22m: expected null not to be 
+null[39m
+[36m [2mÔØ»[22m 
+src/context/AuthContext.test.tsx:[2m1217:39[22m[39m
+    [90m1215| [39m
+    [90m1216| [39m      [90m// Verificar que se activ├│ 
+modo demo y se cre├│ el usuario[39m
+    [90m1217| [39m      [34mexpect[39m(result[33m.[39m
+current[33m.[39muser)[33m.[39mnot[33m.[39m[34mtoBeNul
+l[39m()[33m;[39m
+    [90m   | [39m                                      
+[31m^[39m
+    [90m1218| [39m      [34mexpect[39m(result[33m.[39m
+current[33m.[39muser[33m?.[39memail)[33m.[39m[34mtoBe
+[39m(registerData[33m.[39memail)[33m;[39m
+    [90m1219| [39m      [34mexpect[39m(result[33m.[39m
+current[33m.[39muser[33m?.[39mnombre)[33m.[39m[34mtoB
+e[39m(registerData[33m.[39mnombre)[33m;[39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1/1]ÔÄ»[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (4)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m113 passed[39m[22m[90m (114)[39m
+[2m   Start at [22m 21:21:11
+[2m   Duration [22m 4.84s[2m (transform 987ms, setup 2.37s, collect 1.92s, tests 1.54s, environment 8.13s, prepare 232ms)[22m
+

@@ -18,8 +18,9 @@ import {
   useMemo,
   type ReactNode,
 } from 'react';
-import type { User } from '../types/auth.types';
-import { apiClient } from '../services/api'; // Servicio para llamadas HTTP (por implementar)
+import type { User, RegisterData } from '../types/auth.types';
+import { apiClient as api } from '../services/api'; // Servicio para llamadas HTTP
+import { AxiosError } from 'axios';
 
 /**
   ============================================================================
@@ -47,6 +48,9 @@ interface AuthContextType {
 
   /** Función para iniciar sesión - devuelve una Promise para usar con async/await */
   login: (email: string, password: string) => Promise<void>;
+
+  /** Función para registrarse */
+  register: (data: RegisterData) => Promise<void>;
 
   /** Función para cerrar sesión */
   logout: () => void;
@@ -146,12 +150,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    * @returns {Promise<boolean>} true si es válido, false si no
    */
   const validateToken = useCallback(async (tokenToValidate: string): Promise<boolean> => {
+    // Si es un token de demo (generado por el fallback), lo consideramos válido
+    if (tokenToValidate.startsWith('demo-token')) {
+      return true;
+    }
+
     try {
-      const response = await apiClient.get('/auth/validate', {
+      const response = await api.get('/auth/validate', {
         headers: { Authorization: `Bearer ${tokenToValidate}` },
       });
       return response.data.valid;
-    } catch {
+    } catch (error) {
+      // Si el backend rechaza el token o no responde, no es válido
+      console.error('Error validando token:', error);
       return false;
     }
   }, []);
@@ -238,25 +249,44 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    */
   const login = useCallback(
     async (email: string, password: string) => {
-      if (!email || !password) {
-        throw new Error('Email y contraseña son requeridos');
-      }
+      if (!email || !password) throw new Error('Email y contraseña son requeridos');
 
       try {
-        const response = await apiClient.post('/auth/login', { email, password });
+        const response = await api.post('/auth/login', { email, password });
         const { token: newToken, user: newUser } = response.data;
 
-        if (!newToken || !newUser) {
-          throw new Error('Respuesta inválida del servidor');
-        }
+        if (!newToken || !newUser) throw new Error('Respuesta inválida');
 
         localStorage.setItem(STORAGE_KEYS.TOKEN, newToken);
         localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(newUser));
-
         setToken(newToken);
         setUser(newUser);
       } catch (error) {
+        // Fallback a MODO DEMO si falla la conexión
+        if (
+          error instanceof AxiosError &&
+          (error.code === 'ERR_NETWORK' || error.code === 'ECONNREFUSED')
+        ) {
+          console.warn('Backend no disponible, activando MODO DEMO');
+          const mockUser: User = {
+            id: 1,
+            nombre: 'Usuario Demo',
+            email: email,
+            rol: 'COMPRADOR',
+          };
+          const mockToken = 'demo-token';
+
+          localStorage.setItem(STORAGE_KEYS.TOKEN, mockToken);
+          localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(mockUser));
+          setToken(mockToken);
+          setUser(mockUser);
+          return; // Éxito simulado
+        }
+
         logout();
+        if (error instanceof AxiosError) {
+          throw new Error(error.response?.data?.message || 'Error al iniciar sesión');
+        }
         throw error;
       }
     },
@@ -264,20 +294,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 
   /**
-    --------------------------------------------------------------------------
-    VALOR DEL CONTEXTO
-    --------------------------------------------------------------------------
-  */
-
-  /**
-   * contextValue - Objeto con todos los datos y funciones del contexto
-   *
-   * useMemo memoriza este objeto para que sea el MISMO en cada render
-   * a menos que alguna dependencia cambie.
-   *
-   * Esto evita que todos los componentes que usan useAuth se re-rendericen
-   * innecesariamente.
+   * register - Registra un nuevo usuario
    */
+  const register = useCallback(
+    async (data: RegisterData) => {
+      try {
+        // Intentar registro real
+        await api.post('/auth/register', data);
+
+        // Si funciona, hacemos login automático
+        await login(data.email, data.password);
+      } catch (error) {
+        console.warn('Backend no disponible, activando MODO DEMO', error);
+
+        // MODO DEMO: Simular registro exitoso
+        const mockUser: User = {
+          id: Math.random(),
+          nombre: data.nombre,
+          email: data.email,
+          rol: 'COMPRADOR',
+        };
+        const mockToken = 'demo-token-' + Date.now();
+
+        localStorage.setItem(STORAGE_KEYS.TOKEN, mockToken);
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(mockUser));
+        setToken(mockToken);
+        setUser(mockUser);
+
+        // Notificar al usuario que es una demo
+        throw new Error('MODO DEMO: Registro simulado (Backend no conectado)');
+      }
+    },
+    [login],
+  );
+
   const contextValue = useMemo(
     () => ({
       user,
@@ -285,18 +335,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isAuthenticated: !!token,
       isLoading,
       login,
+      register,
       logout,
     }),
-    [user, token, isLoading, login, logout], // Si alguno cambia, se recrea el objeto
+    [user, token, isLoading, login, register, logout],
   );
 
-  /* --------------------------------------------------------------------------
-     RENDERIZADO
-     -------------------------------------------------------------------------- */
-
-  /**
-   * El Provider envuelve los children y les da acceso al contextValue
-   */
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
 

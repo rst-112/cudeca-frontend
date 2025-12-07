@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Tests para AuthContext
  *
@@ -17,15 +18,15 @@ import { AuthProvider, useAuth } from './AuthContext';
 import type { User } from '../types/auth.types';
 import { apiClient } from '../services/api';
 
-// ============================================================================
-// MOCKS
-// ============================================================================
-
-// Mock de apiClient
+// Mock del servicio API
 vi.mock('../services/api', () => ({
   apiClient: {
-    get: vi.fn(),
     post: vi.fn(),
+    get: vi.fn(),
+    interceptors: {
+      request: { use: vi.fn() },
+      response: { use: vi.fn() },
+    },
   },
 }));
 
@@ -157,6 +158,9 @@ describe('AuthContext', () => {
       localStorageMock.setItem('token', mockToken);
       localStorageMock.setItem('auth_user', JSON.stringify(mockUser));
 
+      // Mock de validación de token exitosa
+      (apiClient.get as any).mockResolvedValue({ data: { valid: true } });
+
       // Ejecutar: Renderizar el hook
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -282,6 +286,22 @@ describe('AuthContext', () => {
       const email = 'test@test.com';
       const password = 'password123';
 
+      // Mock de respuesta exitosa
+      const mockResponse = {
+        data: {
+          token: 'mock_token_' + Date.now(),
+          user: {
+            id: 1,
+            email,
+            nombre: 'Usuario Demo',
+            rol: 'COMPRADOR',
+          },
+        },
+      };
+
+      // Configurar el mock
+      (apiClient.post as any).mockResolvedValue(mockResponse);
+
       // Ejecutar login
       await act(async () => {
         await result.current.login(email, password);
@@ -343,6 +363,19 @@ describe('AuthContext', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
+      // Mock de respuesta exitosa
+      (apiClient.post as any).mockResolvedValue({
+        data: {
+          token: 'mock_token_123',
+          user: {
+            id: 1,
+            email: 'test@test.com',
+            nombre: 'Usuario Demo',
+            rol: 'COMPRADOR',
+          },
+        },
+      });
+
       await act(async () => {
         await result.current.login('test@test.com', 'password123');
       });
@@ -384,6 +417,64 @@ describe('AuthContext', () => {
     dateNowSpy.mockRestore();
   });
 
+  it('debe activar modo demo con error ECONNREFUSED', async () => {
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Mock de AxiosError con código ECONNREFUSED
+    const axiosError = new (await import('axios')).AxiosError('Connection refused');
+    axiosError.code = 'ECONNREFUSED';
+
+    vi.mocked(apiClient.post).mockRejectedValue(axiosError);
+
+    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    // Ejecutar login (debería activar modo demo)
+    await act(async () => {
+      await result.current.login('test@test.com', 'password');
+    });
+
+    // Verificar que se activó modo demo
+    expect(result.current.isAuthenticated).toBe(true);
+    expect(result.current.token).toBe('demo-token');
+    expect(consoleWarnSpy).toHaveBeenCalledWith('Backend no disponible, activando MODO DEMO');
+
+    consoleWarnSpy.mockRestore();
+  });
+
+  it('debe lanzar error con mensaje personalizado del backend', async () => {
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Mock de AxiosError con respuesta del servidor
+    const axiosError = new (await import('axios')).AxiosError('Bad Request');
+    axiosError.response = {
+      data: { message: 'Credenciales inválidas' },
+      status: 401,
+      statusText: 'Unauthorized',
+      headers: {},
+      config: {} as never,
+    };
+
+    vi.mocked(apiClient.post).mockRejectedValue(axiosError);
+
+    // Ejecutar login (debería fallar con mensaje personalizado)
+    await expect(
+      act(async () => {
+        await result.current.login('test@test.com', 'wrongpassword');
+      }),
+    ).rejects.toThrow('Credenciales inválidas');
+
+    // Verificar que se hizo logout
+    expect(result.current.isAuthenticated).toBe(false);
+  });
+
   // --------------------------------------------------------------------------
   // LOGOUT
   // --------------------------------------------------------------------------
@@ -397,6 +488,18 @@ describe('AuthContext', () => {
       });
 
       // Primero hacer login
+      (apiClient.post as any).mockResolvedValue({
+        data: {
+          token: 'mock_token_123',
+          user: {
+            id: 1,
+            email: 'test@test.com',
+            nombre: 'Usuario Demo',
+            rol: 'COMPRADOR',
+          },
+        },
+      });
+
       await act(async () => {
         await result.current.login('test@test.com', 'password123');
       });
@@ -424,6 +527,18 @@ describe('AuthContext', () => {
       });
 
       // Login
+      (apiClient.post as any).mockResolvedValue({
+        data: {
+          token: 'mock_token_123',
+          user: {
+            id: 1,
+            email: 'test@test.com',
+            nombre: 'Usuario Demo',
+            rol: 'COMPRADOR',
+          },
+        },
+      });
+
       await act(async () => {
         await result.current.login('test@test.com', 'password123');
       });
@@ -501,6 +616,18 @@ describe('AuthContext', () => {
       });
 
       // 2. Login
+      (apiClient.post as any).mockResolvedValue({
+        data: {
+          token: 'mock_token_123',
+          user: {
+            id: 1,
+            email: 'user@test.com',
+            nombre: 'Usuario Demo',
+            rol: 'COMPRADOR',
+          },
+        },
+      });
+
       await act(async () => {
         await result.current.login('user@test.com', 'pass123');
       });
@@ -647,6 +774,18 @@ describe('AuthContext', () => {
       });
 
       // Primer login
+      (apiClient.post as any).mockResolvedValue({
+        data: {
+          token: 'mock_token_1',
+          user: {
+            id: 1,
+            email: 'user1@test.com',
+            nombre: 'Usuario 1',
+            rol: 'COMPRADOR',
+          },
+        },
+      });
+
       await act(async () => {
         await result.current.login('user1@test.com', 'pass1');
       });
@@ -658,6 +797,18 @@ describe('AuthContext', () => {
       await new Promise((resolve) => setTimeout(resolve, 1));
 
       // Segundo login (sobreescribe)
+      (apiClient.post as any).mockResolvedValue({
+        data: {
+          token: 'mock_token_2',
+          user: {
+            id: 2,
+            email: 'user2@test.com',
+            nombre: 'Usuario 2',
+            rol: 'COMPRADOR',
+          },
+        },
+      });
+
       await act(async () => {
         await result.current.login('user2@test.com', 'pass2');
       });
@@ -675,6 +826,7 @@ describe('AuthContext', () => {
       });
 
       // Intentar login que fallará (email vacío)
+      // No necesitamos mockear api.post porque la validación de email ocurre antes
       try {
         await act(async () => {
           await result.current.login('', 'password');
@@ -695,6 +847,18 @@ describe('AuthContext', () => {
       });
 
       // Primer login
+      (apiClient.post as any).mockResolvedValue({
+        data: {
+          token: 'mock_token_' + Date.now(),
+          user: {
+            id: 1,
+            email: 'test@test.com',
+            nombre: 'Usuario Demo',
+            rol: 'COMPRADOR',
+          },
+        },
+      });
+
       await act(async () => {
         await result.current.login('test@test.com', 'pass1');
       });
@@ -709,6 +873,18 @@ describe('AuthContext', () => {
       await new Promise((resolve) => setTimeout(resolve, 10));
 
       // Segundo login con mismo usuario
+      (apiClient.post as any).mockResolvedValue({
+        data: {
+          token: 'mock_token_' + (Date.now() + 100),
+          user: {
+            id: 1,
+            email: 'test@test.com',
+            nombre: 'Usuario Demo',
+            rol: 'COMPRADOR',
+          },
+        },
+      });
+
       await act(async () => {
         await result.current.login('test@test.com', 'pass1');
       });
@@ -758,6 +934,18 @@ describe('AuthContext', () => {
       });
 
       // Intentar login (debería fallar al guardar)
+      (apiClient.post as any).mockResolvedValue({
+        data: {
+          token: 'mock_token_123',
+          user: {
+            id: 1,
+            email: 'test@test.com',
+            nombre: 'Usuario Demo',
+            rol: 'COMPRADOR',
+          },
+        },
+      });
+
       try {
         await act(async () => {
           await result.current.login('test@test.com', 'password');
@@ -990,6 +1178,164 @@ describe('AuthContext', () => {
       expect(result.current.user).toBeNull();
       expect(result.current.token).toBeNull();
       expect(result.current.isAuthenticated).toBe(false);
+    });
+  });
+
+  // --------------------------------------------------------------------------
+  // REGISTER
+  // --------------------------------------------------------------------------
+
+  describe('Register', () => {
+    it('debe registrar usuario exitosamente y hacer login automático', async () => {
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      const registerData = {
+        nombre: 'Nuevo Usuario',
+        email: 'nuevo@test.com',
+        password: 'password123',
+      };
+
+      // Mock de registro exitoso
+      vi.mocked(apiClient.post).mockImplementation((url: string) => {
+        if (url === '/auth/register') {
+          return Promise.resolve({
+            data: { success: true },
+            status: 201,
+            statusText: 'Created',
+            headers: {},
+            config: {} as never,
+          });
+        }
+        if (url === '/auth/login') {
+          return Promise.resolve({
+            data: {
+              token: 'mock_token_registered',
+              user: {
+                id: 2,
+                nombre: registerData.nombre,
+                email: registerData.email,
+                rol: 'COMPRADOR',
+              },
+            },
+            status: 200,
+            statusText: 'OK',
+            headers: {},
+            config: {} as never,
+          });
+        }
+        return Promise.reject(new Error('Endpoint no mockeado'));
+      });
+
+      // Ejecutar registro
+      await act(async () => {
+        await result.current.register(registerData);
+      });
+
+      // Verificar que se registró y logueó automáticamente
+      expect(result.current.user).not.toBeNull();
+      expect(result.current.user?.email).toBe(registerData.email);
+      expect(result.current.user?.nombre).toBe(registerData.nombre);
+      expect(result.current.token).toBeTruthy();
+      expect(result.current.isAuthenticated).toBe(true);
+    });
+
+    it('debe activar modo demo si el backend no está disponible', async () => {
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      const registerData = {
+        nombre: 'Usuario Demo',
+        email: 'demo@test.com',
+        password: 'password123',
+      };
+
+      // Mock de error de red
+      vi.mocked(apiClient.post).mockRejectedValue({
+        code: 'ERR_NETWORK',
+        message: 'Network Error',
+      });
+
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      // Ejecutar registro (debería fallar y activar modo demo)
+      let errorThrown = false;
+      try {
+        await act(async () => {
+          await result.current.register(registerData);
+        });
+      } catch (error) {
+        errorThrown = true;
+        expect(error).toBeInstanceOf(Error);
+        expect((error as Error).message).toBe(
+          'MODO DEMO: Registro simulado (Backend no conectado)',
+        );
+      }
+
+      // Verificar que se lanzó el error
+      expect(errorThrown).toBe(true);
+
+      // Verificar que se guardó en localStorage (esto es síncrono)
+      const storedToken = localStorageMock.getItem('token');
+      const storedUser = localStorageMock.getItem('auth_user');
+
+      expect(storedToken).toBeTruthy();
+      expect(storedToken).toMatch(/^demo-token-/);
+
+      const parsedUser = JSON.parse(storedUser!);
+      expect(parsedUser.nombre).toBe(registerData.nombre);
+      expect(parsedUser.email).toBe(registerData.email);
+      expect(parsedUser.rol).toBe('COMPRADOR');
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        'Backend no disponible, activando MODO DEMO',
+        expect.anything(),
+      );
+
+      consoleWarnSpy.mockRestore();
+    });
+
+    it('debe guardar datos correctamente en localStorage al registrar en modo demo', async () => {
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      const registerData = {
+        nombre: 'Test User',
+        email: 'test@demo.com',
+        password: 'pass123',
+      };
+
+      // Mock de error para activar modo demo
+      vi.mocked(apiClient.post).mockRejectedValue(new Error('Network error'));
+
+      try {
+        await act(async () => {
+          await result.current.register(registerData);
+        });
+      } catch {
+        // Esperamos el error de modo demo
+      }
+
+      // Verificar localStorage
+      const storedToken = localStorageMock.getItem('token');
+      const storedUser = localStorageMock.getItem('auth_user');
+
+      expect(storedToken).toBeTruthy();
+      expect(storedToken).toMatch(/^demo-token-/);
+
+      const parsedUser = JSON.parse(storedUser!);
+      expect(parsedUser.nombre).toBe(registerData.nombre);
+      expect(parsedUser.email).toBe(registerData.email);
+      expect(parsedUser.rol).toBe('COMPRADOR');
     });
   });
 });
