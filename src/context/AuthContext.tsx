@@ -19,7 +19,7 @@ import {
   type ReactNode,
 } from 'react';
 import type { User } from '../types/auth.types';
-// import api from '../services/api'; // Servicio para llamadas HTTP (por implementar)
+import { apiClient } from '../services/api'; // Servicio para llamadas HTTP (por implementar)
 
 /**
   ============================================================================
@@ -147,19 +147,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    */
   const validateToken = useCallback(async (tokenToValidate: string): Promise<boolean> => {
     try {
-      // TODO: Implementar cuando esté el backend
-      console.debug('Token a validar:', tokenToValidate); // Usa el parámetro
-
-      // Código real cuando este el backend funcionando
-      // const response = await api.get('/auth/validate', {
-      //   headers: { Authorization: `Bearer ${tokenToValidate}` }
-      // });
-      // return response.data.valid;
-
-      // TODO: TEMPORAL: Asume que todos los tokens son válidos
-      return true;
+      const response = await apiClient.get('/auth/validate', {
+        headers: { Authorization: `Bearer ${tokenToValidate}` },
+      });
+      return response.data.valid;
     } catch {
-      // Si hay error de red o el backend responde con error, el token no es válido
       return false;
     }
   }, []);
@@ -246,50 +238,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    */
   const login = useCallback(
     async (email: string, password: string) => {
-      // 1. Validar entrada
       if (!email || !password) {
         throw new Error('Email y contraseña son requeridos');
       }
 
       try {
-        // 2. Llamar a la API (COMENTADO: descomentaR cuando este backend)
-        // const response = await api.post('/auth/login', { email, password });
-        // const { token: newToken, user: newUser } = response.data;
+        const response = await apiClient.post('/auth/login', { email, password });
+        const { token: newToken, user: newUser } = response.data;
 
-        // TEMPORAL: Respuesta mock (simulada) para desarrollo
-        const mockResponse = {
-          token: 'mock_token_' + Date.now(),
-          user: {
-            id: 1,
-            email,
-            nombre: 'Usuario Demo',
-            rol: 'COMPRADOR' as const,
-          },
-        };
-
-        const { token: newToken, user: newUser } = mockResponse;
-
-        // 3. Validar que la respuesta tiene los datos esperados
         if (!newToken || !newUser) {
           throw new Error('Respuesta inválida del servidor');
         }
 
-        // 4. Guardar en localStorage para persistencia
         localStorage.setItem(STORAGE_KEYS.TOKEN, newToken);
         localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(newUser));
 
-        // 5. Actualizar el estado de React
         setToken(newToken);
         setUser(newUser);
       } catch (error) {
-        // Si algo sale mal, limpiar todo por seguridad
         logout();
-        // Re-lanzar el error para que el componente que llamó login lo maneje
         throw error;
       }
     },
     [logout],
-  ); // Dependencia: logout (si cambia, esta función se recrea)
+  );
 
   /**
     --------------------------------------------------------------------------
