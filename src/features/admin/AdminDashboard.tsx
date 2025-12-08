@@ -1,5 +1,5 @@
 import { useAuth } from '../../context/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/index';
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
