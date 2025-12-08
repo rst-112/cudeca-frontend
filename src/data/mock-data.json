@@ -1,0 +1,89 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "nombre": "Ana García",
+      "email": "ana.garcia@example.com",
+      "direccion": "Calle Larios 12, Málaga",
+      "rol": "ADMIN",
+      "created_at": "2023-01-15T09:00:00Z"
+    },
+    {
+      "id": 2,
+      "nombre": "Carlos Ruiz",
+      "email": "carlos.ruiz@example.com",
+      "direccion": "Av. Andalucía 45, Málaga",
+      "rol": "USER",
+      "created_at": "2023-03-10T14:30:00Z"
+    },
+    {
+      "id": 3,
+      "nombre": "Lucía Méndez",
+      "email": "lucia.m@example.com",
+      "direccion": "",
+      "rol": "USER",
+      "created_at": "2023-05-20T10:15:00Z"
+    }
+  ],
+  "eventos": [
+    {
+      "id": 101,
+      "nombre": "Cena Benéfica de Navidad",
+      "descripcion": "Acompáñanos en una velada inolvidable para recaudar fondos para nuestros cuidados paliativos. Incluye cena de gala y música en vivo.",
+      "fecha_inicio": "2024-12-20T20:00:00Z",
+      "fecha_fin": "2024-12-21T02:00:00Z",
+      "lugar": "Hotel Miramar, Málaga",
+      "estado": "PUBLICADO",
+      "objetivo_recaudacion": 5000.0,
+      "imagen_url": "https://placehold.co/600x400/e63946/ffffff?text=Cena+Navidad",
+      "tipos_entrada": [
+        {
+          "id": 1,
+          "nombre": "Entrada General",
+          "coste_base": 50.0,
+          "cantidad_total": 100,
+          "cantidad_vendida": 45
+        },
+        {
+          "id": 2,
+          "nombre": "Mesa VIP (10 pax)",
+          "coste_base": 600.0,
+          "cantidad_total": 10,
+          "cantidad_vendida": 2
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "nombre": "Carrera Solidaria 'Marcha por la Vida'",
+      "descripcion": "Recorrido de 5km por el paseo marítimo. Apto para familias y mascotas.",
+      "fecha_inicio": "2024-10-15T09:00:00Z",
+      "fecha_fin": "2024-10-15T13:00:00Z",
+      "lugar": "Paseo Marítimo Antonio Banderas",
+      "estado": "FINALIZADO",
+      "objetivo_recaudacion": 2000.0,
+      "imagen_url": "https://placehold.co/600x400/457b9d/ffffff?text=Carrera+Solidaria",
+      "tipos_entrada": [
+        {
+          "id": 3,
+          "nombre": "Dorsal Adulto",
+          "coste_base": 10.0,
+          "cantidad_total": 500,
+          "cantidad_vendida": 500
+        }
+      ]
+    },
+    {
+      "id": 103,
+      "nombre": "Taller de Arte Terapia",
+      "descripcion": "Taller creativo enfocado en la expresión emocional a través de la pintura.",
+      "fecha_inicio": "2025-02-10T17:00:00Z",
+      "fecha_fin": "2025-02-10T19:00:00Z",
+      "lugar": "Centro CUDECA, Benalmádena",
+      "estado": "BORRADOR",
+      "objetivo_recaudacion": 300.0,
+      "imagen_url": "https://placehold.co/600x400/a8dadc/333333?text=Arte+Terapia",
+      "tipos_entrada": []
+    }
+  ]
+}

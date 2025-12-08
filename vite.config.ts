@@ -11,17 +11,40 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-ui': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-label',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-tooltip',
+            'lucide-react',
+            'class-variance-authority',
+            'clsx',
+            'tailwind-merge',
+            'tailwindcss-animate',
+            'sonner',
+          ],
+          'vendor-charts': ['chart.js', 'react-chartjs-2'],
+          'vendor-utils': ['axios', 'zod', 'react-hook-form', '@hookform/resolvers'],
+        },
+      },
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/setupTests.ts',
+    setupFiles: './src/test/setupTests.ts',
 
     // Configuración de Cobertura
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'json-summary'],
-
-      // --- AQUÍ ESTÁN LAS EXCLUSIONES ---
       exclude: [
         // 1. Archivos de Configuración y Setup
         'postcss.config.js',
@@ -44,7 +67,6 @@ export default defineConfig({
         'src/lib/utils.ts',
         'src/lib/axios.ts',
       ],
-      // ----------------------------------
 
       thresholds: {
         lines: 80,
