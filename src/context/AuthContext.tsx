@@ -166,19 +166,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           return;
         }
 
-        // 3. Validar el token con el backend
-        const isValid = await validateToken(storedToken);
+        // 3. Validar que el usuario tenga campos obligatorios
+        if (!storedUser.id || !storedUser.email || !storedUser.rol) {
+          console.error('Error restaurando sesión:', new Error('Usuario con datos incompletos'));
+          logout();
+          setIsLoading(false);
+          return;
+        }
 
-        // 4. Si el token es válido, restaurar la sesión
-        if (isValid) {
-          setToken(storedToken);
-          setUser(storedUser);
-        } else {
-          // Si no es válido, cerrar sesión
+        // 4. Validar el token con el backend
+        try {
+          const isValid = await validateToken(storedToken);
+
+          // 5. Si el token es válido, restaurar la sesión
+          if (isValid) {
+            setToken(storedToken);
+            setUser(storedUser);
+          } else {
+            // Si no es válido, cerrar sesión
+            logout();
+          }
+        } catch (error) {
+          // Si hay un error crítico (de red u otro), cerrar sesión
+          console.error('Error restaurando sesión:', error);
           logout();
         }
       } catch (error) {
-        // Si algo sale mal, cerrar sesión
+        // Si algo sale mal al parsear datos, cerrar sesión
         console.error('Error restaurando sesión:', error);
         logout();
       } finally {
@@ -217,8 +231,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     async (email: string, password: string) => {
       if (!email || !password) throw new Error('Email y contraseña son requeridos');
 
+      setIsLoading(true);
       try {
-        // Login con el backend usando authService
+        // Login con el backend usando authService (ya guarda en localStorage)
         const { token: newToken, user: newUser } = await authService.login({ email, password });
 
         // Actualizar el estado
@@ -230,6 +245,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           throw new Error(error.response?.data?.message || 'Error al iniciar sesión');
         }
         throw error;
+      } finally {
+        setIsLoading(false);
       }
     },
     [logout],
@@ -239,25 +256,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    * register - Registra un nuevo usuario
    */
   const register = useCallback(async (data: RegisterData) => {
+    setIsLoading(true);
     try {
-      // Registro con authService
-      await authService.register(data);
+      // Registro con authService (ya guarda en localStorage)
+      const { token: newToken, user: newUser } = await authService.register(data);
 
-      // authService.register ya guarda el token y usuario en localStorage
-      // Obtenerlos y actualizar el estado
-      const token = authService.getToken();
-      const user = authService.getCurrentUser();
-
-      if (token && user) {
-        setToken(token);
-        setUser(user);
-      }
+      // Actualizar el estado
+      setToken(newToken);
+      setUser(newUser);
     } catch (error) {
       // Propagar el error
       if (error instanceof AxiosError) {
         throw new Error(error.response?.data?.message || 'Error al registrarse');
       }
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
