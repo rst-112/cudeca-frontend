@@ -73,7 +73,7 @@ export default function AuthPage() {
             z-20
             shadow-2xl
             overflow-hidden
-            transform transition-transform duration-[800ms] cubic-bezier(0.65, 0, 0.35, 1)
+            transform transition-transform duration-800 cubic-bezier(0.65, 0, 0.35, 1)
           `}
           style={{
             // 77.7778% es la relación exacta para mover un bloque de 56.25% al borde derecho (43.75% restante)
@@ -84,7 +84,7 @@ export default function AuthPage() {
         >
           {/* Imagen interna */}
           <div
-            className="absolute inset-0 w-full h-full transition-transform duration-[800ms] cubic-bezier(0.65, 0, 0.35, 1)"
+            className="absolute inset-0 w-full h-full transition-transform duration-800 cubic-bezier(0.65, 0, 0.35, 1)"
             style={{
               // Eliminamos el translate negativo en el registro para evitar que se corte la derecha
               transform: 'translateX(0)',
@@ -95,7 +95,7 @@ export default function AuthPage() {
               alt="Campaña Eres Pieza Clave"
               // object-left-top: ANCLA la imagen arriba a la izquierda.
               // Esto asegura que el texto "Eres pieza clave" y la cara no se corten nunca.
-              className="w-full h-full object-cover object-left-top"
+              className="w-full h-full object-cover object-top-left"
             />
 
             {/* Overlay sutil para unificar tonos si la imagen es muy clara */}
