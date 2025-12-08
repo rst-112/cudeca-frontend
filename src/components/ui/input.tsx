@@ -1,14 +1,31 @@
 import * as React from 'react';
-
 import { cn } from '../../lib/utils';
 
-const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'>>(
+export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
+
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
     return (
       <input
         type={type}
         className={cn(
-          'flex h-auto w-full rounded-lg border border-input bg-transparent px-4 py-3 text-base shadow-sm transition-all duration-200 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-slate-400/40 dark:placeholder:text-slate-500/40 placeholder:italic focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50',
+          // Base styles
+          'flex h-12 w-full rounded-lg px-4 py-3 text-base font-["Arimo"]',
+          'transition-all duration-200',
+          // Light mode
+          'bg-white text-slate-900 border-2 border-slate-200',
+          'placeholder:text-slate-400',
+          // Dark mode
+          'dark:bg-slate-800 dark:text-slate-50 dark:border-slate-700',
+          'dark:placeholder:text-slate-500',
+          // Focus states
+          'focus:outline-none focus:ring-4 focus:ring-[#00A651]/20 focus:border-[#00A651]',
+          'dark:focus:ring-[#00A651]/30 dark:focus:border-[#00A651]',
+          // Hover
+          'hover:border-slate-300 dark:hover:border-slate-600',
+          // Disabled
+          'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-slate-50 dark:disabled:bg-slate-900',
+          // Error state (puedes añadir clases condicionales)
           className,
         )}
         ref={ref}

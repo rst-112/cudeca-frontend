@@ -380,4 +380,104 @@ describe('PrivateRoute', () => {
       });
     });
   });
+
+  // --------------------------------------------------------------------------
+  // AUTORIZACIÓN POR ROL (requiredRole)
+  // --------------------------------------------------------------------------
+
+  describe('Autorización por rol', () => {
+    it('debe permitir acceso si el usuario tiene el rol requerido', async () => {
+      mockUseAuth.mockReturnValue({
+        user: {
+          id: 1,
+          email: 'admin@test.com',
+          nombre: 'Admin User',
+          rol: 'ADMINISTRADOR',
+        },
+        token: 'admin_token',
+        isAuthenticated: true,
+        isLoading: false,
+        login: vi.fn(),
+        logout: vi.fn(),
+      });
+
+      render(
+        <MemoryRouter initialEntries={['/admin']}>
+          <Routes>
+            <Route path="/" element={<div>Home Page</div>} />
+            <Route element={<PrivateRoute requiredRole="ADMINISTRADOR" />}>
+              <Route path="/admin" element={<div>Admin Panel</div>} />
+            </Route>
+          </Routes>
+        </MemoryRouter>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Admin Panel')).toBeInTheDocument();
+      });
+    });
+
+    it('debe redirigir a home si el usuario no tiene el rol requerido', async () => {
+      mockUseAuth.mockReturnValue({
+        user: {
+          id: 2,
+          email: 'user@test.com',
+          nombre: 'Regular User',
+          rol: 'COMPRADOR',
+        },
+        token: 'user_token',
+        isAuthenticated: true,
+        isLoading: false,
+        login: vi.fn(),
+        logout: vi.fn(),
+      });
+
+      render(
+        <MemoryRouter initialEntries={['/admin']}>
+          <Routes>
+            <Route path="/" element={<div>Home Page</div>} />
+            <Route element={<PrivateRoute requiredRole="ADMINISTRADOR" />}>
+              <Route path="/admin" element={<div>Admin Panel</div>} />
+            </Route>
+          </Routes>
+        </MemoryRouter>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Home Page')).toBeInTheDocument();
+      });
+
+      expect(screen.queryByText('Admin Panel')).not.toBeInTheDocument();
+    });
+
+    it('debe permitir acceso si no se especifica requiredRole', async () => {
+      mockUseAuth.mockReturnValue({
+        user: {
+          id: 1,
+          email: 'user@test.com',
+          nombre: 'Any User',
+          rol: 'COMPRADOR',
+        },
+        token: 'token',
+        isAuthenticated: true,
+        isLoading: false,
+        login: vi.fn(),
+        logout: vi.fn(),
+      });
+
+      render(
+        <MemoryRouter initialEntries={['/protected']}>
+          <Routes>
+            <Route element={<PrivateRoute />}>
+              <Route path="/protected" element={<div>Protected Content</div>} />
+            </Route>
+          </Routes>
+        </MemoryRouter>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Protected Content')).toBeInTheDocument();
+      });
+    });
+  });
 });

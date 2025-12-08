@@ -130,7 +130,7 @@ describe('API Service', () => {
 
   describe('Interceptor de Request', () => {
     it('debe inyectar el token de Authorization cuando existe en localStorage', () => {
-      localStorage.setItem('auth_token', 'test_token_123');
+      localStorage.setItem('token', 'test_token_123');
 
       const config = {
         headers: {},
@@ -170,7 +170,7 @@ describe('API Service', () => {
     });
 
     it('debe mantener headers existentes al inyectar Authorization', () => {
-      localStorage.setItem('auth_token', 'test_token');
+      localStorage.setItem('token', 'test_token');
 
       const config = {
         headers: {
@@ -201,7 +201,7 @@ describe('API Service', () => {
     });
 
     it('debe limpiar localStorage cuando el error es 401 Unauthorized', async () => {
-      localStorage.setItem('auth_token', 'expired_token');
+      localStorage.setItem('token', 'expired_token');
       localStorage.setItem('auth_user', JSON.stringify({ id: 1, name: 'Test' }));
 
       const error401 = {
@@ -211,12 +211,12 @@ describe('API Service', () => {
 
       await expect(responseInterceptorError(error401)).rejects.toEqual(error401);
 
-      expect(localStorage.getItem('auth_token')).toBeNull();
+      expect(localStorage.getItem('token')).toBeNull();
       expect(localStorage.getItem('auth_user')).toBeNull();
     });
 
     it('NO debe limpiar localStorage para errores diferentes a 401', async () => {
-      localStorage.setItem('auth_token', 'valid_token');
+      localStorage.setItem('token', 'valid_token');
       localStorage.setItem('auth_user', JSON.stringify({ id: 1 }));
 
       const error500 = {
@@ -226,7 +226,7 @@ describe('API Service', () => {
 
       await expect(responseInterceptorError(error500)).rejects.toEqual(error500);
 
-      expect(localStorage.getItem('auth_token')).toBe('valid_token');
+      expect(localStorage.getItem('token')).toBe('valid_token');
       expect(localStorage.getItem('auth_user')).not.toBeNull();
     });
 
@@ -240,7 +240,7 @@ describe('API Service', () => {
     });
 
     it('debe manejar error 401 sin limpiar si no hay response.status', async () => {
-      localStorage.setItem('auth_token', 'token');
+      localStorage.setItem('token', 'token');
       localStorage.setItem('auth_user', JSON.stringify({ id: 1 }));
 
       const errorWithoutStatus = {
@@ -251,23 +251,23 @@ describe('API Service', () => {
         errorWithoutStatus,
       );
 
-      expect(localStorage.getItem('auth_token')).toBe('token');
+      expect(localStorage.getItem('token')).toBe('token');
     });
 
     it('debe manejar múltiples errores 401 consecutivos', async () => {
-      localStorage.setItem('auth_token', 'token1');
+      localStorage.setItem('token', 'token1');
       localStorage.setItem('auth_user', JSON.stringify({ id: 1 }));
 
       const error401 = {
         response: { status: 401 },
-        isAxiosError: true,
+        message: 'Unauthorized',
       } as AxiosError;
 
       await expect(responseInterceptorError(error401)).rejects.toEqual(error401);
-      expect(localStorage.getItem('auth_token')).toBeNull();
+      expect(localStorage.getItem('token')).toBeNull();
 
       await expect(responseInterceptorError(error401)).rejects.toEqual(error401);
-      expect(localStorage.getItem('auth_token')).toBeNull();
+      expect(localStorage.getItem('token')).toBeNull();
     });
   });
 
@@ -672,7 +672,7 @@ describe('API Service', () => {
 
   describe('Integración - Flujo completo', () => {
     it('debe usar el token en peticiones autenticadas', async () => {
-      localStorage.setItem('auth_token', 'integration_token_xyz');
+      localStorage.setItem('token', 'integration_token_xyz');
 
       const config = {
         headers: {},
@@ -684,7 +684,7 @@ describe('API Service', () => {
     });
 
     it('debe limpiar sesión en error 401 y lanzar el error', async () => {
-      localStorage.setItem('auth_token', 'expired');
+      localStorage.setItem('token', 'expired');
       localStorage.setItem('auth_user', JSON.stringify({ id: 1 }));
 
       const error401 = {
@@ -694,12 +694,12 @@ describe('API Service', () => {
       } as AxiosError;
 
       await expect(responseInterceptorError(error401)).rejects.toEqual(error401);
-      expect(localStorage.getItem('auth_token')).toBeNull();
+      expect(localStorage.getItem('token')).toBeNull();
       expect(localStorage.getItem('auth_user')).toBeNull();
     });
 
     it('debe manejar petición completa con todos los elementos', async () => {
-      localStorage.setItem('auth_token', 'valid_token');
+      localStorage.setItem('token', 'valid_token');
 
       const mockData = { success: true, data: { id: 1 } };
       mockAxiosInstance.post.mockResolvedValueOnce({ data: mockData });
@@ -710,7 +710,7 @@ describe('API Service', () => {
     });
 
     it('debe manejar flujo completo: request interceptor -> petición -> response interceptor', async () => {
-      localStorage.setItem('auth_token', 'test_token');
+      localStorage.setItem('token', 'test_token');
 
       const config = {
         headers: {},
@@ -807,7 +807,7 @@ describe('API Service', () => {
     });
 
     it('debe manejar token vacío en localStorage', () => {
-      localStorage.setItem('auth_token', '');
+      localStorage.setItem('token', '');
 
       const config = {
         headers: {},

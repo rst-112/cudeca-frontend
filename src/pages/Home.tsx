@@ -1,75 +1,147 @@
 import { Link } from 'react-router-dom';
+import { Button } from '../components/ui/Button';
 import campaignImage from '../assets/FotoLogin.png';
-import { ThemeToggle } from '../components/ui/ThemeToggle';
+import { ArrowRight, Heart, Calendar, Users, Sparkles } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300">
-      {/* Navigation */}
-      <nav className="absolute top-0 w-full z-50 px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-[#00A651] flex items-center justify-center text-white font-bold shadow-sm">
-            C
-          </div>
-          <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight font-['Arimo']">
-            cudeca <span className="font-light">FUNDACIÓN</span>
-          </span>
-        </div>
-        <div className="flex items-center gap-4">
-          <ThemeToggle />
-          <Link
-            to="/login"
-            className="px-4 py-2 text-slate-700 dark:text-slate-200 font-medium hover:text-[#00A651] dark:hover:text-[#00A651] transition-colors font-['Arimo']"
-          >
-            Iniciar sesión
-          </Link>
-          <Link
-            to="/registro"
-            className="px-4 py-2 bg-[#00A651] hover:bg-[#008a43] text-white font-bold rounded-lg transition-all shadow-sm hover:shadow-md font-['Arimo']"
-          >
-            Regístrate
-          </Link>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <div className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Image with Overlay */}
+    <div className="flex flex-col w-full">
+      {/* === HERO SECTION === */}
+      {/* Altura calculada para restar el navbar (h-20 = 5rem) */}
+      <section className="relative h-[calc(100vh-5rem)] min-h-[600px] flex items-center justify-center overflow-hidden">
+        {/* Fondo con Imagen y Gradiente */}
         <div className="absolute inset-0 z-0">
-          <img src={campaignImage} alt="Cudeca Campaign" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/40 dark:bg-black/60" />
+          <img
+            src={campaignImage}
+            alt="Campaña Cudeca - Eres pieza clave"
+            className="w-full h-full object-cover object-top animate-in fade-in duration-1000"
+          />
+          {/* Gradiente para mejorar legibilidad del texto */}
+          <div className="absolute inset-0 bg-linear-to-r from-black/90 via-black/50 to-transparent dark:from-black/95 dark:via-black/70" />
         </div>
 
-        {/* Content */}
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg font-['Arimo']">
-            Eres pieza clave
-          </h1>
-          <p className="text-xl md:text-2xl text-slate-100 mb-8 max-w-2xl mx-auto drop-shadow-md font-['Arimo']">
-            Cada cuidado cuenta. Cada pieza suma. Únete a nosotros para hacer la diferencia en la
-            vida de quienes más lo necesitan.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/registro"
-              className="px-8 py-4 bg-[#00A651] hover:bg-[#008a43] text-white text-lg font-bold rounded-xl transition-all shadow-lg hover:shadow-xl hover:scale-105 font-['Arimo']"
-            >
-              Únete ahora
-            </Link>
-            <Link
-              to="/about"
-              className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white text-lg font-bold rounded-xl transition-all border border-white/30 hover:border-white/50 font-['Arimo']"
-            >
-              Saber más
-            </Link>
+        {/* Contenido Hero */}
+        <div className="relative z-10 container mx-auto px-4">
+          <div className="max-w-3xl text-white space-y-8 animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-150">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00A651]/20 border border-[#00A651]/50 backdrop-blur-sm text-[#00A651] font-semibold text-sm mb-2">
+              <Sparkles size={16} />
+              <span>Campaña 2025</span>
+            </div>
+
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight tracking-tight font-['Arimo'] drop-shadow-xl">
+              Eres pieza <br />
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-[#00A651] to-[#4ade80]">
+                clave
+              </span>
+            </h1>
+
+            <p className="text-xl md:text-2xl text-slate-200 font-light leading-relaxed max-w-2xl drop-shadow-md">
+              Cada cuidado cuenta. Cada pieza suma. Únete a nosotros para hacer la diferencia en la
+              vida de quienes más lo necesitan.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <Button
+                asChild
+                size="lg"
+                className="text-lg px-8 h-14 bg-[#00A651] hover:bg-[#008a43] border-none shadow-lg hover:shadow-[#00A651]/20 hover:scale-105 transition-all duration-300"
+              >
+                <Link to="/registro">
+                  Únete ahora <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="text-lg px-8 h-14 bg-white/5 hover:bg-white/10 text-white border-white/30 backdrop-blur-sm hover:border-white/50 transition-all duration-300"
+              >
+                <Link to="/about">Saber más</Link>
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Footer */}
-      <footer className="bg-slate-50 dark:bg-slate-900 py-8 text-center text-slate-500 dark:text-slate-400 text-sm font-['Arimo']">
-        <p>© {new Date().getFullYear()} Fundación Cudeca. Todos los derechos reservados.</p>
-      </footer>
+      {/* === SECCIÓN INFORMATIVA === */}
+      <section className="py-24 bg-white dark:bg-slate-950 relative overflow-hidden">
+        {/* Decoración de fondo */}
+        <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-slate-200 dark:via-slate-800 to-transparent" />
+
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 font-['Arimo']">
+              ¿Cómo puedes ayudar?
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 text-lg">
+              Tu compromiso es vital para mantener nuestra "forma especial de cuidar".
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Card 1 */}
+            <div className="group p-8 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all duration-300 hover:-translate-y-1">
+              <div className="h-14 w-14 rounded-2xl bg-green-100 dark:bg-green-900/20 flex items-center justify-center text-[#00A651] mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Heart size={28} className="fill-current" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                Hazte Socio
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
+                Tu apoyo constante nos permite planificar y mantener nuestros cuidados paliativos
+                gratuitos.
+              </p>
+              <Link
+                to="/registro"
+                className="inline-flex items-center text-[#00A651] font-semibold hover:underline underline-offset-4"
+              >
+                Colaborar <ArrowRight size={16} className="ml-1" />
+              </Link>
+            </div>
+
+            {/* Card 2 */}
+            <div className="group p-8 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all duration-300 hover:-translate-y-1">
+              <div className="h-14 w-14 rounded-2xl bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Calendar size={28} />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                Eventos Solidarios
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
+                Participa en nuestros conciertos, cenas y marchas solidarias. Diviértete mientras
+                ayudas.
+              </p>
+              <Link
+                to="/eventos"
+                className="inline-flex items-center text-blue-600 font-semibold hover:underline underline-offset-4"
+              >
+                Ver agenda <ArrowRight size={16} className="ml-1" />
+              </Link>
+            </div>
+
+            {/* Card 3 */}
+            <div className="group p-8 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all duration-300 hover:-translate-y-1">
+              <div className="h-14 w-14 rounded-2xl bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Users size={28} />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                Voluntariado
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
+                Dona tu tiempo y talento. Hay muchas formas de colaborar en nuestras tiendas y
+                eventos.
+              </p>
+              <Link
+                to="/voluntariado"
+                className="inline-flex items-center text-purple-600 font-semibold hover:underline underline-offset-4"
+              >
+                Infórmate <ArrowRight size={16} className="ml-1" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

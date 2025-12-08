@@ -1,17 +1,20 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '../../context/AuthContext';
-import { Eye, EyeOff } from 'lucide-react';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Button } from '../../components/ui/Button';
+import { Input } from '../../components/ui/Input';
 import { Label } from '../../components/ui/label';
 import { Checkbox } from '../../components/ui/checkbox';
+import { toast } from 'sonner';
+import logoLight from '../../assets/ImagenLogoCudecaLigth.png';
+import logoDark from '../../assets/ImagenLogoCudecaDark.png';
 
 const loginSchema = z.object({
-  email: z.email('Email inválido'),
+  email: z.string().email('Email inválido'),
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
   rememberMe: z.boolean().optional(),
 });
@@ -24,6 +27,7 @@ interface LoginPageProps {
 
 export default function LoginPage({ onSwitch }: LoginPageProps) {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -40,129 +44,162 @@ export default function LoginPage({ onSwitch }: LoginPageProps) {
   const onSubmit = async (data: LoginFormValues) => {
     try {
       await login(data.email, data.password);
+      toast.success('¡Sesión iniciada correctamente!', {
+        description: 'Bienvenido de vuelta',
+      });
+      navigate('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
+      toast.error('Error al iniciar sesión', {
+        description: error instanceof Error ? error.message : 'Credenciales inválidas',
+      });
     }
   };
 
   return (
-    <div className="w-full">
-      <div className="mb-6 text-center">
-        <Link to="/" className="relative z-10 block">
-          {/* Logo for Light Mode */}
+    <div className="w-full space-y-8">
+      {/* Logo con Transición Suave */}
+      <div className="text-center">
+        <Link to="/" className="inline-block group relative h-24 w-64 mx-auto">
+          {/* Logo para Modo Claro (Verde) */}
           <img
-            src="/src/assets/ImagenLogoCudecaLigth.png"
+            src={logoLight}
             alt="Fundación Cudeca"
-            className="h-16 mx-auto mb-4 hover:opacity-80 transition-opacity dark:hidden"
+            className={`
+              absolute inset-0 h-full w-full object-contain
+              transition-all duration-500 ease-in-out
+              opacity-100 dark:opacity-0 scale-100 dark:scale-95
+              group-hover:scale-105
+            `}
           />
-          {/* Logo for Dark Mode */}
+
+          {/* Logo para Modo Oscuro (Blanco) */}
           <img
-            src="/src/assets/ImagenLogoCudecaDark.png"
+            src={logoDark}
             alt="Fundación Cudeca"
-            className="h-16 mx-auto mb-4 hover:opacity-80 transition-opacity hidden dark:block"
+            className={`
+              absolute inset-0 h-full w-full object-contain
+              transition-all duration-500 ease-in-out
+              opacity-0 dark:opacity-100 scale-95 dark:scale-100
+              group-hover:scale-105
+            `}
           />
         </Link>
+      </div>
 
-        <h1 className="text-[28px] font-bold text-slate-900 dark:text-white mb-1.5 font-['Arimo'] text-left">
+      {/* Header */}
+      <div className="text-center space-y-4">
+        <h1 className="text-5xl font-bold text-slate-900 dark:text-white font-['Arimo'] tracking-tight">
           Inicia sesión
         </h1>
-        <p className="text-slate-500/80 dark:text-slate-400/80 text-base font-['Arimo'] text-left">
+        <p className="text-slate-600 dark:text-slate-400 text-lg font-['Arimo'] leading-relaxed">
           ¿No tienes cuenta?{' '}
           <button
             type="button"
             onClick={onSwitch}
-            className="font-bold text-[#00A651] hover:text-[#008a43] hover:underline transition-colors cursor-pointer"
+            className="font-bold text-[#00A651] hover:text-[#008a43] dark:text-[#00d66a] dark:hover:text-[#00A651] underline underline-offset-4 decoration-2 transition-all duration-200 hover:scale-105 inline-block cursor-pointer"
+            aria-label="Cambiar a formulario de registro"
           >
-            Crea una aquí
+            Regístrate gratis
           </button>
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-        <div className="space-y-1.5">
-          <Label
-            htmlFor="email"
-            className="font-['Arimo'] text-slate-700 dark:text-slate-300 font-medium"
-          >
-            Correo electrónico
-          </Label>
+      {/* Form */}
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-6"
+        aria-label="Formulario de inicio de sesión"
+      >
+        {/* Email */}
+        <div className="space-y-2">
+          <Label htmlFor="email">Correo electrónico</Label>
           <Input
             id="email"
             type="email"
             placeholder="tu@email.com"
-            className={`bg-[#F4F4F4] dark:bg-slate-800 border-0 font-['Arimo'] ${errors.email ? 'ring-2 ring-red-500/20 bg-red-50 dark:bg-red-950/10' : ''}`}
+            className={errors.email ? 'border-red-500 focus:ring-red-200' : ''}
             {...register('email')}
           />
           {errors.email && (
-            <p className="text-sm text-red-600 dark:text-red-400 font-['Arimo'] flex items-center gap-1">
-              <span className="text-red-500">⚠</span> {errors.email.message}
+            <p className="text-sm text-red-600 dark:text-red-400 flex items-center gap-1.5 font-['Arimo']">
+              <span className="text-base">⚠</span> {errors.email.message}
             </p>
           )}
         </div>
 
-        <div className="space-y-1.5">
-          <Label
-            htmlFor="password"
-            className="font-['Arimo'] text-slate-700 dark:text-slate-300 font-medium"
-          >
-            Contraseña
-          </Label>
+        {/* Password */}
+        <div className="space-y-2">
+          <Label htmlFor="password">Contraseña</Label>
           <div className="relative">
             <Input
               id="password"
               type={showPassword ? 'text' : 'password'}
               placeholder="••••••••"
-              className={`bg-[#F4F4F4] dark:bg-slate-800 border-0 font-['Arimo'] pr-10 ${errors.password ? 'ring-2 ring-red-500/20 bg-red-50 dark:bg-red-950/10' : ''}`}
+              className={`pr-12 ${errors.password ? 'border-red-500 focus:ring-red-200' : ''}`}
               {...register('password')}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-all duration-200 p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#00A651] focus:ring-offset-2 cursor-pointer"
               aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              tabIndex={-1}
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
           {errors.password && (
-            <p className="text-sm text-red-600 dark:text-red-400 font-['Arimo'] flex items-center gap-1">
-              <span className="text-red-500">⚠</span> {errors.password.message}
+            <p className="text-sm text-red-600 dark:text-red-400 flex items-center gap-1.5 font-['Arimo'] animate-in fade-in slide-in-from-top-1 duration-200">
+              <span className="text-base" aria-hidden="true">
+                ⚠
+              </span>{' '}
+              {errors.password.message}
             </p>
           )}
         </div>
 
+        {/* Remember Me & Forgot Password */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <Checkbox id="rememberMe" {...register('rememberMe')} />
             <Label
               htmlFor="rememberMe"
-              className="text-sm text-slate-500/90 dark:text-slate-400/90 font-['Arimo'] font-normal cursor-pointer"
+              className="text-sm font-normal text-slate-600 dark:text-slate-400 cursor-pointer"
             >
               Recuérdame
             </Label>
           </div>
-
           <a
             href="#"
-            className="text-sm font-medium text-[#00A651] hover:underline hover:text-[#008a43] font-['Arimo'] transition-colors"
+            className="text-sm font-semibold text-[#00A651] hover:text-[#008a43] dark:text-[#00d66a] dark:hover:text-[#00A651] transition-colors underline-offset-4 hover:underline"
           >
-            Recuperar Contraseña
+            ¿Olvidaste tu contraseña?
           </a>
         </div>
 
+        {/* Submit Button - CON FONDO VERDE VISIBLE */}
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full font-bold font-['Arimo'] text-lg h-auto py-3 bg-[#00A651] hover:bg-[#008a43] text-white shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#00A651] focus-visible:ring-offset-2"
+          variant="default"
+          size="lg"
+          className="w-full mt-8 shadow-lg hover:shadow-xl transition-all duration-300"
+          aria-label="Iniciar sesión"
         >
-          {isSubmitting ? 'Iniciando sesión...' : 'Entrar'}
+          {isSubmitting ? (
+            <span className="flex items-center gap-2">
+              <Loader2 className="animate-spin" size={20} aria-hidden="true" />
+              Iniciando sesión...
+            </span>
+          ) : (
+            'Entrar'
+          )}
         </Button>
 
-        <Button
-          variant="outline"
-          asChild
-          className="w-full font-bold font-['Arimo'] text-lg h-auto py-3 mt-3 border-2 border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 shadow-sm hover:shadow-md"
-        >
+        {/* Guest Button - CON BORDE VISIBLE */}
+        <Button variant="outline" size="lg" asChild className="w-full">
           <Link to="/">Entrar como invitado</Link>
         </Button>
       </form>

@@ -27,7 +27,7 @@ export const apiClient = axios.create({
  */
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -47,7 +47,7 @@ apiClient.interceptors.response.use(
     // Manejo específico de errores 401 (Unauthorized)
     if (error.response?.status === 401) {
       // Limpiar sesión si el token expiró
-      localStorage.removeItem('auth_token');
+      localStorage.removeItem('token');
       localStorage.removeItem('auth_user');
       // Redirigir al login (esto lo manejará el contexto)
     }

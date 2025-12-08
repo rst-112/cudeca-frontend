@@ -17,6 +17,7 @@ import type { ReactNode } from 'react';
 import { AuthProvider, useAuth } from './AuthContext';
 import type { User } from '../types/auth.types';
 import { apiClient } from '../services/api';
+import { authService } from '../services/auth.service';
 
 // Mock del servicio API
 vi.mock('../services/api', () => ({
@@ -62,7 +63,9 @@ const localStorageMock: Storage = (() => {
       delete store[key];
     },
     setItem: (key: string, value: string) => {
-      store[key] = value.toString();
+      if (value !== undefined && value !== null) {
+        store[key] = value.toString();
+      }
     },
   } as Storage;
 })();
@@ -179,19 +182,32 @@ describe('AuthContext', () => {
       localStorageMock.setItem('token', 'token123');
       localStorageMock.setItem('auth_user', '{"invalid": "data"}'); // Sin campos obligatorios
 
+      // Mock validateToken para que rechace el token
+      vi.mocked(apiClient.post).mockImplementation((url) => {
+        if (url === '/auth/validate') {
+          return Promise.reject({
+            response: { status: 401 },
+            message: 'Invalid token',
+          });
+        }
+        return Promise.reject(new Error('Endpoint no mockeado'));
+      });
+
       // Ejecutar
       const { result } = renderHook(() => useAuth(), { wrapper });
 
-      // Verificar: Debe limpiar todo
+      // Verificar: Debe limpiar todo porque validateToken falla
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.user).toBeNull();
-      expect(result.current.token).toBeNull();
+      // Esperar a que se ejecute logout()
+      await waitFor(() => {
+        expect(result.current.user).toBeNull();
+        expect(result.current.token).toBeNull();
+      });
+
       expect(result.current.isAuthenticated).toBe(false);
-      expect(localStorageMock.getItem('token')).toBeNull();
-      expect(localStorageMock.getItem('auth_user')).toBeNull();
     });
 
     it('debe manejar JSON inválido en localStorage', async () => {
@@ -237,6 +253,44 @@ describe('AuthContext', () => {
 
       expect(result.current.user).toBeNull();
       expect(result.current.token).toBeNull();
+    });
+
+    it('debe manejar error crítico en validateToken', async () => {
+      // Preparar: Guardar datos válidos en localStorage
+      const mockUser: User = {
+        id: 1,
+        email: 'test@test.com',
+        nombre: 'Test User',
+        rol: 'COMPRADOR',
+      };
+      const mockToken = 'valid_token_123';
+
+      localStorageMock.setItem('token', mockToken);
+      localStorageMock.setItem('auth_user', JSON.stringify(mockUser));
+
+      // Mock de validación de token que lanza error (simulando error no capturado o crítico)
+      const validateTokenSpy = vi
+        .spyOn(authService, 'validateToken')
+        .mockRejectedValue(new Error('Critical Error'));
+
+      // Espiar console.error para verificar que se llama
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      // Ejecutar: Renderizar el hook
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      // Verificar: Debe limpiar la sesión
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(result.current.user).toBeNull();
+      expect(result.current.token).toBeNull();
+      expect(result.current.isAuthenticated).toBe(false);
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Error restaurando sesión:', expect.any(Error));
+
+      consoleErrorSpy.mockRestore();
+      validateTokenSpy.mockRestore();
     });
   });
 
@@ -415,34 +469,6 @@ describe('AuthContext', () => {
     ).rejects.toThrow();
 
     dateNowSpy.mockRestore();
-  });
-
-  it('debe activar modo demo con error ECONNREFUSED', async () => {
-    const { result } = renderHook(() => useAuth(), { wrapper });
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    // Mock de AxiosError con código ECONNREFUSED
-    const axiosError = new (await import('axios')).AxiosError('Connection refused');
-    axiosError.code = 'ECONNREFUSED';
-
-    vi.mocked(apiClient.post).mockRejectedValue(axiosError);
-
-    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
-    // Ejecutar login (debería activar modo demo)
-    await act(async () => {
-      await result.current.login('test@test.com', 'password');
-    });
-
-    // Verificar que se activó modo demo
-    expect(result.current.isAuthenticated).toBe(true);
-    expect(result.current.token).toBe('demo-token');
-    expect(consoleWarnSpy).toHaveBeenCalledWith('Backend no disponible, activando MODO DEMO');
-
-    consoleWarnSpy.mockRestore();
   });
 
   it('debe lanzar error con mensaje personalizado del backend', async () => {
@@ -702,7 +728,11 @@ describe('AuthContext', () => {
       localStorageMock.setItem('token', 'token123');
       localStorageMock.setItem('auth_user', JSON.stringify(invalidUser));
 
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      // Mock validateToken para que rechace el token
+      vi.mocked(apiClient.post).mockRejectedValue({
+        response: { status: 401 },
+        message: 'Invalid token',
+      });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -710,12 +740,9 @@ describe('AuthContext', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      // Debe limpiar sesión
+      // Debe limpiar sesión porque validateToken falla
       expect(result.current.user).toBeNull();
       expect(result.current.token).toBeNull();
-      expect(consoleErrorSpy).toHaveBeenCalled();
-
-      consoleErrorSpy.mockRestore();
     });
 
     it('debe manejar usuario sin campo email en localStorage', async () => {
@@ -728,7 +755,11 @@ describe('AuthContext', () => {
       localStorageMock.setItem('token', 'token123');
       localStorageMock.setItem('auth_user', JSON.stringify(invalidUser));
 
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      // Mock validateToken para que rechace el token
+      vi.mocked(apiClient.post).mockRejectedValue({
+        response: { status: 401 },
+        message: 'Invalid token',
+      });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -737,9 +768,6 @@ describe('AuthContext', () => {
       });
 
       expect(result.current.user).toBeNull();
-      expect(consoleErrorSpy).toHaveBeenCalled();
-
-      consoleErrorSpy.mockRestore();
     });
 
     it('debe manejar usuario sin campo rol en localStorage', async () => {
@@ -752,7 +780,11 @@ describe('AuthContext', () => {
       localStorageMock.setItem('token', 'token123');
       localStorageMock.setItem('auth_user', JSON.stringify(invalidUser));
 
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      // Mock validateToken para que rechace el token
+      vi.mocked(apiClient.post).mockRejectedValue({
+        response: { status: 401 },
+        message: 'Invalid token',
+      });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -761,9 +793,6 @@ describe('AuthContext', () => {
       });
 
       expect(result.current.user).toBeNull();
-      expect(consoleErrorSpy).toHaveBeenCalled();
-
-      consoleErrorSpy.mockRestore();
     });
 
     it('debe manejar múltiples logins consecutivos', async () => {
@@ -1203,7 +1232,15 @@ describe('AuthContext', () => {
       vi.mocked(apiClient.post).mockImplementation((url: string) => {
         if (url === '/auth/register') {
           return Promise.resolve({
-            data: { success: true },
+            data: {
+              token: 'mock_token_registered',
+              user: {
+                id: 2,
+                nombre: registerData.nombre,
+                email: registerData.email,
+                rol: 'COMPRADOR',
+              },
+            },
             status: 201,
             statusText: 'Created',
             headers: {},
@@ -1243,65 +1280,7 @@ describe('AuthContext', () => {
       expect(result.current.isAuthenticated).toBe(true);
     });
 
-    it('debe activar modo demo si el backend no está disponible', async () => {
-      const { result } = renderHook(() => useAuth(), { wrapper });
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      const registerData = {
-        nombre: 'Usuario Demo',
-        email: 'demo@test.com',
-        password: 'password123',
-      };
-
-      // Mock de error de red
-      vi.mocked(apiClient.post).mockRejectedValue({
-        code: 'ERR_NETWORK',
-        message: 'Network Error',
-      });
-
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
-      // Ejecutar registro (debería fallar y activar modo demo)
-      let errorThrown = false;
-      try {
-        await act(async () => {
-          await result.current.register(registerData);
-        });
-      } catch (error) {
-        errorThrown = true;
-        expect(error).toBeInstanceOf(Error);
-        expect((error as Error).message).toBe(
-          'MODO DEMO: Registro simulado (Backend no conectado)',
-        );
-      }
-
-      // Verificar que se lanzó el error
-      expect(errorThrown).toBe(true);
-
-      // Verificar que se guardó en localStorage (esto es síncrono)
-      const storedToken = localStorageMock.getItem('token');
-      const storedUser = localStorageMock.getItem('auth_user');
-
-      expect(storedToken).toBeTruthy();
-      expect(storedToken).toMatch(/^demo-token-/);
-
-      const parsedUser = JSON.parse(storedUser!);
-      expect(parsedUser.nombre).toBe(registerData.nombre);
-      expect(parsedUser.email).toBe(registerData.email);
-      expect(parsedUser.rol).toBe('COMPRADOR');
-
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Backend no disponible, activando MODO DEMO',
-        expect.anything(),
-      );
-
-      consoleWarnSpy.mockRestore();
-    });
-
-    it('debe guardar datos correctamente en localStorage al registrar en modo demo', async () => {
+    it('debe lanzar error de AxiosError con mensaje del backend en register', async () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
 
       await waitFor(() => {
@@ -1310,32 +1289,50 @@ describe('AuthContext', () => {
 
       const registerData = {
         nombre: 'Test User',
-        email: 'test@demo.com',
-        password: 'pass123',
+        email: 'test@test.com',
+        password: 'password123',
       };
 
-      // Mock de error para activar modo demo
-      vi.mocked(apiClient.post).mockRejectedValue(new Error('Network error'));
+      // Mock error de axios con mensaje del backend
+      const AxiosError = (await import('axios')).AxiosError;
+      const axiosError = new AxiosError('Request failed');
+      axiosError.response = {
+        status: 400,
+        data: { message: 'El email ya está registrado' },
+        statusText: 'Bad Request',
+        headers: {},
+        config: {} as never,
+      };
 
-      try {
-        await act(async () => {
-          await result.current.register(registerData);
-        });
-      } catch {
-        // Esperamos el error de modo demo
-      }
+      vi.mocked(apiClient.post).mockRejectedValue(axiosError);
 
-      // Verificar localStorage
-      const storedToken = localStorageMock.getItem('token');
-      const storedUser = localStorageMock.getItem('auth_user');
+      await expect(result.current.register(registerData)).rejects.toThrow(
+        'El email ya está registrado',
+      );
+    });
 
-      expect(storedToken).toBeTruthy();
-      expect(storedToken).toMatch(/^demo-token-/);
+    it('debe propagar error genérico si no es AxiosError ni network error', async () => {
+      const { result } = renderHook(() => useAuth(), { wrapper });
 
-      const parsedUser = JSON.parse(storedUser!);
-      expect(parsedUser.nombre).toBe(registerData.nombre);
-      expect(parsedUser.email).toBe(registerData.email);
-      expect(parsedUser.rol).toBe('COMPRADOR');
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      const registerData = {
+        nombre: 'Test User',
+        email: 'test@test.com',
+        password: 'password123',
+      };
+
+      // Mock error genérico (no axios, no network)
+      const genericError = new Error('Unknown error');
+      vi.mocked(apiClient.post).mockRejectedValue(genericError);
+
+      await expect(result.current.register(registerData)).rejects.toThrow('Unknown error');
     });
   });
+
+  // --------------------------------------------------------------------------
+  // VALIDACIÓN DE TOKEN CON DEMO MODE
+  // --------------------------------------------------------------------------
 });

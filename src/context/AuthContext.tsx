@@ -19,7 +19,7 @@ import {
   type ReactNode,
 } from 'react';
 import type { User, RegisterData } from '../types/auth.types';
-import { apiClient as api } from '../services/api'; // Servicio para llamadas HTTP
+import { authService } from '../services/auth.service';
 import { AxiosError } from 'axios';
 
 /**
@@ -55,14 +55,6 @@ interface AuthContextType {
   /** Función para cerrar sesión */
   logout: () => void;
 }
-
-/**
- * STORAGE_KEYS - Nombres de las claves usadas en localStorage
- */
-const STORAGE_KEYS = {
-  TOKEN: 'token',
-  USER: 'auth_user',
-} as const;
 
 /**
   ============================================================================
@@ -128,11 +120,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    * useCallback memoriza esta función para que sea la MISMA en cada render.
    */
   const logout = useCallback(() => {
-    // Limpiar localStorage
-    localStorage.removeItem(STORAGE_KEYS.TOKEN);
-    localStorage.removeItem(STORAGE_KEYS.USER);
-
-    // Limpiar estado de React
+    authService.logout();
     setToken(null);
     setUser(null);
   }, []);
@@ -150,21 +138,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    * @returns {Promise<boolean>} true si es válido, false si no
    */
   const validateToken = useCallback(async (tokenToValidate: string): Promise<boolean> => {
-    // Si es un token de demo (generado por el fallback), lo consideramos válido
-    if (tokenToValidate.startsWith('demo-token')) {
-      return true;
-    }
-
-    try {
-      const response = await api.get('/auth/validate', {
-        headers: { Authorization: `Bearer ${tokenToValidate}` },
-      });
-      return response.data.valid;
-    } catch (error) {
-      // Si el backend rechaza el token o no responde, no es válido
-      console.error('Error validando token:', error);
-      return false;
-    }
+    return authService.validateToken(tokenToValidate);
   }, []);
 
   /**
@@ -182,37 +156,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
      */
     const initAuth = async () => {
       try {
-        // 1. Intentar leer datos guardados de localStorage
-        const storedToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
-        const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
+        // 1. Intentar leer datos guardados de localStorage usando authService
+        const storedToken = authService.getToken();
+        const storedUser = authService.getCurrentUser();
 
         // 2. Si no hay token O no hay usuario, no hay sesión
         if (!storedToken || !storedUser) {
-          setIsLoading(false); // Terminamos de cargar
-          return; // Salimos de la función
+          setIsLoading(false);
+          return;
         }
 
-        // 3. Intentar parsear el JSON del usuario
-        const parsedUser: User = JSON.parse(storedUser);
-
-        // 4. Validar que el usuario tiene los campos obligatorios
-        if (!parsedUser.id || !parsedUser.email || !parsedUser.rol) {
-          throw new Error('Usuario inválido');
-        }
-
-        // 5. Validar el token con el backend
+        // 3. Validar el token con el backend
         const isValid = await validateToken(storedToken);
 
-        // 6. Si el token es válido, restaurar la sesión
+        // 4. Si el token es válido, restaurar la sesión
         if (isValid) {
           setToken(storedToken);
-          setUser(parsedUser);
+          setUser(storedUser);
         } else {
           // Si no es válido, cerrar sesión
           logout();
         }
       } catch (error) {
-        // Si algo sale mal (JSON inválido, error de red, etc.), cerrar sesión
+        // Si algo sale mal, cerrar sesión
         console.error('Error restaurando sesión:', error);
         logout();
       } finally {
@@ -252,37 +218,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!email || !password) throw new Error('Email y contraseña son requeridos');
 
       try {
-        const response = await api.post('/auth/login', { email, password });
-        const { token: newToken, user: newUser } = response.data;
+        // Login con el backend usando authService
+        const { token: newToken, user: newUser } = await authService.login({ email, password });
 
-        if (!newToken || !newUser) throw new Error('Respuesta inválida');
-
-        localStorage.setItem(STORAGE_KEYS.TOKEN, newToken);
-        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(newUser));
+        // Actualizar el estado
         setToken(newToken);
         setUser(newUser);
       } catch (error) {
-        // Fallback a MODO DEMO si falla la conexión
-        if (
-          error instanceof AxiosError &&
-          (error.code === 'ERR_NETWORK' || error.code === 'ECONNREFUSED')
-        ) {
-          console.warn('Backend no disponible, activando MODO DEMO');
-          const mockUser: User = {
-            id: 1,
-            nombre: 'Usuario Demo',
-            email: email,
-            rol: 'COMPRADOR',
-          };
-          const mockToken = 'demo-token';
-
-          localStorage.setItem(STORAGE_KEYS.TOKEN, mockToken);
-          localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(mockUser));
-          setToken(mockToken);
-          setUser(mockUser);
-          return; // Éxito simulado
-        }
-
         logout();
         if (error instanceof AxiosError) {
           throw new Error(error.response?.data?.message || 'Error al iniciar sesión');
@@ -296,37 +238,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   /**
    * register - Registra un nuevo usuario
    */
-  const register = useCallback(
-    async (data: RegisterData) => {
-      try {
-        // Intentar registro real
-        await api.post('/auth/register', data);
+  const register = useCallback(async (data: RegisterData) => {
+    try {
+      // Registro con authService
+      await authService.register(data);
 
-        // Si funciona, hacemos login automático
-        await login(data.email, data.password);
-      } catch (error) {
-        console.warn('Backend no disponible, activando MODO DEMO', error);
+      // authService.register ya guarda el token y usuario en localStorage
+      // Obtenerlos y actualizar el estado
+      const token = authService.getToken();
+      const user = authService.getCurrentUser();
 
-        // MODO DEMO: Simular registro exitoso
-        const mockUser: User = {
-          id: Math.random(),
-          nombre: data.nombre,
-          email: data.email,
-          rol: 'COMPRADOR',
-        };
-        const mockToken = 'demo-token-' + Date.now();
-
-        localStorage.setItem(STORAGE_KEYS.TOKEN, mockToken);
-        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(mockUser));
-        setToken(mockToken);
-        setUser(mockUser);
-
-        // Notificar al usuario que es una demo
-        throw new Error('MODO DEMO: Registro simulado (Backend no conectado)');
+      if (token && user) {
+        setToken(token);
+        setUser(user);
       }
-    },
-    [login],
-  );
+    } catch (error) {
+      // Propagar el error
+      if (error instanceof AxiosError) {
+        throw new Error(error.response?.data?.message || 'Error al registrarse');
+      }
+      throw error;
+    }
+  }, []);
 
   const contextValue = useMemo(
     () => ({
