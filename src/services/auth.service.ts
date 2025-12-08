@@ -33,9 +33,10 @@ export const authService = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
     const response = await apiClient.post<AuthResponse>('/auth/login', credentials);
 
-    // Guardar en localStorage
-    localStorage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.data.user));
+    if (response.data.token && response.data.user) {
+      localStorage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.data.user));
+    }
 
     return response.data;
   },
@@ -49,10 +50,10 @@ export const authService = {
    */
   register: async (data: RegisterData): Promise<AuthResponse> => {
     const response = await apiClient.post<AuthResponse>('/auth/register', data);
-
-    // Guardar en localStorage
-    localStorage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.data.user));
+    if (response.data.token && response.data.user) {
+      localStorage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.data.user));
+    }
 
     return response.data;
   },
@@ -94,15 +95,7 @@ export const authService = {
     try {
       const userStr = localStorage.getItem(STORAGE_KEYS.USER);
       if (!userStr) return null;
-
-      const user: User = JSON.parse(userStr);
-
-      // Validar que tenga los campos requeridos
-      if (!user.id || !user.email || !user.nombre || !user.rol) {
-        return null;
-      }
-
-      return user;
+      return JSON.parse(userStr);
     } catch (error) {
       console.error('Error parseando usuario:', error);
       return null;
