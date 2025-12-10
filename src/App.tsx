@@ -7,6 +7,7 @@ import AuthPage from './features/auth/AuthPage';
 import { PrivateRoute } from './components/PrivateRoute';
 import AdminDashboard from './features/admin/AdminDashboard';
 import Dashboard from './features/dashboard/Dashboard';
+import QrReaderComponent from './components/QrReaderComponent';
 
 // Páginas públicas
 import Home from './pages/Home';
@@ -99,6 +100,10 @@ function App() {
             {/* Redirección por defecto */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <div>
+            <h1>Staff App - QR Code Reader</h1>
+            <QrReaderComponent />
+          </div>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
