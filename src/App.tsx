@@ -12,6 +12,8 @@ import Dashboard from './features/dashboard/Dashboard';
 import Home from './pages/Home';
 import DetalleEvento from './pages/public/DetallesEvento';
 import Checkout from './pages/public/Checkout';
+import SandboxSeatMap from './pages/public/SandboxSeatMap';
+import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
 
 // Componentes temporales
 const EventStaffDashboard = () => <div>Dashboard (Personal Evento)</div>;
@@ -51,6 +53,10 @@ function App() {
               <Route index element={<Home />} />
               <Route path="evento/:id" element={<DetalleEvento />} />
             </Route>
+
+            {/* === RUTA DE DESARROLLO - SANDBOX === */}
+            <Route path="/dev/mapa" element={<SandboxSeatMap />} />
+            <Route path="/dev/mapa/editor" element={<SandboxSeatMapEditor />} />
 
             {/* Rutas de autenticación (redirige si ya está logueado) */}
             <Route

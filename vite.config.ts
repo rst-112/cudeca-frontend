@@ -66,6 +66,11 @@ export default defineConfig({
         // 4. Utilidades de infraestructura
         'src/lib/utils.ts',
         'src/lib/axios.ts',
+
+        // 5. Componentes complejos de mapas (interacciones drag & drop, canvas)
+        'src/features/seats/SeatMapEditor.tsx',
+        'src/pages/public/SandboxSeatMap.tsx',
+        'src/pages/public/SandboxSeatMapEditor.tsx',
       ],
 
       thresholds: {
