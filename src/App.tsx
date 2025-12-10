@@ -14,6 +14,7 @@ import DetalleEvento from './pages/public/DetallesEvento';
 import Checkout from './pages/public/Checkout';
 import SandboxSeatMap from './pages/public/SandboxSeatMap';
 import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
+import MisEntradas from './pages/public/MisEntradas';
 
 // Componentes temporales
 const EventStaffDashboard = () => <div>Dashboard (Personal Evento)</div>;
@@ -52,6 +53,7 @@ function App() {
             <Route path="/" element={<MainLayout />}>
               <Route index element={<Home />} />
               <Route path="evento/:id" element={<DetalleEvento />} />
+              <Route path="/mis-entradas" element={<MisEntradas />} />
             </Route>
 
             {/* === RUTA DE DESARROLLO - SANDBOX === */}
@@ -89,6 +91,7 @@ function App() {
             {/* Rutas protegidas por rol - Comprador */}
             <Route element={<PrivateRoute requiredRole="COMPRADOR" />}>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/mis-entradas" element={<MisEntradas />} />
             </Route>
 
             {/* Rutas protegidas por rol - Personal de Evento */}
