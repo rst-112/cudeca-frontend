@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import campaignImage from '../assets/FotoLogin.png';
-import { ArrowRight, Heart, Calendar, Users, Sparkles } from 'lucide-react';
+import { ArrowRight, Heart, Calendar, Users, Sparkles, TestTube } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -142,6 +142,46 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* === SANDBOX DEV (TEMPORAL) === */}
+      {import.meta.env.DEV && (
+        <section className="py-8 bg-amber-50 dark:bg-amber-950/20 border-y border-amber-200 dark:border-amber-900">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <TestTube className="text-amber-600" size={24} />
+                <div>
+                  <h3 className="font-bold text-amber-900 dark:text-amber-400">Modo Desarrollo</h3>
+                  <p className="text-sm text-amber-700 dark:text-amber-500">
+                    Sistema de Mapa de Asientos Interactivo (Viewer + Editor)
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30"
+                >
+                  <Link to="/dev/mapa">Viewer</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="default"
+                  size="sm"
+                  className="gap-2 bg-amber-600 hover:bg-amber-700 text-white"
+                >
+                  <Link to="/dev/mapa/editor">
+                    Editor
+                    <ArrowRight size={16} />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
