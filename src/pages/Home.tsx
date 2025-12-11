@@ -2,12 +2,12 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import campaignImage from '../assets/FotoLogin.png';
 import { ArrowRight, Heart, Calendar, Users, Sparkles, TestTube } from 'lucide-react';
+import { EventCarousel } from '../components/EventCarousel';
 
 export default function Home() {
   return (
     <div className="flex flex-col w-full">
       {/* === HERO SECTION === */}
-      {/* Altura calculada para restar el navbar (h-20 = 5rem) */}
       <section className="relative h-[calc(100vh-5rem)] min-h-[600px] flex items-center justify-center overflow-hidden">
         {/* Fondo con Imagen y Gradiente */}
         <div className="absolute inset-0 z-0">
@@ -16,26 +16,27 @@ export default function Home() {
             alt="Campaña Cudeca - Eres pieza clave"
             className="w-full h-full object-cover object-top animate-in fade-in duration-1000"
           />
-          {/* Gradiente para mejorar legibilidad del texto */}
-          <div className="absolute inset-0 bg-linear-to-r from-black/90 via-black/50 to-transparent dark:from-black/95 dark:via-black/70" />
+          {/* Gradiente mejorado para legibilidad */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/20 dark:from-black/90 dark:via-black/70" />
         </div>
 
         {/* Contenido Hero */}
         <div className="relative z-10 container mx-auto px-4">
           <div className="max-w-3xl text-white space-y-8 animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-150">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00A651]/20 border border-[#00A651]/50 backdrop-blur-sm text-[#00A651] font-semibold text-sm mb-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/20 border border-green-400/50 backdrop-blur-sm text-green-300 font-semibold text-sm mb-2">
               <Sparkles size={16} />
               <span>Campaña 2025</span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight tracking-tight font-['Arimo'] drop-shadow-xl">
+            {/* Título simplificado */}
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold leading-tight tracking-tighter">
               Eres pieza <br />
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-[#00A651] to-[#4ade80]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500">
                 clave
               </span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-slate-200 font-light leading-relaxed max-w-2xl drop-shadow-md">
+            <p className="text-xl md:text-2xl text-slate-100 font-light leading-relaxed max-w-2xl">
               Cada cuidado cuenta. Cada pieza suma. Únete a nosotros para hacer la diferencia en la
               vida de quienes más lo necesitan.
             </p>
@@ -44,10 +45,10 @@ export default function Home() {
               <Button
                 asChild
                 size="lg"
-                className="text-lg px-8 h-14 bg-[#00A651] hover:bg-[#008a43] border-none shadow-lg hover:shadow-[#00A651]/20 hover:scale-105 transition-all duration-300"
+                className="text-lg px-8 h-14 bg-green-600 hover:bg-green-500 border-none shadow-lg hover:shadow-green-500/20 hover:scale-105 transition-all duration-300"
               >
-                <Link to="/registro">
-                  Únete ahora <ArrowRight className="ml-2 h-5 w-5" />
+                <Link to="/registro" className="flex items-center gap-2"> {/* Añadido flex items-center gap-2 */}
+                  Únete ahora <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
 
@@ -55,7 +56,7 @@ export default function Home() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="text-lg px-8 h-14 bg-white/5 hover:bg-white/10 text-white border-white/30 backdrop-blur-sm hover:border-white/50 transition-all duration-300"
+                className="text-lg px-8 h-14 bg-white/10 hover:bg-white/20 text-white border-white/30 backdrop-blur-sm hover:border-white/50 transition-all duration-300"
               >
                 <Link to="/about">Saber más</Link>
               </Button>
@@ -67,11 +68,11 @@ export default function Home() {
       {/* === SECCIÓN INFORMATIVA === */}
       <section className="py-24 bg-white dark:bg-slate-950 relative overflow-hidden">
         {/* Decoración de fondo */}
-        <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-slate-200 dark:via-slate-800 to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-800 to-transparent" />
 
         <div className="container mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 font-['Arimo']">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
               ¿Cómo puedes ayudar?
             </h2>
             <p className="text-slate-600 dark:text-slate-400 text-lg">
@@ -82,7 +83,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Card 1 */}
             <div className="group p-8 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all duration-300 hover:-translate-y-1">
-              <div className="h-14 w-14 rounded-2xl bg-green-100 dark:bg-green-900/20 flex items-center justify-center text-[#00A651] mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="h-14 w-14 rounded-2xl bg-green-100 dark:bg-green-900/20 flex items-center justify-center text-green-600 mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Heart size={28} className="fill-current" />
               </div>
               <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
@@ -94,7 +95,7 @@ export default function Home() {
               </p>
               <Link
                 to="/registro"
-                className="inline-flex items-center text-[#00A651] font-semibold hover:underline underline-offset-4"
+                className="inline-flex items-center text-green-600 font-semibold hover:underline underline-offset-4"
               >
                 Colaborar <ArrowRight size={16} className="ml-1" />
               </Link>
@@ -140,6 +141,21 @@ export default function Home() {
               </Link>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* === SECCIÓN CARRUSEL DE EVENTOS === */}
+      <section className="py-24 bg-slate-100 dark:bg-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+              Próximos Eventos
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 text-lg">
+              ¡No te pierdas nuestras próximas actividades! Tu participación es fundamental.
+            </p>
+          </div>
+          <EventCarousel />
         </div>
       </section>
 

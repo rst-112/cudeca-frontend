@@ -1,6 +1,6 @@
 // import axios from 'axios';
 // import { ApiResponse } from '../types/api.types';
-import { Evento } from '../types/api.types';
+import type { Evento } from '../types/api.types';
 import { MOCK_EVENTOS } from '../data/mockData';
 
 // Asume que la URL base de la API está en una variable de entorno

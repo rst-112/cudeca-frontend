@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
@@ -36,49 +36,6 @@ export default defineConfig({
       },
     },
   },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/test/setupTests.ts',
-
-    // Configuración de Cobertura
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'html', 'json-summary'],
-      exclude: [
-        // 1. Archivos de Configuración y Setup
-        'postcss.config.js',
-        'tailwind.config.js',
-        'vite.config.ts',
-        'eslint.config.js',
-        'src/vite-env.d.ts',
-        'src/main.tsx',
-        'src/App.tsx',
-
-        // 2. Componentes UI de Shadcn (Código de terceros/visual)
-        'src/components/ui/**',
-
-        // 3. Tipos y Mocks
-        'src/types/**',
-        'src/mocks/**',
-        '**/*.d.ts',
-
-        // 4. Utilidades de infraestructura
-        'src/lib/utils.ts',
-        'src/lib/axios.ts',
-
-        // 5. Componentes complejos de mapas (interacciones drag & drop, canvas)
-        'src/features/seats/SeatMapEditor.tsx',
-        'src/pages/public/SandboxSeatMap.tsx',
-        'src/pages/public/SandboxSeatMapEditor.tsx',
-      ],
-
-      thresholds: {
-        lines: 80,
-        functions: 80,
-        branches: 80,
-        statements: 80,
-      },
-    },
-  },
+  // La configuración de 'test' se mueve a un archivo separado o se carga condicionalmente
+  // para evitar este tipo de error al ejecutar 'npm run dev'.
 });

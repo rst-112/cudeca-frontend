@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { getEventoById } from '../../services/eventos.service';
-import { Evento } from '../../types/api.types';
+import type { Evento } from '../../types/api.types';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/ui/Button';
 import { Progress } from '../../components/ui/Progress';
 import { Input } from '../../components/ui/Input';
 import { Checkbox } from '../../components/ui/Checkbox';
-import { Calendar, MapPin, Clock, Gift } from 'lucide-react';
+import { Calendar, MapPin, Clock } from 'lucide-react';
+import { Badge } from '../../components/ui/Badge';
 
 const DetallesEvento = () => {
   const { id } = useParams<{ id: string }>();

@@ -1,4 +1,4 @@
-import { Evento } from '../types/api.types';
+import type { Evento } from '../types/api.types';
 
 export const MOCK_EVENTOS: Evento[] = [
   {

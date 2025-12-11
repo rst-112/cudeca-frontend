@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '../../components/ui/DropdownMenu';
 import { getEventos } from '../../services/eventos.service';
-import { Evento, EstadoEvento } from '../../types/api.types';
+import type { Evento, EstadoEvento } from '../../types/api.types';
 
 const getBadgeVariant = (estado: EstadoEvento) => {
   switch (estado) {

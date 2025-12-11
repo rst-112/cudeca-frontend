@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   darkMode: ['class'],
   content: [
     './pages/**/*.{ts,tsx}',
@@ -50,11 +50,17 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        // Mantenemos tus colores personalizados por si acaso
+        // Colores específicos del Sistema de Diseño Cudeca
         cudeca: {
-          verde: '#00A651',
-          naranja: '#F29325',
-          rojo: '#D94F04',
+          green: '#00A651',       // Verde Cudeca
+          'dark-green': '#00753E', // Verde Oscuro
+          orange: '#F29325',      // Naranja
+          red: '#D94F04',         // Rojo Error
+          'gray-disabled': '#D1D5DC', // Gris Deshabilitado
+          'gray-border': '#99A1AF',   // Gris Borde
+          'gray-text': '#6A7282',     // Gris Texto
+          footer: '#162810',      // Verde Footer
+          light: '#F0FDF4',       // Verde Relleno
         },
       },
       borderRadius: {
@@ -63,7 +69,7 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        sans: ['Arimo', 'ui-sans-serif', 'system-ui'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui'], // Cambiado a Inter
       },
     },
   },
