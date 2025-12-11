@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { Toaster } from 'sonner';
+import { ScrollToTop } from './components/ScrollToTop';
 import MainLayout from './components/layout/MainLayout';
 import AuthPage from './features/auth/AuthPage';
 import { PrivateRoute } from './components/PrivateRoute';
@@ -12,8 +13,12 @@ import Dashboard from './features/dashboard/Dashboard';
 import Home from './pages/Home';
 import DetalleEvento from './pages/public/DetallesEvento';
 import Checkout from './pages/public/Checkout';
+import { CheckoutUsuario } from './pages/public/CheckoutUsuario';
+import { CheckoutInvitado } from './pages/public/CheckoutInvitado';
+import { CompraInvitado } from './pages/public/CompraInvitado';
 import SandboxSeatMap from './pages/public/SandboxSeatMap';
 import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
+import PerfilUsuario from './pages/PerfilUsuario';
 
 // Componentes temporales
 const EventStaffDashboard = () => <div>Dashboard (Personal Evento)</div>;
@@ -44,6 +49,7 @@ function RedirectIfAuthenticated({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <AuthProvider>
           <Toaster position="top-right" richColors />
@@ -57,6 +63,9 @@ function App() {
             {/* === RUTA DE DESARROLLO - SANDBOX === */}
             <Route path="/dev/mapa" element={<SandboxSeatMap />} />
             <Route path="/dev/mapa/editor" element={<SandboxSeatMapEditor />} />
+            <Route path="/dev/checkout-usuario" element={<CheckoutUsuario />} />
+            <Route path="/dev/checkout-invitado" element={<CheckoutInvitado />} />
+            <Route path="/dev/compra-invitado" element={<CompraInvitado />} />
 
             {/* Rutas de autenticación (redirige si ya está logueado) */}
             <Route
@@ -79,6 +88,8 @@ function App() {
             {/* Rutas protegidas - Checkout */}
             <Route element={<PrivateRoute />}>
               <Route path="/checkout" element={<Checkout />} />
+              <Route path="/checkout-usuario" element={<CheckoutUsuario />} />
+              <Route path="/perfil" element={<PerfilUsuario />} />
             </Route>
 
             {/* Rutas protegidas por rol - Administrador */}
