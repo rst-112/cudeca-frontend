@@ -28,7 +28,7 @@ export const CheckoutFormSection = () => {
   const handleConfirmPurchase = () => {
     // Aquí iría la lógica de procesamiento de pago
     // Por ahora, redirigimos directamente a la confirmación
-    navigate("/dev/compra-invitado");
+    navigate("/dev/compra-usuario");
   };
 
   const cartItems: CartItem[] = [
