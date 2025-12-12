@@ -180,7 +180,7 @@ export default function SandboxSeatMap() {
               asChild
               className="gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-200"
             >
-              <Link to="/">
+              <Link to="/" className="inline-flex items-center gap-2">
                 <ArrowLeft size={16} />
                 Volver
               </Link>
@@ -206,7 +206,7 @@ export default function SandboxSeatMap() {
               asChild
               className="gap-2 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
             >
-              <Link to="/dev/mapa/editor">
+              <Link to="/dev/mapa/editor" className="inline-flex items-center gap-2">
                 <Edit size={16} />
                 <span className="hidden sm:inline">Abrir Editor</span>
               </Link>
@@ -216,7 +216,7 @@ export default function SandboxSeatMap() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6 space-y-6">
+      <main className="container mx-auto px-4 py-4 space-y-4">
         {/* Info del mapa importado */}
         {mapaImportado && (
           <div className="p-4 bg-[#00A651]/10 border border-[#00A651]/30 rounded-xl flex gap-3">
@@ -234,20 +234,20 @@ export default function SandboxSeatMap() {
         )}
 
         {/* Panel de Estadísticas */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-          <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+          <div className="bg-white dark:bg-slate-900 p-3 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800">
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total</p>
-            <p className="text-2xl font-bold text-slate-900 dark:text-white">{asientos.length}</p>
+            <p className="text-xl font-bold text-slate-900 dark:text-white">{asientos.length}</p>
           </div>
-          <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 p-3 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800">
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Disponibles</p>
-            <p className="text-2xl font-bold text-[#00A651]">{stats.libres}</p>
+            <p className="text-xl font-bold text-[#00A651]">{stats.libres}</p>
           </div>
-          <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 p-3 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800">
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Ocupados</p>
-            <p className="text-2xl font-bold text-slate-500">{stats.ocupados}</p>
+            <p className="text-xl font-bold text-slate-500">{stats.ocupados}</p>
           </div>
-          <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 p-3 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800">
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Bloqueados</p>
             <p className="text-2xl font-bold text-red-500">{stats.bloqueados}</p>
           </div>
@@ -294,7 +294,7 @@ export default function SandboxSeatMap() {
         </div>
 
         {/* Mapa de Asientos */}
-        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden h-[500px]">
           <SeatMapViewer
             asientos={asientos}
             objetosDecorativos={objetosDecorativos}

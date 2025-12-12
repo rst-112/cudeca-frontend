@@ -183,7 +183,7 @@ export const SeatMapViewer: React.FC<SeatMapViewerProps> = ({
   const escenarioAncho = Math.min(viewBox.width * 0.6, 400);
 
   return (
-    <div className="relative w-full h-full min-h-[400px] bg-slate-950 rounded-xl overflow-hidden">
+    <div className="relative w-full h-full min-h-[350px] bg-slate-950 rounded-xl overflow-hidden">
       {/* Contenedor del mapa con zoom/pan */}
       <TransformWrapper
         initialScale={1}
@@ -191,13 +191,14 @@ export const SeatMapViewer: React.FC<SeatMapViewerProps> = ({
         maxScale={5}
         centerOnInit
         limitToBounds={false}
-        // CONFIGURACIÓN DE ZOOM
+        // CONFIGURACIÓN DE ZOOM - Requiere Ctrl/Cmd + rueda para evitar conflicto con scroll
         wheel={{
           step: 0.05,
           smoothStep: 0.002,
           disabled: false,
+          activationKeys: ['Control', 'Meta'], // Requiere Ctrl (Windows/Linux) o Cmd (Mac)
         }}
-        // CONFIGURACIÓN DE PANNING SUAVE
+        // CONFIGURACIÓN DE PANNING - Navegación fluida con arrastre
         panning={{
           velocityDisabled: false,
           disabled: false,
@@ -247,7 +248,7 @@ export const SeatMapViewer: React.FC<SeatMapViewerProps> = ({
               <div className="bg-slate-800/80 backdrop-blur-sm px-3 py-2 rounded-lg border border-slate-700/50 flex items-center gap-2">
                 <Move size={14} className="text-slate-400" />
                 <span className="text-xs font-medium text-slate-300 font-['Arimo']">
-                  Arrastra para mover · Rueda para zoom
+                  Arrastra para mover · Ctrl + Rueda para zoom
                 </span>
               </div>
             </div>
@@ -276,13 +277,13 @@ export const SeatMapViewer: React.FC<SeatMapViewerProps> = ({
               </div>
             </div>
 
-            {/* Área del mapa - Ocupa todo el contenedor con CURSOR DE MANO */}
+            {/* Área del mapa - Ocupa todo el contenedor */}
             <TransformComponent
               wrapperStyle={{
                 width: '100%',
                 height: '100%',
-                cursor: 'grab',
               }}
+              wrapperClass="cursor-grab active:cursor-grabbing"
               contentStyle={{
                 width: '100%',
                 height: '100%',
@@ -290,7 +291,6 @@ export const SeatMapViewer: React.FC<SeatMapViewerProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
-              wrapperClass="cursor-grab active:cursor-grabbing"
             >
               <svg
                 viewBox={`${viewBox.minX} ${viewBox.minY} ${viewBox.width} ${viewBox.height}`}
