@@ -1,16 +1,16 @@
-import { useNavigate } from "react-router-dom";
-import { CheckCircle, Mail } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+import { CheckCircle, Mail } from 'lucide-react';
 
 export const ConfirmationSection = () => {
   const navigate = useNavigate();
-  const userEmail = "usuario.logueado@email.com";
+  const userEmail = 'usuario.logueado@email.com';
 
- const handleViewPurchases = () => {
-    navigate("/perfil");
+  const handleViewPurchases = () => {
+    navigate('/perfil');
   };
 
   const handleGoBack = () => {
-    navigate("/");
+    navigate('/');
   };
 
   return (
@@ -94,4 +94,3 @@ export const ConfirmationSection = () => {
     </section>
   );
 };
-

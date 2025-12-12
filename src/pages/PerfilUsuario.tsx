@@ -6,10 +6,7 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Label } from '../components/ui/Label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/Tabs';
-import {
-  obtenerEntradasUsuario,
-  descargarPdfEntrada,
-} from '../services/perfil.service';
+import { obtenerEntradasUsuario, descargarPdfEntrada } from '../services/perfil.service';
 import {
   obtenerDatosFiscalesUsuario,
   crearDatosFiscales,
@@ -67,7 +64,10 @@ export default function PerfilUsuario() {
       const data = await obtenerEntradasUsuario(usuarioId);
       setEntradas(data);
     } catch (error) {
-      toast.error('Error al cargar entradas: ' + (error instanceof Error ? error.message : 'Error desconocido'));
+      toast.error(
+        'Error al cargar entradas: ' +
+          (error instanceof Error ? error.message : 'Error desconocido'),
+      );
     } finally {
       setLoading(false);
     }
@@ -81,7 +81,10 @@ export default function PerfilUsuario() {
       const data = await obtenerDatosFiscalesUsuario(usuarioId);
       setDatosFiscales(data);
     } catch (error) {
-      toast.error('Error al cargar datos fiscales: ' + (error instanceof Error ? error.message : 'Error desconocido'));
+      toast.error(
+        'Error al cargar datos fiscales: ' +
+          (error instanceof Error ? error.message : 'Error desconocido'),
+      );
     } finally {
       setLoading(false);
     }
@@ -96,7 +99,9 @@ export default function PerfilUsuario() {
       window.open(url, '_blank');
       toast.success('PDF descargado');
     } catch (error) {
-      toast.error('Error al descargar PDF: ' + (error instanceof Error ? error.message : 'Error desconocido'));
+      toast.error(
+        'Error al descargar PDF: ' + (error instanceof Error ? error.message : 'Error desconocido'),
+      );
     }
   };
 
@@ -129,7 +134,9 @@ export default function PerfilUsuario() {
 
       cargarDatosFiscales();
     } catch (error) {
-      toast.error('Error al guardar: ' + (error instanceof Error ? error.message : 'Error desconocido'));
+      toast.error(
+        'Error al guardar: ' + (error instanceof Error ? error.message : 'Error desconocido'),
+      );
     }
   };
 
@@ -143,7 +150,9 @@ export default function PerfilUsuario() {
       toast.success('Datos fiscales eliminados');
       cargarDatosFiscales();
     } catch (error) {
-      toast.error('Error al eliminar: ' + (error instanceof Error ? error.message : 'Error desconocido'));
+      toast.error(
+        'Error al eliminar: ' + (error instanceof Error ? error.message : 'Error desconocido'),
+      );
     }
   };
 
@@ -182,18 +191,13 @@ export default function PerfilUsuario() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-6xl">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">
-          Mi Perfil
-        </h1>
+        <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">Mi Perfil</h1>
         <p className="text-gray-600 dark:text-gray-400">
           Gestiona tus entradas, datos fiscales y monedero
         </p>
       </div>
 
-      <Tabs
-        value={tabActual}
-        onValueChange={(value) => setSearchParams({ tab: value })}
-      >
+      <Tabs value={tabActual} onValueChange={(value) => setSearchParams({ tab: value })}>
         <TabsList className="mb-6">
           <TabsTrigger value="entradas">
             <Ticket className="w-4 h-4 mr-2" />
@@ -254,10 +258,13 @@ export default function PerfilUsuario() {
                         </div>
                         <div className="flex items-center gap-2">
                           <MapPin className="w-4 h-4" />
-                          <span>{entrada.zonaNombre || 'N/A'} - {entrada.asientoNumero}</span>
+                          <span>
+                            {entrada.zonaNombre || 'N/A'} - {entrada.asientoNumero}
+                          </span>
                         </div>
                         <div>
-                          <span className="font-semibold">Código:</span> {entrada.codigo || entrada.codigoQR}
+                          <span className="font-semibold">Código:</span>{' '}
+                          {entrada.codigo || entrada.codigoQR}
                         </div>
                       </div>
                     </div>
@@ -309,7 +316,10 @@ export default function PerfilUsuario() {
                       placeholder="12345678A"
                       value={formularioDatos.nif}
                       onChange={(e) =>
-                        setFormularioDatos({ ...formularioDatos, nif: e.target.value.toUpperCase() })
+                        setFormularioDatos({
+                          ...formularioDatos,
+                          nif: e.target.value.toUpperCase(),
+                        })
                       }
                     />
                   </div>
@@ -375,9 +385,7 @@ export default function PerfilUsuario() {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button onClick={handleGuardarDatosFiscales}>
-                      Guardar
-                    </Button>
+                    <Button onClick={handleGuardarDatosFiscales}>Guardar</Button>
                     <Button variant="outline" onClick={handleCancelarEdicion}>
                       Cancelar
                     </Button>
@@ -411,12 +419,19 @@ export default function PerfilUsuario() {
                       </div>
 
                       <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
-                        <p><span className="font-semibold">NIF:</span> {datos.nif}</p>
-                        <p><span className="font-semibold">Dirección:</span> {datos.direccion}</p>
                         <p>
-                          <span className="font-semibold">Ciudad:</span> {datos.ciudad}, {datos.codigoPostal}
+                          <span className="font-semibold">NIF:</span> {datos.nif}
                         </p>
-                        <p><span className="font-semibold">País:</span> {datos.pais}</p>
+                        <p>
+                          <span className="font-semibold">Dirección:</span> {datos.direccion}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Ciudad:</span> {datos.ciudad},{' '}
+                          {datos.codigoPostal}
+                        </p>
+                        <p>
+                          <span className="font-semibold">País:</span> {datos.pais}
+                        </p>
                       </div>
                     </div>
 
@@ -431,11 +446,7 @@ export default function PerfilUsuario() {
                           <Star className="w-4 h-4" />
                         </Button>
                       )}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEditarDatos(datos)}
-                      >
+                      <Button variant="outline" size="sm" onClick={() => handleEditarDatos(datos)}>
                         <Edit className="w-4 h-4" />
                       </Button>
                       <Button
@@ -457,12 +468,8 @@ export default function PerfilUsuario() {
         <TabsContent value="monedero">
           <Card className="p-8 text-center">
             <Wallet className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
-              Monedero
-            </h3>
-            <p className="text-gray-500 mb-6">
-              Funcionalidad en desarrollo
-            </p>
+            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">Monedero</h3>
+            <p className="text-gray-500 mb-6">Funcionalidad en desarrollo</p>
             <div className="bg-gradient-to-r from-[#00A651] to-[#4ade80] text-white p-6 rounded-lg max-w-md mx-auto">
               <p className="text-sm opacity-90 mb-2">Saldo Disponible</p>
               <p className="text-4xl font-bold">0.00 €</p>
@@ -473,4 +480,3 @@ export default function PerfilUsuario() {
     </div>
   );
 }
-

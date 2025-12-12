@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 interface TabItem {
   label: string;
@@ -7,15 +7,15 @@ interface TabItem {
 }
 
 export const UserProfileTabsSection = (): JSX.Element => {
-  const [activeTab, setActiveTab] = useState<string>("compras");
+  const [activeTab, setActiveTab] = useState<string>('compras');
 
   const tabs: TabItem[] = [
-    { label: "Saldo: 36.00€", id: "saldo", isActive: activeTab === "saldo" },
-    { label: "Retirar saldo", id: "retirar", isActive: activeTab === "retirar" },
-    { label: "Perfil", id: "perfil", isActive: activeTab === "perfil" },
-    { label: "Compras", id: "compras", isActive: activeTab === "compras" },
-    { label: "Datos fiscales", id: "datos", isActive: activeTab === "datos" },
-    { label: "Suscripción", id: "suscripcion", isActive: activeTab === "suscripcion" },
+    { label: 'Saldo: 36.00€', id: 'saldo', isActive: activeTab === 'saldo' },
+    { label: 'Retirar saldo', id: 'retirar', isActive: activeTab === 'retirar' },
+    { label: 'Perfil', id: 'perfil', isActive: activeTab === 'perfil' },
+    { label: 'Compras', id: 'compras', isActive: activeTab === 'compras' },
+    { label: 'Datos fiscales', id: 'datos', isActive: activeTab === 'datos' },
+    { label: 'Suscripción', id: 'suscripcion', isActive: activeTab === 'suscripcion' },
   ];
 
   return (
@@ -32,10 +32,10 @@ export const UserProfileTabsSection = (): JSX.Element => {
               onClick={() => setActiveTab(tab.id)}
               className={`px-6 py-4 text-sm font-medium whitespace-nowrap rounded-t-lg border-b-2 transition-colors ${
                 tab.isActive
-                  ? "border-[#00753e] bg-[#00753e] text-white"
-                  : "border-transparent bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  ? 'border-[#00753e] bg-[#00753e] text-white'
+                  : 'border-transparent bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
-              aria-current={tab.isActive ? "page" : undefined}
+              aria-current={tab.isActive ? 'page' : undefined}
             >
               {tab.label}
             </button>
@@ -45,4 +45,3 @@ export const UserProfileTabsSection = (): JSX.Element => {
     </nav>
   );
 };
-

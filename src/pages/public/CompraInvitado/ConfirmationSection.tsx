@@ -1,16 +1,16 @@
-import { useNavigate } from "react-router-dom";
-import { CheckCircle, Mail } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+import { CheckCircle, Mail } from 'lucide-react';
 
 export const ConfirmationSection = () => {
   const navigate = useNavigate();
-  const userEmail = "usuario.invitado@email.com";
+  const userEmail = 'usuario.invitado@email.com';
 
   const handleCreateAccount = () => {
-    navigate("/registro");
+    navigate('/registro');
   };
 
   const handleGoBack = () => {
-    navigate("/");
+    navigate('/');
   };
 
   return (
@@ -70,7 +70,8 @@ export const ConfirmationSection = () => {
           </h3>
 
           <p className="text-base text-slate-700 dark:text-slate-300 text-center font-['Arimo']">
-            Crea una cuenta con este email para gestionar tus entradas y acceder a tu historial en el futuro.
+            Crea una cuenta con este email para gestionar tus entradas y acceder a tu historial en
+            el futuro.
           </p>
 
           {/* Botones de acción */}
@@ -98,4 +99,3 @@ export const ConfirmationSection = () => {
     </section>
   );
 };
-

@@ -10,20 +10,20 @@ interface Purchase {
 export const PurchasesHistorySection = () => {
   const purchases: Purchase[] = [
     {
-      id: "1",
-      title: "Concierto Benéfico de Navidad",
-      date: "15 de Noviembre, 2024",
-      tickets: "2 entradas",
-      total: "48.00€",
-      status: "Completada",
+      id: '1',
+      title: 'Concierto Benéfico de Navidad',
+      date: '15 de Noviembre, 2024',
+      tickets: '2 entradas',
+      total: '48.00€',
+      status: 'Completada',
     },
     {
-      id: "2",
-      title: "Gala Anual Cudeca 2024",
-      date: "03 de Octubre, 2024",
-      tickets: "4 entradas",
-      total: "120.00€",
-      status: "Completada",
+      id: '2',
+      title: 'Gala Anual Cudeca 2024',
+      date: '03 de Octubre, 2024',
+      tickets: '4 entradas',
+      total: '120.00€',
+      status: 'Completada',
     },
   ];
 
@@ -98,4 +98,3 @@ export const PurchasesHistorySection = () => {
     </section>
   );
 };
-

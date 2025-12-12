@@ -226,7 +226,9 @@ export default function Home() {
 
             <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
               <div>
-                <h4 className="font-bold text-amber-900 dark:text-amber-400">Confirmación Compra Invitado</h4>
+                <h4 className="font-bold text-amber-900 dark:text-amber-400">
+                  Confirmación Compra Invitado
+                </h4>
                 <p className="text-sm text-amber-700 dark:text-amber-500">
                   Confirmación después de completar la compra (Sin login requerido)
                 </p>
@@ -248,7 +250,9 @@ export default function Home() {
 
             <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
               <div>
-                <h4 className="font-bold text-amber-900 dark:text-amber-400">Confirmación Compra Usuario</h4>
+                <h4 className="font-bold text-amber-900 dark:text-amber-400">
+                  Confirmación Compra Usuario
+                </h4>
                 <p className="text-sm text-amber-700 dark:text-amber-500">
                   Confirmación de compra para usuarios logueados con acceso a perfil
                 </p>

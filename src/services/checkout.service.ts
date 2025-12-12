@@ -108,7 +108,7 @@ export async function obtenerDetallesCompra(compraId: number): Promise<DetallesC
  */
 export async function confirmarPago(
   compraId: number,
-  datos: ConfirmarPagoRequest
+  datos: ConfirmarPagoRequest,
 ): Promise<ConfirmarPagoResponse> {
   return apiPost<ConfirmarPagoResponse>(`/checkout/${compraId}/confirmar`, datos);
 }
@@ -119,7 +119,7 @@ export async function confirmarPago(
  */
 export async function cancelarCompra(
   compraId: number,
-  datos: CancelarCompraRequest
+  datos: CancelarCompraRequest,
 ): Promise<CancelarCompraResponse> {
   return apiPost<CancelarCompraResponse>(`/checkout/${compraId}/cancelar`, datos);
 }
@@ -142,7 +142,7 @@ export async function obtenerDatosFiscalesUsuario(usuarioId: number): Promise<Da
  */
 export async function obtenerDatosFiscalesPorId(
   id: number,
-  usuarioId: number
+  usuarioId: number,
 ): Promise<DatosFiscales> {
   return apiGet<DatosFiscales>(`/datos-fiscales/${id}?usuarioId=${usuarioId}`);
 }
@@ -153,7 +153,7 @@ export async function obtenerDatosFiscalesPorId(
  */
 export async function crearDatosFiscales(
   usuarioId: number,
-  datos: Omit<DatosFiscales, 'id' | 'usuarioId'>
+  datos: Omit<DatosFiscales, 'id' | 'usuarioId'>,
 ): Promise<DatosFiscales> {
   return apiPost<DatosFiscales>(`/datos-fiscales/usuario/${usuarioId}`, datos);
 }
@@ -165,7 +165,7 @@ export async function crearDatosFiscales(
 export async function actualizarDatosFiscales(
   id: number,
   usuarioId: number,
-  datos: Partial<Omit<DatosFiscales, 'id' | 'usuarioId'>>
+  datos: Partial<Omit<DatosFiscales, 'id' | 'usuarioId'>>,
 ): Promise<DatosFiscales> {
   return apiPut<DatosFiscales>(`/datos-fiscales/${id}?usuarioId=${usuarioId}`, datos);
 }
@@ -176,7 +176,7 @@ export async function actualizarDatosFiscales(
  */
 export async function eliminarDatosFiscales(
   id: number,
-  usuarioId: number
+  usuarioId: number,
 ): Promise<EliminarDatosFiscalesResponse> {
   return apiDelete<EliminarDatosFiscalesResponse>(`/datos-fiscales/${id}?usuarioId=${usuarioId}`);
 }
@@ -240,4 +240,3 @@ export function validarFormatoNif(nif: string): boolean {
   const regex = /^[0-9]{8}[A-Z]$/i;
   return regex.test(nif);
 }
-

@@ -1,7 +1,7 @@
-import { HeaderSection } from "./HeaderSection";
-import { ProfileActionsSection } from "./ProfileActionsSection";
-import { SubscriptionSection } from "./SubscriptionSection";
-import { FooterSection } from "./FooterSection";
+import { HeaderSection } from './HeaderSection';
+import { ProfileActionsSection } from './ProfileActionsSection';
+import { SubscriptionSection } from './SubscriptionSection';
+import { FooterSection } from './FooterSection';
 
 export const Suscripcion = () => {
   return (
@@ -15,4 +15,3 @@ export const Suscripcion = () => {
     </div>
   );
 };
-

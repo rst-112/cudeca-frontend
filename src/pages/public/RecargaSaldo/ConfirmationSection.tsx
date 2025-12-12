@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 export const ConfirmationSection = (): JSX.Element => {
-  const [amount, setAmount] = useState<string>("0.00");
+  const [amount, setAmount] = useState<string>('0.00');
   const [selectedQuickAmount, setSelectedQuickAmount] = useState<number | null>(null);
 
   const quickAmounts = [
-    { value: 10, label: "10€" },
-    { value: 25, label: "25€" },
-    { value: 50, label: "50€" },
-    { value: 100, label: "100€" },
+    { value: 10, label: '10€' },
+    { value: 25, label: '25€' },
+    { value: 50, label: '50€' },
+    { value: 100, label: '100€' },
   ];
 
   const handleQuickAmountClick = (value: number) => {
@@ -71,8 +71,8 @@ export const ConfirmationSection = (): JSX.Element => {
                     onClick={() => handleQuickAmountClick(quickAmount.value)}
                     className={`px-4 py-2 rounded-full border-2 transition-colors text-sm font-medium ${
                       selectedQuickAmount === quickAmount.value
-                        ? "border-[#00753e] bg-[#00753e] text-white"
-                        : "border-[#00753e] text-[#00753e] bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800"
+                        ? 'border-[#00753e] bg-[#00753e] text-white'
+                        : 'border-[#00753e] text-[#00753e] bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800'
                     }`}
                     aria-label={`Añadir ${quickAmount.label}`}
                     aria-pressed={selectedQuickAmount === quickAmount.value}
@@ -117,4 +117,3 @@ export const ConfirmationSection = (): JSX.Element => {
     </main>
   );
 };
-

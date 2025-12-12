@@ -90,8 +90,13 @@ export default function Checkout() {
 
     if (mostrarFormularioNuevo) {
       // Validar formulario de nuevos datos
-      if (!nuevosDatos.nif || !nuevosDatos.nombre || !nuevosDatos.direccion ||
-          !nuevosDatos.ciudad || !nuevosDatos.codigoPostal) {
+      if (
+        !nuevosDatos.nif ||
+        !nuevosDatos.nombre ||
+        !nuevosDatos.direccion ||
+        !nuevosDatos.ciudad ||
+        !nuevosDatos.codigoPostal
+      ) {
         toast.error('Completa todos los campos de datos fiscales');
         return false;
       }
@@ -125,13 +130,15 @@ export default function Checkout() {
       // 1. Procesar checkout (crear compra)
       const response = await procesarCheckout({
         usuarioId,
-        items: asientosSeleccionados.map(a => ({
+        items: asientosSeleccionados.map((a) => ({
           asientoId: parseInt(a.id) || 0,
           precio: a.precio,
         })),
         donacionExtra: 0,
         solicitarCertificado,
-        datosFiscalesId: mostrarFormularioNuevo ? undefined : datosFiscalesSeleccionado ?? undefined,
+        datosFiscalesId: mostrarFormularioNuevo
+          ? undefined
+          : (datosFiscalesSeleccionado ?? undefined),
       });
 
       toast.success('Compra procesada correctamente');
@@ -152,7 +159,6 @@ export default function Checkout() {
       setTimeout(() => {
         navigate('/perfil?tab=entradas');
       }, 3000);
-
     } catch (error) {
       console.error('Error en checkout:', error);
       const errorMessage = error instanceof Error ? error.message : 'Error al procesar la compra';
@@ -175,9 +181,7 @@ export default function Checkout() {
           <p className="text-gray-600 dark:text-gray-300 mb-6">
             Recibirás un correo electrónico con tus entradas.
           </p>
-          <Button onClick={() => navigate('/perfil?tab=entradas')}>
-            Ver mis entradas
-          </Button>
+          <Button onClick={() => navigate('/perfil?tab=entradas')}>Ver mis entradas</Button>
         </Card>
       </div>
     );
@@ -186,9 +190,7 @@ export default function Checkout() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-6xl">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">
-          Checkout
-        </h1>
+        <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">Checkout</h1>
         <p className="text-gray-600 dark:text-gray-400">
           Completa tu compra y descarga tus entradas
         </p>
@@ -238,7 +240,10 @@ export default function Checkout() {
             <div className="flex items-center justify-between p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg mb-4">
               <div className="flex items-center gap-3">
                 <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
-                <Label htmlFor="certificado" className="cursor-pointer text-gray-800 dark:text-white">
+                <Label
+                  htmlFor="certificado"
+                  className="cursor-pointer text-gray-800 dark:text-white"
+                >
                   Solicitar Certificado de Donación
                 </Label>
               </div>
@@ -296,7 +301,9 @@ export default function Checkout() {
                         id="nif"
                         placeholder="12345678A"
                         value={nuevosDatos.nif}
-                        onChange={(e) => setNuevosDatos({ ...nuevosDatos, nif: e.target.value.toUpperCase() })}
+                        onChange={(e) =>
+                          setNuevosDatos({ ...nuevosDatos, nif: e.target.value.toUpperCase() })
+                        }
                       />
                     </div>
 
@@ -316,7 +323,9 @@ export default function Checkout() {
                         id="direccion"
                         placeholder="Calle Principal, 123"
                         value={nuevosDatos.direccion}
-                        onChange={(e) => setNuevosDatos({ ...nuevosDatos, direccion: e.target.value })}
+                        onChange={(e) =>
+                          setNuevosDatos({ ...nuevosDatos, direccion: e.target.value })
+                        }
                       />
                     </div>
 
@@ -327,7 +336,9 @@ export default function Checkout() {
                           id="ciudad"
                           placeholder="Málaga"
                           value={nuevosDatos.ciudad}
-                          onChange={(e) => setNuevosDatos({ ...nuevosDatos, ciudad: e.target.value })}
+                          onChange={(e) =>
+                            setNuevosDatos({ ...nuevosDatos, ciudad: e.target.value })
+                          }
                         />
                       </div>
                       <div>
@@ -336,7 +347,9 @@ export default function Checkout() {
                           id="codigoPostal"
                           placeholder="29001"
                           value={nuevosDatos.codigoPostal}
-                          onChange={(e) => setNuevosDatos({ ...nuevosDatos, codigoPostal: e.target.value })}
+                          onChange={(e) =>
+                            setNuevosDatos({ ...nuevosDatos, codigoPostal: e.target.value })
+                          }
                         />
                       </div>
                     </div>
@@ -361,9 +374,7 @@ export default function Checkout() {
           <Card className="p-6 sticky top-24">
             <div className="flex items-center gap-2 mb-6">
               <CreditCard className="w-5 h-5 text-[#00A651]" />
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
-                Resumen
-              </h2>
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Resumen</h2>
             </div>
 
             <div className="space-y-3 mb-6">
@@ -383,12 +394,7 @@ export default function Checkout() {
               </div>
             </div>
 
-            <Button
-              className="w-full"
-              size="lg"
-              onClick={handleConfirmarCompra}
-              disabled={loading}
-            >
+            <Button className="w-full" size="lg" onClick={handleConfirmarCompra} disabled={loading}>
               {loading ? 'Procesando...' : 'Confirmar Compra'}
             </Button>
 

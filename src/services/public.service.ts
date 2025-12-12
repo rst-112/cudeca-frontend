@@ -76,4 +76,3 @@ export async function verificarBackendDisponible(): Promise<boolean> {
     return false;
   }
 }
-

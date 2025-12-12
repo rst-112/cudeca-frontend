@@ -1,7 +1,7 @@
-import React from "react";
-import { CheckoutFormSection } from "./CheckoutFormSection";
-import { FooterSection } from "./FooterSection";
-import { HeaderSection } from "./HeaderSection";
+import React from 'react';
+import { CheckoutFormSection } from './CheckoutFormSection';
+import { FooterSection } from './FooterSection';
+import { HeaderSection } from './HeaderSection';
 
 export const CheckoutInvitado = () => {
   return (
@@ -14,4 +14,3 @@ export const CheckoutInvitado = () => {
     </div>
   );
 };
-

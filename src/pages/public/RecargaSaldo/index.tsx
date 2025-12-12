@@ -1,7 +1,7 @@
-import { ConfirmationSection } from "./ConfirmationSection";
-import { FooterSection } from "./FooterSection";
-import { HeaderSection } from "./HeaderSection";
-import { ProfileActionsSection } from "./ProfileActionsSection";
+import { ConfirmationSection } from './ConfirmationSection';
+import { FooterSection } from './FooterSection';
+import { HeaderSection } from './HeaderSection';
+import { ProfileActionsSection } from './ProfileActionsSection';
 
 export const PantallaDeRecargar = () => {
   return (
@@ -15,4 +15,3 @@ export const PantallaDeRecargar = () => {
     </div>
   );
 };
-

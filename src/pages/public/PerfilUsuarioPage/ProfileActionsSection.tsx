@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 interface ActionButton {
   id: string;
@@ -7,16 +7,16 @@ interface ActionButton {
 }
 
 const actionButtons: ActionButton[] = [
-  { id: "recargar-saldo", label: "Recargar saldo", path: "/dev/recarga-saldo" },
-  { id: "perfil", label: "Perfil", path: "/dev/perfil-usuario" },
-  { id: "compras", label: "Compras", path: "/dev/perfil-compras" },
-  { id: "datos-fiscales", label: "Datos fiscales", path: "/dev/datos-fiscales" },
-  { id: "suscripcion", label: "Suscripción", path: "/dev/suscripcion" },
+  { id: 'recargar-saldo', label: 'Recargar saldo', path: '/dev/recarga-saldo' },
+  { id: 'perfil', label: 'Perfil', path: '/dev/perfil-usuario' },
+  { id: 'compras', label: 'Compras', path: '/dev/perfil-compras' },
+  { id: 'datos-fiscales', label: 'Datos fiscales', path: '/dev/datos-fiscales' },
+  { id: 'suscripcion', label: 'Suscripción', path: '/dev/suscripcion' },
 ];
 
 export const ProfileActionsSection = () => {
   const navigate = useNavigate();
-  const activeAction = "compras"; // Esta página muestra compras
+  const activeAction = 'compras'; // Esta página muestra compras
   const saldo = 36.0;
 
   const handleNavigate = (path: string) => {
@@ -43,8 +43,8 @@ export const ProfileActionsSection = () => {
             onClick={() => handleNavigate(button.path)}
             className={`px-6 py-2 text-sm font-normal rounded-lg transition-colors font-['Arimo'] ${
               activeAction === button.id
-                ? "bg-[#00753e] text-white"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                ? 'bg-[#00753e] text-white'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
             }`}
           >
             {button.label}
@@ -54,4 +54,3 @@ export const ProfileActionsSection = () => {
     </section>
   );
 };
-

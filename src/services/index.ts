@@ -25,4 +25,3 @@ export * from './public.service';
 
 // Exportar el authService como default también
 export { authService } from './auth.service';
-

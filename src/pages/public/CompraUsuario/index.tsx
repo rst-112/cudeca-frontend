@@ -1,7 +1,7 @@
-import React from "react";
-import { ConfirmationSection } from "./ConfirmationSection";
-import { FooterSection } from "./FooterSection";
-import { HeaderSection } from "./HeaderSection";
+import React from 'react';
+import { ConfirmationSection } from './ConfirmationSection';
+import { FooterSection } from './FooterSection';
+import { HeaderSection } from './HeaderSection';
 
 export const CompraUsuario = () => {
   return (
@@ -12,4 +12,3 @@ export const CompraUsuario = () => {
     </div>
   );
 };
-

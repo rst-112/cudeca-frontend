@@ -79,7 +79,7 @@ export async function obtenerPerfilPorEmail(email: string): Promise<PerfilUsuari
  */
 export async function actualizarPerfil(
   usuarioId: number,
-  datos: ActualizarPerfilRequest
+  datos: ActualizarPerfilRequest,
 ): Promise<PerfilUsuario> {
   return apiPut<PerfilUsuario>(`/perfil/${usuarioId}`, datos);
 }
@@ -115,9 +115,9 @@ export async function descargarPdfEntrada(usuarioId: number, entradaId: number):
     `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/perfil/${usuarioId}/entradas/${entradaId}/pdf`,
     {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-    }
+    },
   );
 
   if (!response.ok) {
@@ -186,4 +186,3 @@ export function obtenerEstadoEntrada(estado: EntradaUsuario['estadoEntrada']): {
       return { label: 'Desconocido', color: 'gray' };
   }
 }
-

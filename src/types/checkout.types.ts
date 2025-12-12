@@ -109,4 +109,3 @@ export interface CompraResponse {
   total: number;
   mensaje: string;
 }
-

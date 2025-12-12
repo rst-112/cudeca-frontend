@@ -1,5 +1,5 @@
-import React from "react";
-import { Edit2, Trash2, Plus } from "lucide-react";
+import React from 'react';
+import { Edit2, Trash2, Plus } from 'lucide-react';
 
 interface FiscalData {
   id: number;
@@ -13,17 +13,17 @@ export const FiscalDataSection = (): JSX.Element => {
   const fiscalDataItems: FiscalData[] = [
     {
       id: 1,
-      title: "NIF Guardado 1",
-      name: "Mi empresa S.L",
-      nif: "B12345678",
-      address: "Calle ficticia 123",
+      title: 'NIF Guardado 1',
+      name: 'Mi empresa S.L',
+      nif: 'B12345678',
+      address: 'Calle ficticia 123',
     },
     {
       id: 2,
-      title: "NIF Guardado 2",
-      name: "(Mi nombre personal)",
-      nif: "123456784",
-      address: "Av. de la Donación 42",
+      title: 'NIF Guardado 2',
+      name: '(Mi nombre personal)',
+      nif: '123456784',
+      address: 'Av. de la Donación 42',
     },
   ];
 
@@ -42,15 +42,10 @@ export const FiscalDataSection = (): JSX.Element => {
           {fiscalDataItems.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               {fiscalDataItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="border-2 border-[#00753e] rounded-lg p-6 space-y-4"
-                >
+                <div key={item.id} className="border-2 border-[#00753e] rounded-lg p-6 space-y-4">
                   {/* Card Header */}
                   <div className="pb-4 border-b border-[#00753e]">
-                    <h3 className="text-base font-bold text-[#00753e]">
-                      {item.title}
-                    </h3>
+                    <h3 className="text-base font-bold text-[#00753e]">{item.title}</h3>
                   </div>
 
                   {/* Card Data */}
@@ -59,18 +54,14 @@ export const FiscalDataSection = (): JSX.Element => {
                       <dt className="font-semibold text-slate-900 dark:text-white min-w-fit">
                         Nombre:
                       </dt>
-                      <dd className="text-slate-600 dark:text-slate-400 underline">
-                        {item.name}
-                      </dd>
+                      <dd className="text-slate-600 dark:text-slate-400 underline">{item.name}</dd>
                     </div>
 
                     <div className="flex gap-4">
                       <dt className="font-semibold text-slate-900 dark:text-white min-w-fit">
                         NIF:
                       </dt>
-                      <dd className="text-slate-600 dark:text-slate-400 underline">
-                        {item.nif}
-                      </dd>
+                      <dd className="text-slate-600 dark:text-slate-400 underline">{item.nif}</dd>
                     </div>
 
                     <div className="flex gap-4">
@@ -125,4 +116,3 @@ export const FiscalDataSection = (): JSX.Element => {
     </main>
   );
 };
-

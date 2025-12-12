@@ -1,11 +1,11 @@
-import { Link } from "react-router-dom";
-import { Search, ShoppingCart, User, LogOut } from "lucide-react";
-import { useAuth } from "../../../context/AuthContext";
+import { Link } from 'react-router-dom';
+import { Search, ShoppingCart, User, LogOut } from 'lucide-react';
+import { useAuth } from '../../../context/AuthContext';
 
 const navigationItems = [
-  { label: "Inicio", isActive: false, path: "/" },
-  { label: "Eventos", isActive: true, path: "/eventos" },
-  { label: "Contacto", isActive: false, path: "/contacto" },
+  { label: 'Inicio', isActive: false, path: '/' },
+  { label: 'Eventos', isActive: true, path: '/eventos' },
+  { label: 'Contacto', isActive: false, path: '/contacto' },
 ];
 
 export const HeaderSection = () => {
@@ -35,10 +35,10 @@ export const HeaderSection = () => {
               to={item.path}
               className={`flex flex-col items-center gap-1 pb-1 ${
                 item.isActive
-                  ? "font-bold text-slate-900 dark:text-white border-b-2 border-[#00753e]"
-                  : "font-normal text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  ? 'font-bold text-slate-900 dark:text-white border-b-2 border-[#00753e]'
+                  : 'font-normal text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               } text-base transition-colors`}
-              aria-current={item.isActive ? "page" : undefined}
+              aria-current={item.isActive ? 'page' : undefined}
             >
               {item.label}
             </Link>
@@ -47,7 +47,10 @@ export const HeaderSection = () => {
 
         {/* Acciones */}
         <div className="flex items-center gap-4">
-          <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" aria-label="Search">
+          <button
+            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+            aria-label="Search"
+          >
             <Search className="w-5 h-5 text-slate-600 dark:text-slate-400" />
           </button>
 
@@ -69,7 +72,7 @@ export const HeaderSection = () => {
               >
                 <User size={18} />
                 <span className="text-sm font-medium">
-                  {user?.nombre?.split(" ")[0] || "Perfil"}
+                  {user?.nombre?.split(' ')[0] || 'Perfil'}
                 </span>
               </Link>
               <button
@@ -101,4 +104,3 @@ export const HeaderSection = () => {
     </header>
   );
 };
-

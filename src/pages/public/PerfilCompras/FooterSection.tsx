@@ -1,28 +1,27 @@
 const footerData = {
   organization: {
-    name: "Fundación Cudeca",
-    description:
-      "Cuidados paliativos con corazón para Málaga y Costa del Sol desde 1992.",
+    name: 'Fundación Cudeca',
+    description: 'Cuidados paliativos con corazón para Málaga y Costa del Sol desde 1992.',
   },
   quickLinks: {
-    title: "Enlaces Rápidos",
-    links: ["Sobre Nosotros", "Nuestros Servicios", "Cómo Ayudar"],
+    title: 'Enlaces Rápidos',
+    links: ['Sobre Nosotros', 'Nuestros Servicios', 'Cómo Ayudar'],
   },
   events: {
-    title: "Eventos",
-    links: ["Próximos Eventos", "Eventos Pasados"],
+    title: 'Eventos',
+    links: ['Próximos Eventos', 'Eventos Pasados'],
   },
   contact: {
-    title: "Contacto",
+    title: 'Contacto',
     details: [
-      "Calle Virgen de la Peña, 7",
-      "29602 Marbella, Málaga",
-      "Tel: +34 952 56 47 10",
-      "info@cudeca.org",
+      'Calle Virgen de la Peña, 7',
+      '29602 Marbella, Málaga',
+      'Tel: +34 952 56 47 10',
+      'info@cudeca.org',
     ],
   },
-  copyright: "© 2025 Fundación Cudeca. Todos los derechos reservados.",
-  legal: ["Política de Privacidad", "Términos y Condiciones"],
+  copyright: '© 2025 Fundación Cudeca. Todos los derechos reservados.',
+  legal: ['Política de Privacidad', 'Términos y Condiciones'],
 };
 
 export const FooterSection = () => {
@@ -33,13 +32,19 @@ export const FooterSection = () => {
         <div className="grid grid-cols-4 gap-8 mb-8">
           {/* Organization Info */}
           <div>
-            <h2 className="text-lg font-bold mb-4 font-['Arimo']">{footerData.organization.name}</h2>
-            <p className="text-sm text-gray-400 font-['Arimo']">{footerData.organization.description}</p>
+            <h2 className="text-lg font-bold mb-4 font-['Arimo']">
+              {footerData.organization.name}
+            </h2>
+            <p className="text-sm text-gray-400 font-['Arimo']">
+              {footerData.organization.description}
+            </p>
           </div>
 
           {/* Quick Links */}
           <nav aria-label="Enlaces rápidos">
-            <h3 className="text-base font-bold mb-4 font-['Arimo']">{footerData.quickLinks.title}</h3>
+            <h3 className="text-base font-bold mb-4 font-['Arimo']">
+              {footerData.quickLinks.title}
+            </h3>
             <ul className="space-y-2">
               {footerData.quickLinks.links.map((link, index) => (
                 <li key={index}>
@@ -77,16 +82,16 @@ export const FooterSection = () => {
             <ul className="space-y-2">
               {footerData.contact.details.map((detail, index) => (
                 <li key={index}>
-                  {detail.includes("@") ? (
+                  {detail.includes('@') ? (
                     <a
                       href={`mailto:${detail}`}
                       className="text-sm text-gray-400 hover:text-white transition-colors font-['Arimo']"
                     >
                       {detail}
                     </a>
-                  ) : detail.includes("Tel:") ? (
+                  ) : detail.includes('Tel:') ? (
                     <a
-                      href={`tel:${detail.replace("Tel: ", "").replace(/\s/g, "")}`}
+                      href={`tel:${detail.replace('Tel: ', '').replace(/\s/g, '')}`}
                       className="text-sm text-gray-400 hover:text-white transition-colors font-['Arimo']"
                     >
                       {detail}
@@ -119,4 +124,3 @@ export const FooterSection = () => {
     </footer>
   );
 };
-

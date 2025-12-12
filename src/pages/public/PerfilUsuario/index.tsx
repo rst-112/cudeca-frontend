@@ -1,8 +1,8 @@
 // Pantalla de Perfil de Usuario
-import { FooterSection } from "./FooterSection";
-import { HeaderSection } from "./HeaderSection";
-import { ProfileActionsSection } from "./ProfileActionsSection";
-import { ProfileInformationSection } from "./ProfileInformationSection";
+import { FooterSection } from './FooterSection';
+import { HeaderSection } from './HeaderSection';
+import { ProfileActionsSection } from './ProfileActionsSection';
+import { ProfileInformationSection } from './ProfileInformationSection';
 
 export const PantallaDePerfil = () => {
   return (
@@ -16,4 +16,3 @@ export const PantallaDePerfil = () => {
     </div>
   );
 };
-

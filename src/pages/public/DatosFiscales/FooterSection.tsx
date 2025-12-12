@@ -1,30 +1,29 @@
-import React from "react";
+import React from 'react';
 
 const footerData = {
   organization: {
-    name: "Fundación Cudeca",
-    description:
-      "Cuidados paliativos con corazón para Málaga y Costa del Sol desde 1992.",
+    name: 'Fundación Cudeca',
+    description: 'Cuidados paliativos con corazón para Málaga y Costa del Sol desde 1992.',
   },
   quickLinks: {
-    title: "Enlaces Rápidos",
-    links: ["Sobre Nosotros", "Nuestros Servicios", "Cómo Ayudar"],
+    title: 'Enlaces Rápidos',
+    links: ['Sobre Nosotros', 'Nuestros Servicios', 'Cómo Ayudar'],
   },
   events: {
-    title: "Eventos",
-    links: ["Próximos Eventos", "Eventos Pasados"],
+    title: 'Eventos',
+    links: ['Próximos Eventos', 'Eventos Pasados'],
   },
   contact: {
-    title: "Contacto",
+    title: 'Contacto',
     details: [
-      "Calle Virgen de la Peña, 7",
-      "29602 Marbella, Málaga",
-      "Tel: +34 952 56 47 10",
-      "info@cudeca.org",
+      'Calle Virgen de la Peña, 7',
+      '29602 Marbella, Málaga',
+      'Tel: +34 952 56 47 10',
+      'info@cudeca.org',
     ],
   },
-  copyright: "© 2025 Fundación Cudeca. Todos los derechos reservados.",
-  legal: ["Política de Privacidad", "Términos y Condiciones"],
+  copyright: '© 2025 Fundación Cudeca. Todos los derechos reservados.',
+  legal: ['Política de Privacidad', 'Términos y Condiciones'],
 };
 
 export const FooterSection = (): JSX.Element => {
@@ -45,10 +44,7 @@ export const FooterSection = (): JSX.Element => {
             <ul className="space-y-2">
               {footerData.quickLinks.links.map((link, index) => (
                 <li key={index}>
-                  <a
-                    href="#"
-                    className="text-sm text-gray-400 hover:text-white transition-colors"
-                  >
+                  <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">
                     {link}
                   </a>
                 </li>
@@ -62,10 +58,7 @@ export const FooterSection = (): JSX.Element => {
             <ul className="space-y-2">
               {footerData.events.links.map((link, index) => (
                 <li key={index}>
-                  <a
-                    href="#"
-                    className="text-sm text-gray-400 hover:text-white transition-colors"
-                  >
+                  <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">
                     {link}
                   </a>
                 </li>
@@ -79,16 +72,16 @@ export const FooterSection = (): JSX.Element => {
             <ul className="space-y-2">
               {footerData.contact.details.map((detail, index) => (
                 <li key={index}>
-                  {detail.includes("@") ? (
+                  {detail.includes('@') ? (
                     <a
                       href={`mailto:${detail}`}
                       className="text-sm text-gray-400 hover:text-white transition-colors"
                     >
                       {detail}
                     </a>
-                  ) : detail.includes("Tel:") ? (
+                  ) : detail.includes('Tel:') ? (
                     <a
-                      href={`tel:${detail.replace("Tel: ", "").replace(/\s/g, "")}`}
+                      href={`tel:${detail.replace('Tel: ', '').replace(/\s/g, '')}`}
                       className="text-sm text-gray-400 hover:text-white transition-colors"
                     >
                       {detail}
@@ -121,4 +114,3 @@ export const FooterSection = (): JSX.Element => {
     </footer>
   );
 };
-

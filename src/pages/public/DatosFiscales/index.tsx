@@ -1,7 +1,7 @@
-import { HeaderSection } from "./HeaderSection";
-import { ProfileActionsSection } from "./ProfileActionsSection";
-import { FiscalDataSection } from "./FiscalDataSection";
-import { FooterSection } from "./FooterSection";
+import { HeaderSection } from './HeaderSection';
+import { ProfileActionsSection } from './ProfileActionsSection';
+import { FiscalDataSection } from './FiscalDataSection';
+import { FooterSection } from './FooterSection';
 
 export const DatosFiscales = () => {
   return (
@@ -15,4 +15,3 @@ export const DatosFiscales = () => {
     </div>
   );
 };
-

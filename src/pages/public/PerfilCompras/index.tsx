@@ -1,7 +1,7 @@
-import { FooterSection } from "./FooterSection";
-import { HeaderSection } from "./HeaderSection";
-import { ProfileActionsSection } from "./ProfileActionsSection";
-import { PurchasesHistorySection } from "./PurchasesHistorySection";
+import { FooterSection } from './FooterSection';
+import { HeaderSection } from './HeaderSection';
+import { ProfileActionsSection } from './ProfileActionsSection';
+import { PurchasesHistorySection } from './PurchasesHistorySection';
 
 export const PerfilCompras = () => {
   return (
@@ -15,4 +15,3 @@ export const PerfilCompras = () => {
     </div>
   );
 };
-

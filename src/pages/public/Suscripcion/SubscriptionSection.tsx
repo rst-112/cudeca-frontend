@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Check } from "lucide-react";
+import { Check } from 'lucide-react';
 
 interface SubscriptionPlan {
   id: number;
@@ -12,57 +11,55 @@ interface SubscriptionPlan {
   ctaText: string;
 }
 
-export const SubscriptionSection = (): JSX.Element => {
-  const [selectedPlan, setSelectedPlan] = useState<number>(1);
-
+export const SubscriptionSection = (): React.JSX.Element => {
   const plans: SubscriptionPlan[] = [
     {
       id: 1,
-      name: "Socio Amigo",
+      name: 'Socio Amigo',
       price: 10,
-      billingPeriod: "mes",
-      description: "Colaboración básica",
+      billingPeriod: 'mes',
+      description: 'Colaboración básica',
       features: [
-        "Acceso a eventos exclusivos",
-        "Boletín mensual",
-        "10% descuento en tienda",
-        "Certificado de donación",
+        'Acceso a eventos exclusivos',
+        'Boletín mensual',
+        '10% descuento en tienda',
+        'Certificado de donación',
       ],
       isActive: true,
-      ctaText: "Plan Actual",
+      ctaText: 'Plan Actual',
     },
     {
       id: 2,
-      name: "Socio Protector",
+      name: 'Socio Protector',
       price: 25,
-      billingPeriod: "mes",
-      description: "Colaboración incrementada",
+      billingPeriod: 'mes',
+      description: 'Colaboración incrementada',
       features: [
-        "Todo de Socio Amigo",
-        "Invitaciones a eventos VIP",
-        "20% descuento en tienda",
-        "Reconocimiento en web",
-        "Acceso a reportes mensuales",
+        'Todo de Socio Amigo',
+        'Invitaciones a eventos VIP',
+        '20% descuento en tienda',
+        'Reconocimiento en web',
+        'Acceso a reportes mensuales',
       ],
       isActive: false,
-      ctaText: "Mejorar Plan",
+      ctaText: 'Mejorar Plan',
     },
     {
       id: 3,
-      name: "Socio Benefactor",
+      name: 'Socio Benefactor',
       price: 50,
-      billingPeriod: "mes",
-      description: "Máximo compromiso",
+      billingPeriod: 'mes',
+      description: 'Máximo compromiso',
       features: [
-        "Todo de Socio Protector",
-        "Cena anual privada",
-        "30% descuento en tienda",
-        "Mención en boletín",
-        "Acceso a eventos especiales",
-        "Asesoramiento personalizado",
+        'Todo de Socio Protector',
+        'Cena anual privada',
+        '30% descuento en tienda',
+        'Mención en boletín',
+        'Acceso a eventos especiales',
+        'Asesoramiento personalizado',
       ],
       isActive: false,
-      ctaText: "Mejorar Plan",
+      ctaText: 'Mejorar Plan',
     },
   ];
 
@@ -75,8 +72,8 @@ export const SubscriptionSection = (): JSX.Element => {
             Elige tu Plan de Suscripción
           </h2>
           <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Tu aporte constante nos ayuda a mantener nuestros cuidados paliativos gratuitos.
-            Elige el plan que mejor se adapte a ti.
+            Tu aporte constante nos ayuda a mantener nuestros cuidados paliativos gratuitos. Elige
+            el plan que mejor se adapte a ti.
           </p>
         </div>
 
@@ -85,19 +82,16 @@ export const SubscriptionSection = (): JSX.Element => {
           {plans.map((plan) => (
             <div
               key={plan.id}
-              onClick={() => setSelectedPlan(plan.id)}
-              className={`relative rounded-lg overflow-hidden transition-all duration-300 cursor-pointer transform hover:scale-105 ${
+              className={`relative rounded-lg overflow-hidden transition-all duration-300 ${
                 plan.isActive
-                  ? "ring-2 ring-[#00753e] shadow-xl"
-                  : "border border-slate-200 dark:border-slate-800"
+                  ? 'ring-2 ring-[#00753e] shadow-xl'
+                  : 'border border-slate-200 dark:border-slate-800'
               }`}
             >
               {/* Card Background */}
               <div
                 className={`p-8 space-y-6 ${
-                  plan.isActive
-                    ? "bg-[#00753e] text-white"
-                    : "bg-white dark:bg-slate-950"
+                  plan.isActive ? 'bg-[#00753e] text-white' : 'bg-white dark:bg-slate-950'
                 }`}
               >
                 {/* Active Badge */}
@@ -109,12 +103,16 @@ export const SubscriptionSection = (): JSX.Element => {
 
                 {/* Plan Name */}
                 <div>
-                  <h3 className={`text-2xl font-bold mb-2 ${
-                    plan.isActive ? "text-white" : "text-slate-900 dark:text-white"
-                  }`}>{plan.name}</h3>
+                  <h3
+                    className={`text-2xl font-bold mb-2 ${
+                      plan.isActive ? 'text-white' : 'text-slate-900 dark:text-white'
+                    }`}
+                  >
+                    {plan.name}
+                  </h3>
                   <p
                     className={`text-sm ${
-                      plan.isActive ? "text-green-100" : "text-slate-600 dark:text-slate-400"
+                      plan.isActive ? 'text-green-100' : 'text-slate-600 dark:text-slate-400'
                     }`}
                   >
                     {plan.description}
@@ -123,10 +121,16 @@ export const SubscriptionSection = (): JSX.Element => {
 
                 {/* Price */}
                 <div className="flex items-baseline gap-2">
-                  <span className={`text-4xl font-bold ${
-                    plan.isActive ? "text-white" : "text-slate-900 dark:text-white"
-                  }`}>{plan.price}€</span>
-                  <span className={`text-sm ${plan.isActive ? "text-green-100" : "text-slate-600 dark:text-slate-400"}`}>
+                  <span
+                    className={`text-4xl font-bold ${
+                      plan.isActive ? 'text-white' : 'text-slate-900 dark:text-white'
+                    }`}
+                  >
+                    {plan.price}€
+                  </span>
+                  <span
+                    className={`text-sm ${plan.isActive ? 'text-green-100' : 'text-slate-600 dark:text-slate-400'}`}
+                  >
                     / {plan.billingPeriod}
                   </span>
                 </div>
@@ -138,10 +142,12 @@ export const SubscriptionSection = (): JSX.Element => {
                       <Check
                         size={20}
                         className={`flex-shrink-0 ${
-                          plan.isActive ? "text-green-200" : "text-[#00753e]"
+                          plan.isActive ? 'text-green-200' : 'text-[#00753e]'
                         }`}
                       />
-                      <span className={`text-sm ${plan.isActive ? "text-white" : "text-slate-700 dark:text-slate-300"}`}>
+                      <span
+                        className={`text-sm ${plan.isActive ? 'text-white' : 'text-slate-700 dark:text-slate-300'}`}
+                      >
                         {feature}
                       </span>
                     </li>
@@ -152,8 +158,8 @@ export const SubscriptionSection = (): JSX.Element => {
                 <button
                   className={`w-full py-3 rounded-lg font-semibold transition-colors mt-6 ${
                     plan.isActive
-                      ? "bg-white text-[#00753e] hover:bg-gray-100"
-                      : "bg-[#00753e] text-white hover:bg-[#005a2e] dark:bg-[#00753e] dark:hover:bg-[#005a2e]"
+                      ? 'bg-white text-[#00753e] hover:bg-gray-100'
+                      : 'bg-[#00753e] text-white hover:bg-[#005a2e] dark:bg-[#00753e] dark:hover:bg-[#005a2e]'
                   }`}
                   disabled={plan.isActive}
                 >
@@ -177,12 +183,8 @@ export const SubscriptionSection = (): JSX.Element => {
               <p className="text-slate-600 dark:text-slate-400">15 de enero, 2025</p>
             </div>
             <div>
-              <h4 className="font-semibold text-slate-900 dark:text-white mb-2">
-                Método de pago
-              </h4>
-              <p className="text-slate-600 dark:text-slate-400">
-                Tarjeta ***4567
-              </p>
+              <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Método de pago</h4>
+              <p className="text-slate-600 dark:text-slate-400">Tarjeta ***4567</p>
             </div>
             <div>
               <h4 className="font-semibold text-slate-900 dark:text-white mb-2">
@@ -191,9 +193,7 @@ export const SubscriptionSection = (): JSX.Element => {
               <p className="text-slate-600 dark:text-slate-400">Desde 15 de noviembre, 2024</p>
             </div>
             <div>
-              <h4 className="font-semibold text-slate-900 dark:text-white mb-2">
-                Acciones
-              </h4>
+              <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Acciones</h4>
               <button className="text-red-600 hover:text-red-700 font-medium text-sm">
                 Cancelar suscripción
               </button>

@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { CreditCard, Wallet, Check, Trash2, ChevronDown } from "lucide-react";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CreditCard, Wallet, Check, Trash2, ChevronDown } from 'lucide-react';
 
 interface CartItem {
   id: string;
@@ -20,32 +20,32 @@ interface PriceBreakdown {
 
 export const CheckoutFormSection = () => {
   const navigate = useNavigate();
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("credit-card");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('credit-card');
   const [requestFiscalCertificate, setRequestFiscalCertificate] = useState(true);
-  const [selectedFiscalData, setSelectedFiscalData] = useState("saved");
+  const [selectedFiscalData, setSelectedFiscalData] = useState('saved');
   const [fiscalDropdownOpen, setFiscalDropdownOpen] = useState(false);
 
   const handleConfirmPurchase = () => {
     // Aquí iría la lógica de procesamiento de pago
     // Por ahora, redirigimos directamente a la confirmación
-    navigate("/dev/compra-usuario");
+    navigate('/dev/compra-usuario');
   };
 
   const cartItems: CartItem[] = [
     {
-      id: "1",
-      name: "Noche de Jazz Solidaria",
-      type: "Asiento normal",
-      image: "/image-noche-de-jazz-solidaria.png",
+      id: '1',
+      name: 'Noche de Jazz Solidaria',
+      type: 'Asiento normal',
+      image: '/image-noche-de-jazz-solidaria.png',
       basePrice: 15.0,
       implicitDonation: 3.0,
       memberDiscount: -1.5,
     },
     {
-      id: "2",
-      name: "Gala Benéfica anual",
-      type: "Entrada general",
-      image: "/image-gala-ben-fica-anual.png",
+      id: '2',
+      name: 'Gala Benéfica anual',
+      type: 'Entrada general',
+      image: '/image-gala-ben-fica-anual.png',
       basePrice: 15.0,
       implicitDonation: 5.0,
       memberDiscount: -1.5,
@@ -54,23 +54,20 @@ export const CheckoutFormSection = () => {
   ];
 
   const paymentMethods = [
-    { id: "credit-card", label: "Tarjeta de crédito", icon: CreditCard },
-    { id: "paypal", label: "Paypal", icon: CreditCard },
-    { id: "bizum", label: "Bizum", icon: CreditCard },
-    { id: "wallet", label: "Monedero", subtitle: "Saldo disponible: 0,00€", icon: Wallet },
+    { id: 'credit-card', label: 'Tarjeta de crédito', icon: CreditCard },
+    { id: 'paypal', label: 'Paypal', icon: CreditCard },
+    { id: 'bizum', label: 'Bizum', icon: CreditCard },
+    { id: 'wallet', label: 'Monedero', subtitle: 'Saldo disponible: 0,00€', icon: Wallet },
   ];
 
   const fiscalDataOptions = [
-    { id: "saved", label: "Usar mis datos guardados" },
-    { id: "other", label: "Usar otros datos" },
+    { id: 'saved', label: 'Usar mis datos guardados' },
+    { id: 'other', label: 'Usar otros datos' },
   ];
 
   const calculateItemTotal = (item: CartItem): number => {
     return (
-      item.basePrice +
-      item.implicitDonation +
-      item.memberDiscount +
-      (item.additionalDonation || 0)
+      item.basePrice + item.implicitDonation + item.memberDiscount + (item.additionalDonation || 0)
     );
   };
 
@@ -80,20 +77,20 @@ export const CheckoutFormSection = () => {
 
   const getItemBreakdown = (item: CartItem): PriceBreakdown[] => {
     const breakdown: PriceBreakdown[] = [
-      { label: "Entrada base", amount: `${item.basePrice.toFixed(2)}€` },
+      { label: 'Entrada base', amount: `${item.basePrice.toFixed(2)}€` },
       {
-        label: "Donación Implícita",
+        label: 'Donación Implícita',
         amount: `${item.implicitDonation.toFixed(2)}€`,
       },
       {
-        label: "Descuento Socio (10%)",
+        label: 'Descuento Socio (10%)',
         amount: `${item.memberDiscount.toFixed(2)}€`,
       },
     ];
 
     if (item.additionalDonation) {
       breakdown.push({
-        label: "Donación Adicional",
+        label: 'Donación Adicional',
         amount: `${item.additionalDonation.toFixed(2)}€`,
       });
     }
@@ -135,10 +132,7 @@ export const CheckoutFormSection = () => {
 
             <div className="space-y-4">
               {paymentMethods.map((method) => (
-                <label
-                  key={method.id}
-                  className="flex items-start gap-3 cursor-pointer group"
-                >
+                <label key={method.id} className="flex items-start gap-3 cursor-pointer group">
                   <input
                     type="radio"
                     name="payment-method"
@@ -203,10 +197,7 @@ export const CheckoutFormSection = () => {
                 {/* Opciones de datos fiscales */}
                 <div className="space-y-4">
                   {fiscalDataOptions.map((option) => (
-                    <label
-                      key={option.id}
-                      className="flex items-center gap-3 cursor-pointer"
-                    >
+                    <label key={option.id} className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="radio"
                         name="fiscal-data"
@@ -244,7 +235,7 @@ export const CheckoutFormSection = () => {
                     </span>
                     <ChevronDown
                       className={`w-5 h-5 text-slate-500 transition-transform ${
-                        fiscalDropdownOpen ? "rotate-180" : ""
+                        fiscalDropdownOpen ? 'rotate-180' : ''
                       }`}
                     />
                   </button>
@@ -252,7 +243,10 @@ export const CheckoutFormSection = () => {
                   {/* Formulario de datos fiscales */}
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <label htmlFor="nif" className="text-base text-slate-900 dark:text-white font-['Arimo']">
+                      <label
+                        htmlFor="nif"
+                        className="text-base text-slate-900 dark:text-white font-['Arimo']"
+                      >
                         NIF <span className="text-[#d94f04]">*</span>
                       </label>
                       <input
@@ -266,7 +260,10 @@ export const CheckoutFormSection = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label htmlFor="nombre" className="text-base text-slate-900 dark:text-white font-['Arimo']">
+                      <label
+                        htmlFor="nombre"
+                        className="text-base text-slate-900 dark:text-white font-['Arimo']"
+                      >
                         Nombre <span className="text-[#d94f04]">*</span>
                       </label>
                       <input
@@ -280,7 +277,10 @@ export const CheckoutFormSection = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label htmlFor="direccion" className="text-base text-slate-900 dark:text-white font-['Arimo']">
+                      <label
+                        htmlFor="direccion"
+                        className="text-base text-slate-900 dark:text-white font-['Arimo']"
+                      >
                         Dirección <span className="text-[#d94f04]">*</span>
                       </label>
                       <input
@@ -322,12 +322,14 @@ export const CheckoutFormSection = () => {
                     <h3 className="text-base text-slate-900 dark:text-white font-['Arimo']">
                       {item.name}
                     </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                      {item.type}
-                    </p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">{item.type}</p>
                   </div>
 
-                  <button type="button" aria-label={`Eliminar ${item.name}`} className="text-slate-500 hover:text-red-500 transition-colors">
+                  <button
+                    type="button"
+                    aria-label={`Eliminar ${item.name}`}
+                    className="text-slate-500 hover:text-red-500 transition-colors"
+                  >
                     <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
@@ -336,12 +338,8 @@ export const CheckoutFormSection = () => {
               <div className="space-y-1">
                 {getItemBreakdown(item).map((breakdown, index) => (
                   <div key={index} className="flex justify-between text-sm">
-                    <span className="text-slate-500 dark:text-slate-400">
-                      {breakdown.label}
-                    </span>
-                    <span className="text-slate-900 dark:text-white">
-                      {breakdown.amount}
-                    </span>
+                    <span className="text-slate-500 dark:text-slate-400">{breakdown.label}</span>
+                    <span className="text-slate-900 dark:text-white">{breakdown.amount}</span>
                   </div>
                 ))}
 
@@ -379,4 +377,3 @@ export const CheckoutFormSection = () => {
     </div>
   );
 };
-

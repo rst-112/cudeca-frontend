@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface Purchase {
   id: string;
@@ -6,39 +6,39 @@ interface Purchase {
   date: string;
   tickets: string;
   total: string;
-  status: "Completada" | "Pendiente" | "Cancelada";
+  status: 'Completada' | 'Pendiente' | 'Cancelada';
 }
 
 export const PurchasesHistorySection = (): JSX.Element => {
   const purchases: Purchase[] = [
     {
-      id: "1",
-      title: "Concierto Benéfico de Navidad",
-      date: "15 de Noviembre, 2024",
-      tickets: "2 entradas",
-      total: "48.00€",
-      status: "Completada",
+      id: '1',
+      title: 'Concierto Benéfico de Navidad',
+      date: '15 de Noviembre, 2024',
+      tickets: '2 entradas',
+      total: '48.00€',
+      status: 'Completada',
     },
     {
-      id: "2",
-      title: "Gala Anual Cudeca 2024",
-      date: "03 de Octubre, 2024",
-      tickets: "4 entradas",
-      total: "120.00€",
-      status: "Completada",
+      id: '2',
+      title: 'Gala Anual Cudeca 2024',
+      date: '03 de Octubre, 2024',
+      tickets: '4 entradas',
+      total: '120.00€',
+      status: 'Completada',
     },
   ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Completada":
-        return "bg-emerald-100 text-emerald-800";
-      case "Pendiente":
-        return "bg-yellow-100 text-yellow-800";
-      case "Cancelada":
-        return "bg-red-100 text-red-800";
+      case 'Completada':
+        return 'bg-emerald-100 text-emerald-800';
+      case 'Pendiente':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Cancelada':
+        return 'bg-red-100 text-red-800';
       default:
-        return "bg-gray-100 text-gray-800";
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -101,14 +101,12 @@ export const PurchasesHistorySection = (): JSX.Element => {
                         </div>
                       </td>
                       <td className="py-4 px-4">
-                        <div className="font-semibold text-[#00753e] text-sm">
-                          {purchase.total}
-                        </div>
+                        <div className="font-semibold text-[#00753e] text-sm">{purchase.total}</div>
                       </td>
                       <td className="py-4 px-4">
                         <span
                           className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                            purchase.status
+                            purchase.status,
                           )}`}
                         >
                           {purchase.status}
@@ -140,4 +138,3 @@ export const PurchasesHistorySection = (): JSX.Element => {
     </main>
   );
 };
-

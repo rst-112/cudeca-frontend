@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 interface ProfileField {
   label: string;
@@ -7,14 +7,14 @@ interface ProfileField {
 
 export const ProfileInformationSection = () => {
   const [profileData] = useState<ProfileField[]>([
-    { label: "Nombre", value: "Juan Carlos" },
-    { label: "Apellidos", value: "García Martínez" },
-    { label: "Correo electrónico", value: "juancarlos.garcia@email.com" },
-    { label: "Teléfono", value: "+34 612 345 678" },
+    { label: 'Nombre', value: 'Juan Carlos' },
+    { label: 'Apellidos', value: 'García Martínez' },
+    { label: 'Correo electrónico', value: 'juancarlos.garcia@email.com' },
+    { label: 'Teléfono', value: '+34 612 345 678' },
   ]);
 
   const handleEdit = () => {
-    console.log("Edit button clicked");
+    console.log('Edit button clicked');
   };
 
   return (
@@ -47,4 +47,3 @@ export const ProfileInformationSection = () => {
     </section>
   );
 };
-

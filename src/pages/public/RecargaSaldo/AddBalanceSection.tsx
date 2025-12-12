@@ -1,26 +1,21 @@
-import React, { useState } from "react";
+import { useState } from 'react';
 
-export const AddBalanceSection = (): JSX.Element => {
-  const [amount, setAmount] = useState<string>("0.00");
-  const [selectedQuickAmount, setSelectedQuickAmount] = useState<number | null>(
-    null,
-  );
+export const AddBalanceSection = (): React.JSX.Element => {
+  const [amount, setAmount] = useState<string>('0.00');
 
   const quickAmounts = [
-    { value: 10, label: "10€" },
-    { value: 25, label: "25€" },
-    { value: 50, label: "50€" },
-    { value: 100, label: "100€" },
+    { value: 10, label: '10€' },
+    { value: 25, label: '25€' },
+    { value: 50, label: '50€' },
+    { value: 100, label: '100€' },
   ];
 
   const handleQuickAmountClick = (value: number) => {
     setAmount(value.toFixed(2));
-    setSelectedQuickAmount(value);
   };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAmount(e.target.value);
-    setSelectedQuickAmount(null);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -85,11 +80,7 @@ export const AddBalanceSection = (): JSX.Element => {
                   </div>
                 </div>
 
-                <div
-                  className="w-[1018px] flex gap-3"
-                  role="group"
-                  aria-label="Cantidades rápidas"
-                >
+                <div className="w-[1018px] flex gap-3" role="group" aria-label="Cantidades rápidas">
                   {quickAmounts.map((quickAmount) => (
                     <button
                       key={quickAmount.value}
@@ -101,7 +92,7 @@ export const AddBalanceSection = (): JSX.Element => {
                       <div className="absolute top-0 left-0 w-[100px] h-[42px] rounded-[20px] border-[0.8px] border-solid border-[#00753e]" />
 
                       <div
-                        className={`flex flex-col w-[100px] h-[42px] items-start pt-[9px] pb-0 ${quickAmount.value === 100 ? "px-[32.2px]" : "px-[36.65px]"} absolute top-0 left-0`}
+                        className={`flex flex-col w-[100px] h-[42px] items-start pt-[9px] pb-0 ${quickAmount.value === 100 ? 'px-[32.2px]' : 'px-[36.65px]'} absolute top-0 left-0`}
                       >
                         <div className="relative self-stretch w-full h-6">
                           <span className="absolute top-px left-0 [font-family:'Arimo-Regular',Helvetica] font-normal text-[#00753e] text-base text-center tracking-[0] leading-6 whitespace-nowrap">
@@ -164,4 +155,3 @@ export const AddBalanceSection = (): JSX.Element => {
     </section>
   );
 };
-
