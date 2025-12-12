@@ -39,7 +39,7 @@ describe('CheckoutFormSection - Branches Coverage', () => {
 
       // Buscar y hacer clic en el botón de continuar
       const buttons = screen.getAllByRole('button');
-      const continueButton = buttons.find(btn => btn.textContent?.includes('Continuar'));
+      const continueButton = buttons.find((btn) => btn.textContent?.includes('Continuar'));
 
       if (continueButton) {
         fireEvent.click(continueButton);
@@ -90,4 +90,3 @@ describe('CheckoutFormSection - Branches Coverage', () => {
     });
   });
 });
-

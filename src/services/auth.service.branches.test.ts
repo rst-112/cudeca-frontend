@@ -235,4 +235,3 @@ describe('auth.service - Branches Coverage', () => {
     });
   });
 });
-

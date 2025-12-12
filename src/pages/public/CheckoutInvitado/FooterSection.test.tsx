@@ -68,4 +68,3 @@ describe('CheckoutInvitado - FooterSection', () => {
     expect(privacyLink).toHaveAttribute('href', '/privacidad');
   });
 });
-

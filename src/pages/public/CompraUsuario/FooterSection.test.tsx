@@ -53,4 +53,3 @@ describe('CompraUsuario - FooterSection', () => {
     expect(screen.getByText('Cookies')).toBeInTheDocument();
   });
 });
-

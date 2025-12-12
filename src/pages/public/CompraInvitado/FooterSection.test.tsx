@@ -65,4 +65,3 @@ describe('CompraInvitado - FooterSection', () => {
     expect(eventsLink).toHaveAttribute('href', '/eventos');
   });
 });
-

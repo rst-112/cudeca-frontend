@@ -64,7 +64,7 @@ describe('Checkout - Branches Coverage', () => {
     it('debe manejar error al cargar datos fiscales', async () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
       vi.mocked(checkoutService.obtenerDatosFiscalesUsuario).mockRejectedValue(
-        new Error('Error de red')
+        new Error('Error de red'),
       );
 
       renderWithRouter(<Checkout />);
@@ -72,7 +72,7 @@ describe('Checkout - Branches Coverage', () => {
       await waitFor(() => {
         expect(consoleError).toHaveBeenCalledWith(
           'Error al cargar datos fiscales:',
-          expect.any(Error)
+          expect.any(Error),
         );
       });
 
@@ -118,7 +118,6 @@ describe('Checkout - Branches Coverage', () => {
 
       const switchCertificado = screen.getByRole('switch');
       fireEvent.click(switchCertificado);
-
 
       await waitFor(() => {
         expect(screen.getByText(/Selecciona Datos Fiscales/i)).toBeInTheDocument();
@@ -171,17 +170,16 @@ describe('Checkout - Branches Coverage', () => {
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
-          'El NIF debe tener 8 números seguidos de una letra'
+          'El NIF debe tener 8 números seguidos de una letra',
         );
       });
     });
-
 
     it('debe permitir confirmar sin certificado', async () => {
       vi.mocked(checkoutService.procesarCheckout).mockResolvedValue({
         compraId: 123,
         urlPago: 'http://pago.test',
-        importeTotal: 52.50,
+        importeTotal: 52.5,
         mensaje: 'Compra procesada correctamente',
       });
       vi.mocked(checkoutService.confirmarPago).mockResolvedValue({
@@ -203,7 +201,7 @@ describe('Checkout - Branches Coverage', () => {
         expect(checkoutService.procesarCheckout).toHaveBeenCalledWith(
           expect.objectContaining({
             solicitarCertificado: false,
-          })
+          }),
         );
       });
     });
@@ -214,7 +212,7 @@ describe('Checkout - Branches Coverage', () => {
       vi.mocked(checkoutService.procesarCheckout).mockResolvedValue({
         compraId: 123,
         urlPago: 'http://pago.test',
-        importeTotal: 52.50,
+        importeTotal: 52.5,
         mensaje: 'Compra procesada correctamente',
       });
       vi.mocked(checkoutService.confirmarPago).mockResolvedValue({
@@ -245,13 +243,19 @@ describe('Checkout - Branches Coverage', () => {
         expect(checkoutService.procesarCheckout).toHaveBeenCalled();
       });
 
-      await waitFor(() => {
-        expect(toast.success).toHaveBeenCalledWith('Compra procesada correctamente');
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(toast.success).toHaveBeenCalledWith('Compra procesada correctamente');
+        },
+        { timeout: 3000 },
+      );
 
-      await waitFor(() => {
-        expect(toast.success).toHaveBeenCalledWith('¡Compra confirmada! Redirigiendo...');
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(toast.success).toHaveBeenCalledWith('¡Compra confirmada! Redirigiendo...');
+        },
+        { timeout: 3000 },
+      );
     });
 
     it('debe procesar compra con nuevos datos fiscales', async () => {
@@ -259,7 +263,7 @@ describe('Checkout - Branches Coverage', () => {
       vi.mocked(checkoutService.procesarCheckout).mockResolvedValue({
         compraId: 123,
         urlPago: 'http://pago.test',
-        importeTotal: 52.50,
+        importeTotal: 52.5,
         mensaje: 'Compra procesada correctamente',
       });
       vi.mocked(checkoutService.confirmarPago).mockResolvedValue({
@@ -294,16 +298,14 @@ describe('Checkout - Branches Coverage', () => {
           expect.objectContaining({
             solicitarCertificado: true,
             datosFiscalesId: undefined,
-          })
+          }),
         );
       });
     });
 
     it('debe manejar errores durante el proceso de compra', async () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
-      vi.mocked(checkoutService.procesarCheckout).mockRejectedValue(
-        new Error('Error de conexión')
-      );
+      vi.mocked(checkoutService.procesarCheckout).mockRejectedValue(new Error('Error de conexión'));
 
       renderWithRouter(<Checkout />);
 
@@ -343,7 +345,7 @@ describe('Checkout - Branches Coverage', () => {
       vi.mocked(checkoutService.procesarCheckout).mockResolvedValue({
         compraId: 123,
         urlPago: 'http://pago.test',
-        importeTotal: 52.50,
+        importeTotal: 52.5,
         mensaje: 'Compra procesada correctamente',
       });
       vi.mocked(checkoutService.confirmarPago).mockResolvedValue({
@@ -361,9 +363,12 @@ describe('Checkout - Branches Coverage', () => {
       const btnConfirmar = screen.getByText('Confirmar Compra');
       fireEvent.click(btnConfirmar);
 
-      await waitFor(() => {
-        expect(screen.getByText('¡Compra Confirmada!')).toBeInTheDocument();
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText('¡Compra Confirmada!')).toBeInTheDocument();
+        },
+        { timeout: 5000 },
+      );
 
       expect(screen.getByText('Ver mis entradas')).toBeInTheDocument();
     });
@@ -439,7 +444,10 @@ describe('Checkout - Branches Coverage', () => {
     it('debe deshabilitar botón durante la carga', async () => {
       let resolveCheckout: ((value: unknown) => void) | undefined;
       vi.mocked(checkoutService.procesarCheckout).mockImplementation(
-        () => new Promise((resolve) => { resolveCheckout = resolve; })
+        () =>
+          new Promise((resolve) => {
+            resolveCheckout = resolve;
+          }),
       );
 
       renderWithRouter(<Checkout />);
@@ -459,11 +467,10 @@ describe('Checkout - Branches Coverage', () => {
         resolveCheckout({
           compraId: 123,
           urlPago: 'http://test.com',
-          importeTotal: 52.50,
-          mensaje: 'OK'
+          importeTotal: 52.5,
+          mensaje: 'OK',
         });
       }
     });
   });
 });
-

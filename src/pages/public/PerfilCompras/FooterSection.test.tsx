@@ -40,4 +40,3 @@ describe('PerfilCompras - FooterSection', () => {
     expect(screen.getByText('Términos y Condiciones')).toBeInTheDocument();
   });
 });
-

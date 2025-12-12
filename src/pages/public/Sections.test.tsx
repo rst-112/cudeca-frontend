@@ -298,7 +298,6 @@ describe('ConfirmationSection Components', () => {
     expect(button10).toHaveAttribute('aria-pressed', 'true');
   });
 
-
   it('permite seleccionar diferentes cantidades en RecargaSaldo', () => {
     render(
       <MemoryRouter>
@@ -420,4 +419,3 @@ describe('HeaderSection Components', () => {
     expect(screen.getByText(/Contacto/i)).toBeInTheDocument();
   });
 });
-

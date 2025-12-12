@@ -150,7 +150,9 @@ describe('perfil.service', () => {
         ok: false,
       } as Response);
 
-      await expect(perfilService.descargarPdfEntrada(1, 1)).rejects.toThrow('Error al descargar PDF');
+      await expect(perfilService.descargarPdfEntrada(1, 1)).rejects.toThrow(
+        'Error al descargar PDF',
+      );
     });
   });
 
@@ -206,7 +208,7 @@ describe('perfil.service', () => {
       const monedero = {
         id: 1,
         usuarioId: 1,
-        saldo: 100.50,
+        saldo: 100.5,
         moneda: 'EUR',
         fechaCreacion: '2024-01-01',
         fechaActualizacion: '2024-01-01',
@@ -249,4 +251,3 @@ describe('perfil.service', () => {
     });
   });
 });
-

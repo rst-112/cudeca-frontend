@@ -40,4 +40,3 @@ describe('Suscripcion - FooterSection', () => {
     expect(screen.getByText('Términos y Condiciones')).toBeInTheDocument();
   });
 });
-

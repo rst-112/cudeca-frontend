@@ -40,4 +40,3 @@ describe('DatosFiscales - FooterSection', () => {
     expect(screen.getByText('Términos y Condiciones')).toBeInTheDocument();
   });
 });
-

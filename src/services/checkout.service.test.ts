@@ -23,17 +23,17 @@ describe('checkout.service', () => {
         importeTotal: 50,
         mensaje: 'Success',
       };
-      
+
       vi.mocked(api.apiPost).mockResolvedValue(mockResponse);
-      
+
       const request = {
         usuarioId: 1,
         items: [{ asientoId: 1, precio: 25 }],
         solicitarCertificado: false,
       };
-      
+
       const result = await checkoutService.procesarCheckout(request);
-      
+
       expect(api.apiPost).toHaveBeenCalledWith('/checkout', request);
       expect(result).toEqual(mockResponse);
     });
@@ -45,17 +45,17 @@ describe('checkout.service', () => {
         success: true,
         mensaje: 'Payment confirmed',
       };
-      
+
       vi.mocked(api.apiPost).mockResolvedValue(mockResponse);
-      
+
       const compraId = 1;
       const request = {
         transaccionId: 'TXN123',
         estado: 'COMPLETADO' as const,
       };
-      
+
       const result = await checkoutService.confirmarPago(compraId, request);
-      
+
       expect(api.apiPost).toHaveBeenCalledWith(`/checkout/${compraId}/confirmar`, request);
       expect(result).toEqual(mockResponse);
     });
@@ -75,11 +75,11 @@ describe('checkout.service', () => {
           esPrincipal: true,
         },
       ];
-      
+
       vi.mocked(api.apiGet).mockResolvedValue(mockData);
-      
+
       const result = await checkoutService.obtenerDatosFiscalesUsuario(1);
-      
+
       expect(api.apiGet).toHaveBeenCalledWith('/datos-fiscales/usuario/1');
       expect(result).toEqual(mockData);
     });
@@ -88,9 +88,9 @@ describe('checkout.service', () => {
   describe('crearDatosFiscales', () => {
     it('crea nuevos datos fiscales', async () => {
       const mockData = { id: 1, message: 'Created' };
-      
+
       vi.mocked(api.apiPost).mockResolvedValue(mockData);
-      
+
       const datosFiscales = {
         nif: '12345678A',
         nombre: 'Test User',
@@ -99,9 +99,9 @@ describe('checkout.service', () => {
         codigoPostal: '28001',
         pais: 'España',
       };
-      
+
       const result = await checkoutService.crearDatosFiscales(1, datosFiscales);
-      
+
       expect(api.apiPost).toHaveBeenCalledWith('/datos-fiscales/usuario/1', datosFiscales);
       expect(result).toEqual(mockData);
     });
@@ -110,15 +110,15 @@ describe('checkout.service', () => {
   describe('actualizarDatosFiscales', () => {
     it('actualiza datos fiscales existentes', async () => {
       const mockData = { id: 1, message: 'Updated' };
-      
+
       vi.mocked(api.apiPut).mockResolvedValue(mockData);
-      
+
       const datosFiscales = {
         nombre: 'Updated Name',
       };
-      
+
       const result = await checkoutService.actualizarDatosFiscales(1, 1, datosFiscales);
-      
+
       expect(api.apiPut).toHaveBeenCalledWith('/datos-fiscales/1?usuarioId=1', datosFiscales);
       expect(result).toEqual(mockData);
     });
@@ -127,9 +127,9 @@ describe('checkout.service', () => {
   describe('eliminarDatosFiscales', () => {
     it('elimina datos fiscales', async () => {
       vi.mocked(api.apiDelete).mockResolvedValue(undefined);
-      
+
       await checkoutService.eliminarDatosFiscales(1, 1);
-      
+
       expect(api.apiDelete).toHaveBeenCalledWith('/datos-fiscales/1?usuarioId=1');
     });
   });
@@ -247,7 +247,7 @@ describe('checkout.service', () => {
 
   describe('formatearPrecio', () => {
     it('formatea un precio correctamente', () => {
-      const precio = checkoutService.formatearPrecio(25.50);
+      const precio = checkoutService.formatearPrecio(25.5);
 
       expect(precio).toContain('25');
       expect(precio).toContain('€');
@@ -342,4 +342,3 @@ describe('checkout.service', () => {
     });
   });
 });
-

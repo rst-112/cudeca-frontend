@@ -566,7 +566,7 @@ describe('Páginas Públicas (Cobertura)', () => {
     );
 
     const createAccountButton = screen.getByRole('button', {
-      name: /Crear cuenta con el correo electrónico proporcionado/i
+      name: /Crear cuenta con el correo electrónico proporcionado/i,
     });
 
     expect(createAccountButton).toBeInTheDocument();
@@ -581,7 +581,7 @@ describe('Páginas Públicas (Cobertura)', () => {
     );
 
     const backButton = screen.getByRole('button', {
-      name: /Volver a la página anterior/i
+      name: /Volver a la página anterior/i,
     });
 
     expect(backButton).toBeInTheDocument();
@@ -596,7 +596,7 @@ describe('Páginas Públicas (Cobertura)', () => {
     );
 
     const viewPurchasesButton = screen.getByRole('button', {
-      name: /Ver mis compras/i
+      name: /Ver mis compras/i,
     });
 
     expect(viewPurchasesButton).toBeInTheDocument();
@@ -611,7 +611,7 @@ describe('Páginas Públicas (Cobertura)', () => {
     );
 
     const backButton = screen.getByRole('button', {
-      name: /Volver a la página anterior/i
+      name: /Volver a la página anterior/i,
     });
 
     expect(backButton).toBeInTheDocument();

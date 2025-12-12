@@ -48,7 +48,9 @@ describe('PerfilUsuario', () => {
     );
 
     expect(screen.getByText('Mi Perfil')).toBeInTheDocument();
-    expect(screen.getByText(/Gestiona tus entradas, datos fiscales y monedero/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Gestiona tus entradas, datos fiscales y monedero/i),
+    ).toBeInTheDocument();
   });
 
   it('carga las entradas al montar el componente', async () => {
@@ -121,7 +123,9 @@ describe('PerfilUsuario', () => {
 
   it('maneja errores al cargar datos fiscales', async () => {
     const { toast } = await import('sonner');
-    vi.mocked(checkoutService.obtenerDatosFiscalesUsuario).mockRejectedValue(new Error('Error de red'));
+    vi.mocked(checkoutService.obtenerDatosFiscalesUsuario).mockRejectedValue(
+      new Error('Error de red'),
+    );
 
     render(
       <MemoryRouter initialEntries={['/?tab=fiscales']}>
@@ -130,7 +134,9 @@ describe('PerfilUsuario', () => {
     );
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Error al cargar datos fiscales'));
+      expect(toast.error).toHaveBeenCalledWith(
+        expect.stringContaining('Error al cargar datos fiscales'),
+      );
     });
   });
 
@@ -250,7 +256,9 @@ describe('PerfilUsuario', () => {
   it('maneja errores al eliminar datos fiscales', async () => {
     const { toast } = await import('sonner');
     const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    vi.mocked(checkoutService.eliminarDatosFiscales).mockRejectedValue(new Error('Error al eliminar'));
+    vi.mocked(checkoutService.eliminarDatosFiscales).mockRejectedValue(
+      new Error('Error al eliminar'),
+    );
 
     // Verificar manejo de errores
     expect(toast.error).toBeDefined();
@@ -368,7 +376,10 @@ describe('PerfilUsuario', () => {
 
   it('establece datos fiscales como principal', async () => {
     const { toast } = await import('sonner');
-    vi.mocked(checkoutService.actualizarDatosFiscales).mockResolvedValue({ id: 1, esPrincipal: true });
+    vi.mocked(checkoutService.actualizarDatosFiscales).mockResolvedValue({
+      id: 1,
+      esPrincipal: true,
+    });
 
     expect(toast.success).toBeDefined();
   });
@@ -382,7 +393,9 @@ describe('PerfilUsuario', () => {
 
   it('maneja errores al eliminar datos fiscales', async () => {
     const { toast } = await import('sonner');
-    vi.mocked(checkoutService.eliminarDatosFiscales).mockRejectedValue(new Error('Error al eliminar'));
+    vi.mocked(checkoutService.eliminarDatosFiscales).mockRejectedValue(
+      new Error('Error al eliminar'),
+    );
 
     global.confirm = vi.fn(() => true);
 
@@ -485,4 +498,3 @@ describe('PerfilUsuario', () => {
     expect(checkoutService.actualizarDatosFiscales).toBeDefined();
   });
 });
-
