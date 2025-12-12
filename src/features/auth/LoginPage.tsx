@@ -57,7 +57,7 @@ export default function LoginPage({ onSwitch }: LoginPageProps) {
   };
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-8 py-4">
       {/* Logo con Transición Suave */}
       <div className="text-center">
         <Link to="/" className="inline-block group relative h-24 w-64 mx-auto">
@@ -89,10 +89,10 @@ export default function LoginPage({ onSwitch }: LoginPageProps) {
 
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-5xl font-bold text-slate-900 dark:text-white font-['Arimo'] tracking-tight">
+        <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white font-['Arimo'] tracking-tight">
           Inicia sesión
         </h1>
-        <p className="text-slate-600 dark:text-slate-400 text-lg font-['Arimo'] leading-relaxed">
+        <p className="text-slate-600 dark:text-slate-400 text-base md:text-lg font-['Arimo'] leading-relaxed">
           ¿No tienes cuenta?{' '}
           <button
             type="button"
@@ -108,7 +108,7 @@ export default function LoginPage({ onSwitch }: LoginPageProps) {
       {/* Form */}
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="space-y-6"
+        className="space-y-5"
         aria-label="Formulario de inicio de sesión"
       >
         {/* Email */}
