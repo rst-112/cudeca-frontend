@@ -238,7 +238,11 @@ describe('Páginas Públicas (Cobertura)', () => {
   });
 
   it('renderiza la página de Checkout', () => {
-    render(<Checkout />);
+    render(
+      <MemoryRouter>
+        <Checkout />
+      </MemoryRouter>,
+    );
     expect(screen.getByText(/Pasarela de pago/i)).toBeInTheDocument();
   });
 
