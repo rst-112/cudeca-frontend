@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Search, ShoppingCart } from "lucide-react";
+import { Search, ShoppingCart, User, LogOut } from "lucide-react";
+import { useAuth } from "../../../context/AuthContext";
 
 const navigationItems = [
   { label: "Inicio", isActive: false, path: "/" },
@@ -8,6 +9,12 @@ const navigationItems = [
 ];
 
 export const HeaderSection = () => {
+  const { isAuthenticated, user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <header className="w-full h-20 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
       <div className="container mx-auto px-8 h-full flex items-center justify-between">
@@ -54,12 +61,41 @@ export const HeaderSection = () => {
             </span>
           </button>
 
-          <Link
-            to="/login"
-            className="flex items-center gap-2 px-6 py-2 bg-[#00753e] hover:bg-[#00a651] text-white rounded-lg transition-colors"
-          >
-            <span className="text-base">INICIAR SESIÓN</span>
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <Link
+                to="/perfil"
+                className="flex items-center gap-2 px-4 py-2 bg-[#00753e] text-white rounded-lg hover:bg-[#005a2e] transition-colors"
+              >
+                <User size={18} />
+                <span className="text-sm font-medium">
+                  {user?.nombre?.split(" ")[0] || "Perfil"}
+                </span>
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                aria-label="Cerrar sesión"
+              >
+                <LogOut size={18} />
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="px-6 py-2 bg-[#00753e] hover:bg-[#00a651] text-white rounded-lg transition-colors font-medium text-sm"
+              >
+                Iniciar sesión
+              </Link>
+              <Link
+                to="/registro"
+                className="px-6 py-2 bg-[#00a651] text-white rounded-lg hover:bg-[#008a43] transition-colors font-medium text-sm"
+              >
+                Regístrate
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>

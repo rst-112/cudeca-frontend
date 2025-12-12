@@ -19,6 +19,10 @@ import { CompraInvitado } from './pages/public/CompraInvitado';
 import { CompraUsuario } from './pages/public/CompraUsuario';
 import SandboxSeatMap from './pages/public/SandboxSeatMap';
 import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
+import { PantallaDeRecargar } from './pages/public/RecargaSaldo';
+import { PerfilUsuarioPage } from './pages/public/PerfilUsuarioPage';
+import { DatosFiscales } from './pages/public/DatosFiscales';
+import { Suscripcion } from './pages/public/Suscripcion';
 import PerfilUsuario from './pages/PerfilUsuario';
 
 // Componentes temporales
@@ -68,6 +72,10 @@ function App() {
             <Route path="/dev/checkout-invitado" element={<CheckoutInvitado />} />
             <Route path="/dev/compra-invitado" element={<CompraInvitado />} />
             <Route path="/dev/compra-usuario" element={<CompraUsuario />} />
+            <Route path="/recarga-saldo" element={<PantallaDeRecargar />} />
+            <Route path="/perfil-usuario" element={<PerfilUsuarioPage />} />
+            <Route path="/datos-fiscales" element={<DatosFiscales />} />
+            <Route path="/suscripcion" element={<Suscripcion />} />
 
             {/* Rutas de autenticación (redirige si ya está logueado) */}
             <Route

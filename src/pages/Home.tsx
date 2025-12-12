@@ -267,6 +267,95 @@ export default function Home() {
                 </Button>
               </div>
             </div>
+
+            {/* Atajo a Recarga de Saldo */}
+            <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
+              <div>
+                <h4 className="font-bold text-amber-900 dark:text-amber-400">Recarga de Saldo</h4>
+                <p className="text-sm text-amber-700 dark:text-amber-500">
+                  Accede al monedero y añade saldo para tus compras futuras.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  asChild
+                  variant="default"
+                  size="sm"
+                  className="gap-2 bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <Link to="/recarga-saldo">Ir a Recarga de Saldo</Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Atajo a Perfil Usuario */}
+            <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
+              <div>
+                <h4 className="font-bold text-amber-900 dark:text-amber-400">Perfil Usuario</h4>
+                <p className="text-sm text-amber-700 dark:text-amber-500">
+                  Panel de perfil con historial de compras y gestión de cuenta.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  asChild
+                  variant="default"
+                  size="sm"
+                  className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
+                >
+                  <Link to="/perfil-usuario">
+                    Ver Perfil Usuario
+                    <ArrowRight size={16} />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Atajo a Datos Fiscales */}
+            <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
+              <div>
+                <h4 className="font-bold text-amber-900 dark:text-amber-400">Datos Fiscales</h4>
+                <p className="text-sm text-amber-700 dark:text-amber-500">
+                  Gestiona tus direcciones fiscales y datos de facturación.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  asChild
+                  variant="default"
+                  size="sm"
+                  className="gap-2 bg-orange-600 hover:bg-orange-700 text-white"
+                >
+                  <Link to="/datos-fiscales">
+                    Ver Datos Fiscales
+                    <ArrowRight size={16} />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Atajo a Suscripción */}
+            <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
+              <div>
+                <h4 className="font-bold text-amber-900 dark:text-amber-400">Suscripción</h4>
+                <p className="text-sm text-amber-700 dark:text-amber-500">
+                  Elige tu plan de suscripción y colabora de forma constante.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  asChild
+                  variant="default"
+                  size="sm"
+                  className="gap-2 bg-rose-600 hover:bg-rose-700 text-white"
+                >
+                  <Link to="/suscripcion">
+                    Ver Planes
+                    <ArrowRight size={16} />
+                  </Link>
+                </Button>
+              </div>
+            </div>
           </div>
         </section>
       )}
