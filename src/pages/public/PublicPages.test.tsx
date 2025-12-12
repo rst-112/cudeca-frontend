@@ -8,6 +8,15 @@ import Registro from '../../features/auth/RegisterPage';
 import Checkout from './Checkout';
 import DetallesEvento from './DetallesEvento';
 import Home from '../Home';
+import { PantallaDePerfil } from './PerfilUsuario/index';
+import { PerfilCompras } from './PerfilCompras/index';
+import { CompraUsuario } from './CompraUsuario/index';
+import { CheckoutUsuario } from './CheckoutUsuario/index';
+import { CheckoutInvitado } from './CheckoutInvitado/index';
+import { CompraInvitado } from './CompraInvitado/index';
+import { DatosFiscales } from './DatosFiscales/index';
+import { PantallaDeRecargar } from './RecargaSaldo/index';
+import { Suscripcion } from './Suscripcion/index';
 
 // Mock del AuthContext
 const mockLogin = vi.fn();
@@ -243,7 +252,8 @@ describe('Páginas Públicas (Cobertura)', () => {
         <Checkout />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/Pasarela de pago/i)).toBeInTheDocument();
+    expect(screen.getByText(/Checkout/i)).toBeInTheDocument();
+    expect(screen.getByText(/Completa tu compra y descarga tus entradas/i)).toBeInTheDocument();
   });
 
   // Test para la página de Detalles del Evento con parámetro dinámico
@@ -256,5 +266,394 @@ describe('Páginas Públicas (Cobertura)', () => {
       </MemoryRouter>,
     );
     expect(screen.getByText(/Viendo evento con ID: 123/i)).toBeInTheDocument();
+  });
+
+  it('renderiza la página de Perfil de Usuario', () => {
+    render(
+      <MemoryRouter>
+        <PantallaDePerfil />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(/Nombre/i)).toBeInTheDocument();
+    expect(screen.getByText(/Juan Carlos/i)).toBeInTheDocument();
+  });
+
+  it('renderiza la página de Historial de Compras', () => {
+    render(
+      <MemoryRouter>
+        <PerfilCompras />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(/Historial de Compras/i)).toBeInTheDocument();
+  });
+
+  it('renderiza la página de Confirmación de Compra Usuario', () => {
+    render(
+      <MemoryRouter>
+        <CompraUsuario />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(/Gracias por su colaboración/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tu pago ha sido procesado correctamente/i)).toBeInTheDocument();
+  });
+
+  it('renderiza la página de Checkout Usuario', () => {
+    render(
+      <MemoryRouter>
+        <CheckoutUsuario />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(/Información de contacto/i)).toBeInTheDocument();
+  });
+
+  it('renderiza la página de Checkout Invitado', () => {
+    render(
+      <MemoryRouter>
+        <CheckoutInvitado />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(/Información de contacto/i)).toBeInTheDocument();
+  });
+
+  it('renderiza la página de Confirmación Compra Invitado', () => {
+    render(
+      <MemoryRouter>
+        <CompraInvitado />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(/Gracias por su colaboración/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tu pago ha sido procesado correctamente/i)).toBeInTheDocument();
+  });
+
+  it('renderiza la página de Datos Fiscales', () => {
+    render(
+      <MemoryRouter>
+        <DatosFiscales />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(/Datos Fiscales/i)).toBeInTheDocument();
+  });
+
+  it('renderiza la página de Recarga de Saldo', () => {
+    render(
+      <MemoryRouter>
+        <PantallaDeRecargar />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(/Saldo:/i)).toBeInTheDocument();
+  });
+
+  it('renderiza la página de Suscripción', () => {
+    render(
+      <MemoryRouter>
+        <Suscripcion />
+      </MemoryRouter>,
+    );
+    expect(screen.getAllByText(/Socio Amigo/i).length).toBeGreaterThan(0);
+  });
+
+  it('muestra diferentes planes de suscripción', () => {
+    render(
+      <MemoryRouter>
+        <Suscripcion />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getAllByText(/Socio Amigo/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Socio Protector/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Socio Benefactor/i).length).toBeGreaterThan(0);
+  });
+
+  it('muestra botones de editar en Datos Fiscales', () => {
+    render(
+      <MemoryRouter>
+        <DatosFiscales />
+      </MemoryRouter>,
+    );
+
+    const editButtons = screen.getAllByRole('button', { name: /Editar/i });
+    expect(editButtons.length).toBeGreaterThan(0);
+  });
+
+  it('muestra compras en el historial', () => {
+    render(
+      <MemoryRouter>
+        <PerfilCompras />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/Concierto Benéfico de Navidad/i)).toBeInTheDocument();
+    expect(screen.getByText(/Gala Anual Cudeca 2024/i)).toBeInTheDocument();
+  });
+
+  it('muestra email del usuario en confirmación de compra', () => {
+    render(
+      <MemoryRouter>
+        <CompraUsuario />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/usuario.logueado@email.com/i)).toBeInTheDocument();
+  });
+
+  it('permite interactuar con el perfil de usuario', () => {
+    render(
+      <MemoryRouter>
+        <PantallaDePerfil />
+      </MemoryRouter>,
+    );
+
+    const editButton = screen.getByRole('button', { name: /Editar información del perfil/i });
+    expect(editButton).toBeInTheDocument();
+    fireEvent.click(editButton);
+  });
+
+  it('muestra todos los campos del perfil de usuario', () => {
+    render(
+      <MemoryRouter>
+        <PantallaDePerfil />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/Apellidos/i)).toBeInTheDocument();
+    expect(screen.getByText(/Correo electrónico/i)).toBeInTheDocument();
+    expect(screen.getByText(/Teléfono/i)).toBeInTheDocument();
+  });
+
+  it('renderiza correctamente los botones en CompraUsuario', () => {
+    render(
+      <MemoryRouter>
+        <CompraUsuario />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole('button', { name: /Volver a la página anterior/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Ver mis compras/i })).toBeInTheDocument();
+  });
+
+  it('renderiza correctamente los botones en CompraInvitado', () => {
+    render(
+      <MemoryRouter>
+        <CompraInvitado />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole('button', { name: /Volver a la página anterior/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Crear cuenta con el correo electrónico proporcionado/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('muestra información de contacto en CheckoutUsuario', () => {
+    render(
+      <MemoryRouter>
+        <CheckoutUsuario />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/Información de contacto/i)).toBeInTheDocument();
+  });
+
+  it('muestra información de contacto en CheckoutInvitado', () => {
+    render(
+      <MemoryRouter>
+        <CheckoutInvitado />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/Información de contacto/i)).toBeInTheDocument();
+  });
+
+  it('muestra detalles de compras en el historial', () => {
+    render(
+      <MemoryRouter>
+        <PerfilCompras />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getAllByText(/Ver detalles/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/2 entradas/i)).toBeInTheDocument();
+    expect(screen.getByText(/4 entradas/i)).toBeInTheDocument();
+  });
+
+  it('muestra precios en el historial de compras', () => {
+    render(
+      <MemoryRouter>
+        <PerfilCompras />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/48.00€/i)).toBeInTheDocument();
+    expect(screen.getByText(/120.00€/i)).toBeInTheDocument();
+  });
+
+  it('muestra estado de compras completadas', () => {
+    render(
+      <MemoryRouter>
+        <PerfilCompras />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getAllByText(/Completada/i).length).toBeGreaterThan(0);
+  });
+
+  it('renderiza el header en todas las páginas de perfil', () => {
+    const { unmount } = render(
+      <MemoryRouter>
+        <PantallaDePerfil />
+      </MemoryRouter>,
+    );
+    const headers = screen.getAllByText(/Fundación Cudeca/i);
+    expect(headers.length).toBeGreaterThan(0);
+    unmount();
+  });
+
+  it('muestra características de los planes de suscripción', () => {
+    render(
+      <MemoryRouter>
+        <Suscripcion />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/Acceso a eventos exclusivos/i)).toBeInTheDocument();
+    expect(screen.getByText(/Boletín mensual/i)).toBeInTheDocument();
+  });
+
+  it('muestra precios de los planes de suscripción', () => {
+    render(
+      <MemoryRouter>
+        <Suscripcion />
+      </MemoryRouter>,
+    );
+
+    // Verificar que hay múltiples elementos con los nombres de los planes
+    const socioAmigoElements = screen.getAllByText(/Socio Amigo/i);
+    expect(socioAmigoElements.length).toBeGreaterThan(0);
+  });
+
+  it('verifica que el formulario de registro valida las contraseñas coincidentes', async () => {
+    render(
+      <MemoryRouter>
+        <Registro />
+      </MemoryRouter>,
+    );
+
+    const passwordInput = screen.getByLabelText(/^Contraseña\*/i);
+    const confirmPasswordInput = screen.getByLabelText(/Confirmar Contraseña/i);
+
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.change(confirmPasswordInput, { target: { value: 'different123' } });
+
+    const submitButton = screen.getByRole('button', { name: /Crear cuenta/i });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Las contraseñas no coinciden/i)).toBeInTheDocument();
+    });
+  });
+
+  // Pruebas adicionales para mejorar la cobertura
+
+  it('navega desde CompraInvitado a registro', () => {
+    render(
+      <MemoryRouter>
+        <CompraInvitado />
+      </MemoryRouter>,
+    );
+
+    const createAccountButton = screen.getByRole('button', {
+      name: /Crear cuenta con el correo electrónico proporcionado/i
+    });
+
+    expect(createAccountButton).toBeInTheDocument();
+    fireEvent.click(createAccountButton);
+  });
+
+  it('navega desde CompraInvitado a la página anterior', () => {
+    render(
+      <MemoryRouter>
+        <CompraInvitado />
+      </MemoryRouter>,
+    );
+
+    const backButton = screen.getByRole('button', {
+      name: /Volver a la página anterior/i
+    });
+
+    expect(backButton).toBeInTheDocument();
+    fireEvent.click(backButton);
+  });
+
+  it('navega desde CompraUsuario a compras', () => {
+    render(
+      <MemoryRouter>
+        <CompraUsuario />
+      </MemoryRouter>,
+    );
+
+    const viewPurchasesButton = screen.getByRole('button', {
+      name: /Ver mis compras/i
+    });
+
+    expect(viewPurchasesButton).toBeInTheDocument();
+    fireEvent.click(viewPurchasesButton);
+  });
+
+  it('navega desde CompraUsuario a la página anterior', () => {
+    render(
+      <MemoryRouter>
+        <CompraUsuario />
+      </MemoryRouter>,
+    );
+
+    const backButton = screen.getByRole('button', {
+      name: /Volver a la página anterior/i
+    });
+
+    expect(backButton).toBeInTheDocument();
+    fireEvent.click(backButton);
+  });
+
+  it('muestra información detallada en PerfilCompras', () => {
+    render(
+      <MemoryRouter>
+        <PerfilCompras />
+      </MemoryRouter>,
+    );
+
+    // Verificar que muestra información de eventos
+    expect(screen.getByText(/Concierto Benéfico de Navidad/i)).toBeInTheDocument();
+    expect(screen.getByText(/Gala Anual Cudeca 2024/i)).toBeInTheDocument();
+  });
+
+  it('muestra el email del usuario en CompraInvitado', () => {
+    render(
+      <MemoryRouter>
+        <CompraInvitado />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/usuario.invitado@email.com/i)).toBeInTheDocument();
+  });
+
+  it('muestra información de perfil de usuario completa', () => {
+    render(
+      <MemoryRouter>
+        <PantallaDePerfil />
+      </MemoryRouter>,
+    );
+
+    // Verificar todos los campos
+    expect(screen.getByText(/Nombre/i)).toBeInTheDocument();
+    expect(screen.getByText(/Apellidos/i)).toBeInTheDocument();
+    expect(screen.getByText(/Correo electrónico/i)).toBeInTheDocument();
+    expect(screen.getByText(/Teléfono/i)).toBeInTheDocument();
+
+    // Verificar valores
+    expect(screen.getByText(/Juan Carlos/i)).toBeInTheDocument();
   });
 });

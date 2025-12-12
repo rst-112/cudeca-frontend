@@ -12,6 +12,7 @@ export const FooterSection = () => {
         { text: 'Sobre Nosotros', path: '/about' },
         { text: 'Nuestros Servicios', path: '/servicios' },
         { text: 'Cómo Ayudar', path: '/ayudar' },
+        { text: 'Voluntariado', path: '/voluntariado' },
       ],
     },
     events: {
@@ -19,6 +20,8 @@ export const FooterSection = () => {
       links: [
         { text: 'Próximos Eventos', path: '/eventos' },
         { text: 'Eventos Pasados', path: '/eventos/pasados' },
+        { text: 'Organizar Evento', path: '/eventos/organizar' },
+        { text: 'Patrocinios', path: '/patrocinios' },
       ],
     },
     contact: {
@@ -35,6 +38,7 @@ export const FooterSection = () => {
       links: [
         { text: 'Política de Privacidad', path: '/privacidad' },
         { text: 'Términos y Condiciones', path: '/terminos' },
+        { text: 'Cookies', path: '/cookies' },
       ],
     },
   };
