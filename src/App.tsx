@@ -23,6 +23,7 @@ import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
 import { PantallaDeRecargar } from './pages/public/RecargaSaldo';
 import { DatosFiscales } from './pages/public/DatosFiscales';
 import { Suscripcion } from './pages/public/Suscripcion';
+import { PerfilCompras } from './pages/public/PerfilCompras';
 import PerfilUsuario from './pages/PerfilUsuario';
 
 // Componentes temporales
@@ -76,6 +77,7 @@ function App() {
             <Route path="/dev/recarga-saldo" element={<PantallaDeRecargar />} />
             <Route path="/dev/datos-fiscales" element={<DatosFiscales />} />
             <Route path="/dev/suscripcion" element={<Suscripcion />} />
+            <Route path="/dev/perfil-compras" element={<PerfilCompras />} />
 
             {/* Rutas de autenticación (redirige si ya está logueado) */}
             <Route

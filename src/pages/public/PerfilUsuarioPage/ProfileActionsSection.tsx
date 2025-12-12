@@ -16,7 +16,7 @@ const actionButtons: ActionButton[] = [
 
 export const ProfileActionsSection = () => {
   const navigate = useNavigate();
-  const activeAction = "recargar-saldo"; // Esta página es Recargar saldo
+  const activeAction = "compras"; // Esta página muestra compras
   const saldo = 36.0;
 
   const handleNavigate = (path: string) => {

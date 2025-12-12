@@ -16,7 +16,7 @@ const actionButtons: ActionButton[] = [
 
 export const ProfileActionsSection = () => {
   const navigate = useNavigate();
-  const activeAction = "recargar-saldo"; // Esta página es Recargar saldo
+  const activeAction = "compras"; // Esta página es Compras
   const saldo = 36.0;
 
   const handleNavigate = (path: string) => {
@@ -36,7 +36,7 @@ export const ProfileActionsSection = () => {
           </span>
         </div>
 
-        {/* Botones de acción */}
+        {/* Botones de acción (incluye Recargar saldo) */}
         {actionButtons.map((button) => (
           <button
             key={button.id}

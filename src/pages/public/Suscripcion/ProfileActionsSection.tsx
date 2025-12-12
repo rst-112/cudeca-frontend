@@ -1,21 +1,27 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface ActionButton {
   id: string;
   label: string;
+  path: string;
 }
 
 const actionButtons: ActionButton[] = [
-  { id: "recargar-saldo", label: "Recargar saldo" },
-  { id: "perfil", label: "Perfil" },
-  { id: "compras", label: "Compras" },
-  { id: "datos-fiscales", label: "Datos fiscales" },
-  { id: "suscripcion", label: "Suscripción" },
+  { id: "recargar-saldo", label: "Recargar saldo", path: "/dev/recarga-saldo" },
+  { id: "perfil", label: "Perfil", path: "/dev/perfil-usuario" },
+  { id: "compras", label: "Compras", path: "/dev/perfil-compras" },
+  { id: "datos-fiscales", label: "Datos fiscales", path: "/dev/datos-fiscales" },
+  { id: "suscripcion", label: "Suscripción", path: "/dev/suscripcion" },
 ];
 
 export const ProfileActionsSection = () => {
-  const [activeAction, setActiveAction] = useState<string>("suscripcion");
+  const navigate = useNavigate();
+  const activeAction = "suscripcion"; // Esta página es Suscripción
   const saldo = 36.0;
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+  };
 
   return (
     <section className="w-full flex justify-center px-4 mt-8">
@@ -30,11 +36,11 @@ export const ProfileActionsSection = () => {
           </span>
         </div>
 
-        {/* Botones de acción (incluye Recargar saldo) */}
+        {/* Botones de acción */}
         {actionButtons.map((button) => (
           <button
             key={button.id}
-            onClick={() => setActiveAction(button.id)}
+            onClick={() => handleNavigate(button.path)}
             className={`px-6 py-2 text-sm font-normal rounded-lg transition-colors font-['Arimo'] ${
               activeAction === button.id
                 ? "bg-[#00753e] text-white"

@@ -7,9 +7,9 @@ import { Label } from '../../components/ui/Label';
 import { Switch } from '../../components/ui/Switch';
 import { Card } from '../../components/ui/Card';
 import {
-  crearReserva,
-  confirmarReserva,
-  obtenerDatosFiscales,
+  procesarCheckout,
+  confirmarPago,
+  obtenerDatosFiscalesUsuario,
 } from '../../services/checkout.service';
 import type { AsientoSeleccionado, DatosFiscales } from '../../types/checkout.types';
 import { ShoppingCart, FileText, CreditCard, CheckCircle, AlertCircle } from 'lucide-react';
@@ -29,7 +29,7 @@ export default function Checkout() {
   // Formulario de nuevos datos fiscales
   const [nuevosDatos, setNuevosDatos] = useState<DatosFiscales>({
     nif: '',
-    nombreCompleto: '',
+    nombre: '',
     direccion: '',
     ciudad: '',
     codigoPostal: '',
@@ -51,11 +51,13 @@ export default function Checkout() {
 
   const cargarDatosFiscales = async () => {
     try {
-      const datos = await obtenerDatosFiscales();
+      // TODO: Obtener usuarioId del contexto de autenticación
+      const usuarioId = 1; // Temporal
+      const datos = await obtenerDatosFiscalesUsuario(usuarioId);
       setDatosFiscales(datos);
 
       // Seleccionar el principal por defecto
-      const principal = datos.find(d => d.isPrincipal);
+      const principal = datos.find((d: DatosFiscales) => d.esPrincipal);
       if (principal?.id) {
         setDatosFiscalesSeleccionado(principal.id);
       }
@@ -88,7 +90,7 @@ export default function Checkout() {
 
     if (mostrarFormularioNuevo) {
       // Validar formulario de nuevos datos
-      if (!nuevosDatos.nif || !nuevosDatos.nombreCompleto || !nuevosDatos.direccion ||
+      if (!nuevosDatos.nif || !nuevosDatos.nombre || !nuevosDatos.direccion ||
           !nuevosDatos.ciudad || !nuevosDatos.codigoPostal) {
         toast.error('Completa todos los campos de datos fiscales');
         return false;
@@ -117,19 +119,31 @@ export default function Checkout() {
 
     setLoading(true);
     try {
-      // 1. Crear reserva (bloqueo de asientos)
-      const reserva = await crearReserva({
-        eventoId: 1, // Simular evento ID
-        asientoIds: asientosSeleccionados.map(a => a.id),
+      // TODO: Obtener usuarioId del contexto de autenticación
+      const usuarioId = 1; // Temporal
+
+      // 1. Procesar checkout (crear compra)
+      const response = await procesarCheckout({
+        usuarioId,
+        items: asientosSeleccionados.map(a => ({
+          asientoId: parseInt(a.id) || 0,
+          precio: a.precio,
+        })),
+        donacionExtra: 0,
         solicitarCertificado,
         datosFiscalesId: mostrarFormularioNuevo ? undefined : datosFiscalesSeleccionado ?? undefined,
-        nuevoDatosFiscales: mostrarFormularioNuevo ? nuevosDatos : undefined,
       });
 
-      toast.success('Asientos bloqueados correctamente');
+      toast.success('Compra procesada correctamente');
 
-      // 2. Confirmar reserva (convertir a entrada)
-      await confirmarReserva(reserva.id);
+      // 2. En un escenario real, redirigir a la URL de pago
+      // window.location.href = response.urlPago;
+
+      // Para simulación, confirmar el pago directamente
+      await confirmarPago(response.compraId, {
+        transaccionId: 'DEMO-' + Date.now(),
+        estado: 'COMPLETADO',
+      });
 
       toast.success('¡Compra confirmada! Redirigiendo...');
       setStep('confirmado');
@@ -249,7 +263,7 @@ export default function Checkout() {
                       <option value="">-- Selecciona --</option>
                       {datosFiscales.map((datos) => (
                         <option key={datos.id} value={datos.id}>
-                          {datos.nombreCompleto} - {datos.nif}
+                          {datos.nombre} - {datos.nif}
                         </option>
                       ))}
                     </select>
@@ -287,12 +301,12 @@ export default function Checkout() {
                     </div>
 
                     <div>
-                      <Label htmlFor="nombreCompleto">Nombre Completo *</Label>
+                      <Label htmlFor="nombre">Nombre Completo *</Label>
                       <Input
-                        id="nombreCompleto"
+                        id="nombre"
                         placeholder="Juan Pérez García"
-                        value={nuevosDatos.nombreCompleto}
-                        onChange={(e) => setNuevosDatos({ ...nuevosDatos, nombreCompleto: e.target.value })}
+                        value={nuevosDatos.nombre}
+                        onChange={(e) => setNuevosDatos({ ...nuevosDatos, nombre: e.target.value })}
                       />
                     </div>
 

@@ -356,6 +356,29 @@ export default function Home() {
                 </Button>
               </div>
             </div>
+
+            {/* Atajo a Perfil Compras */}
+            <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
+              <div>
+                <h4 className="font-bold text-amber-900 dark:text-amber-400">Perfil Compras</h4>
+                <p className="text-sm text-amber-700 dark:text-amber-500">
+                  Historial completo de compras y entradas adquiridas.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  asChild
+                  variant="default"
+                  size="sm"
+                  className="gap-2 bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  <Link to="/dev/perfil-compras">
+                    Ver Compras
+                    <ArrowRight size={16} />
+                  </Link>
+                </Button>
+              </div>
+            </div>
           </div>
         </section>
       )}

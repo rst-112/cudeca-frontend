@@ -33,19 +33,19 @@ export const FooterSection = () => {
         <div className="grid grid-cols-4 gap-8 mb-8">
           {/* Organization Info */}
           <div>
-            <h2 className="text-lg font-bold mb-4">{footerData.organization.name}</h2>
-            <p className="text-sm text-gray-400">{footerData.organization.description}</p>
+            <h2 className="text-lg font-bold mb-4 font-['Arimo']">{footerData.organization.name}</h2>
+            <p className="text-sm text-gray-400 font-['Arimo']">{footerData.organization.description}</p>
           </div>
 
           {/* Quick Links */}
           <nav aria-label="Enlaces rápidos">
-            <h3 className="text-base font-bold mb-4">{footerData.quickLinks.title}</h3>
+            <h3 className="text-base font-bold mb-4 font-['Arimo']">{footerData.quickLinks.title}</h3>
             <ul className="space-y-2">
               {footerData.quickLinks.links.map((link, index) => (
                 <li key={index}>
                   <a
                     href="#"
-                    className="text-sm text-gray-400 hover:text-white transition-colors"
+                    className="text-sm text-gray-400 hover:text-white transition-colors font-['Arimo']"
                   >
                     {link}
                   </a>
@@ -56,13 +56,13 @@ export const FooterSection = () => {
 
           {/* Events */}
           <nav aria-label="Eventos">
-            <h3 className="text-base font-bold mb-4">{footerData.events.title}</h3>
+            <h3 className="text-base font-bold mb-4 font-['Arimo']">{footerData.events.title}</h3>
             <ul className="space-y-2">
               {footerData.events.links.map((link, index) => (
                 <li key={index}>
                   <a
                     href="#"
-                    className="text-sm text-gray-400 hover:text-white transition-colors"
+                    className="text-sm text-gray-400 hover:text-white transition-colors font-['Arimo']"
                   >
                     {link}
                   </a>
@@ -73,26 +73,26 @@ export const FooterSection = () => {
 
           {/* Contact */}
           <address className="not-italic">
-            <h3 className="text-base font-bold mb-4">{footerData.contact.title}</h3>
+            <h3 className="text-base font-bold mb-4 font-['Arimo']">{footerData.contact.title}</h3>
             <ul className="space-y-2">
               {footerData.contact.details.map((detail, index) => (
                 <li key={index}>
                   {detail.includes("@") ? (
                     <a
                       href={`mailto:${detail}`}
-                      className="text-sm text-gray-400 hover:text-white transition-colors"
+                      className="text-sm text-gray-400 hover:text-white transition-colors font-['Arimo']"
                     >
                       {detail}
                     </a>
                   ) : detail.includes("Tel:") ? (
                     <a
                       href={`tel:${detail.replace("Tel: ", "").replace(/\s/g, "")}`}
-                      className="text-sm text-gray-400 hover:text-white transition-colors"
+                      className="text-sm text-gray-400 hover:text-white transition-colors font-['Arimo']"
                     >
                       {detail}
                     </a>
                   ) : (
-                    <p className="text-sm text-gray-400">{detail}</p>
+                    <p className="text-sm text-gray-400 font-['Arimo']">{detail}</p>
                   )}
                 </li>
               ))}
@@ -102,13 +102,13 @@ export const FooterSection = () => {
 
         {/* Footer Bottom */}
         <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <p className="text-sm text-gray-400">{footerData.copyright}</p>
+          <p className="text-sm text-gray-400 font-['Arimo']">{footerData.copyright}</p>
           <nav className="flex gap-6" aria-label="Legal">
             {footerData.legal.map((item, index) => (
               <a
                 key={index}
                 href="#"
-                className="text-sm text-gray-400 hover:text-white transition-colors"
+                className="text-sm text-gray-400 hover:text-white transition-colors font-['Arimo']"
               >
                 {item}
               </a>

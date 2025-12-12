@@ -4,16 +4,18 @@
 
 /**
  * DatosFiscales - Información fiscal del usuario
+ * Debe coincidir exactamente con el tipo en checkout.service.ts
  */
 export interface DatosFiscales {
   id?: number;
+  usuarioId?: number;
+  nombre: string;
   nif: string;
-  nombreCompleto: string;
   direccion: string;
   ciudad: string;
   codigoPostal: string;
   pais: string;
-  isPrincipal?: boolean;
+  esPrincipal?: boolean;
 }
 
 /**
@@ -66,20 +68,25 @@ export interface AsientoReserva {
 
 /**
  * Entrada - Entrada confirmada/comprada
+ * Compatible con EntradaUsuario del servicio de perfil
  */
 export interface Entrada {
   id: number;
-  codigo: string;
-  eventoId: number;
+  codigo?: string;
+  eventoId?: number;
   eventoNombre: string;
-  eventoFecha: string;
-  asientoId: string;
-  asientoEtiqueta: string;
-  zonaNombre: string;
-  precio: number;
-  estadoEntrada: 'ACTIVA' | 'USADA' | 'CANCELADA';
-  fechaCompra: string;
+  eventoFecha?: string;
+  fechaEvento: string;
+  asientoId?: string;
+  asientoEtiqueta?: string;
+  asientoNumero: string;
+  zonaNombre?: string;
+  precio?: number;
+  estadoEntrada: 'VALIDA' | 'USADA' | 'CANCELADA';
+  fechaCompra?: string;
+  fechaEmision: string;
   qrCode?: string;
+  codigoQR: string;
   pdfUrl?: string;
 }
 

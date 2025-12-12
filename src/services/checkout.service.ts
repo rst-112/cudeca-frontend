@@ -1,139 +1,243 @@
 /**
- * Servicio para gestión de checkout y compras
+ * Servicio de Checkout y Datos Fiscales
+ *
+ * Basado en:
+ * - /api/checkout (Sección 2 de API-ENDPOINTS.md)
+ * - /api/datos-fiscales (Sección 3 de API-ENDPOINTS.md)
  */
 
 import { apiGet, apiPost, apiPut, apiDelete } from './api';
-import type {
-  ReservaRequest,
-  Reserva,
-  CompraResponse,
-  DatosFiscales,
-  Entrada,
-} from '../types/checkout.types';
-
-const CHECKOUT_BASE = '/reservas';
-const DATOS_FISCALES_BASE = '/usuarios/datos-fiscales';
-const ENTRADAS_BASE = '/entradas';
+import type { DatosFiscales } from '../types/checkout.types';
 
 // ============================================================================
-// RESERVAS
+// TIPOS - CHECKOUT
+// ============================================================================
+
+export interface ItemCheckout {
+  asientoId: number;
+  precio: number;
+}
+
+export interface CheckoutRequest {
+  usuarioId: number;
+  items: ItemCheckout[];
+  donacionExtra?: number;
+  solicitarCertificado: boolean;
+  datosFiscalesId?: number;
+}
+
+export interface CheckoutResponse {
+  compraId: number;
+  urlPago: string;
+  importeTotal: number;
+  mensaje: string;
+}
+
+export interface DetallesCompra {
+  compraId: number;
+  usuarioId: number;
+  importeTotal: number;
+  estadoCompra: 'PENDIENTE' | 'COMPLETADO' | 'CANCELADO' | 'FALLIDO';
+  fechaCompra: string;
+  items: ItemCheckout[];
+}
+
+export interface ConfirmarPagoRequest {
+  transaccionId: string;
+  estado: 'COMPLETADO' | 'FALLIDO';
+}
+
+export interface ConfirmarPagoResponse {
+  success: boolean;
+  message: string;
+  compraId: number;
+}
+
+export interface CancelarCompraRequest {
+  motivo: string;
+}
+
+export interface CancelarCompraResponse {
+  success: boolean;
+  message: string;
+  compraId: number;
+}
+
+// ============================================================================
+// TIPOS - DATOS FISCALES
+// ============================================================================
+// DatosFiscales se importa desde checkout.types.ts para evitar duplicación
+
+export interface ValidarNifRequest {
+  nif: string;
+}
+
+export interface ValidarNifResponse {
+  valido: boolean;
+  mensaje: string;
+}
+
+export interface EliminarDatosFiscalesResponse {
+  success: boolean;
+  message: string;
+}
+
+// ============================================================================
+// ENDPOINTS DE CHECKOUT
 // ============================================================================
 
 /**
- * Crear una nueva reserva (bloqueo de asientos)
+ * Procesar Checkout (Crear Compra)
+ * POST /api/checkout
  */
-export async function crearReserva(request: ReservaRequest): Promise<Reserva> {
-  return apiPost<Reserva>(CHECKOUT_BASE, request);
+export async function procesarCheckout(request: CheckoutRequest): Promise<CheckoutResponse> {
+  return apiPost<CheckoutResponse>('/checkout', request);
 }
 
 /**
- * Obtener una reserva por ID
+ * Obtener Detalles de Compra
+ * GET /api/checkout/{compraId}
  */
-export async function obtenerReserva(reservaId: number): Promise<Reserva> {
-  return apiGet<Reserva>(`${CHECKOUT_BASE}/${reservaId}`);
+export async function obtenerDetallesCompra(compraId: number): Promise<DetallesCompra> {
+  return apiGet<DetallesCompra>(`/checkout/${compraId}`);
 }
 
 /**
- * Confirmar una reserva (convertir a entrada)
+ * Confirmar Pago (Webhook)
+ * POST /api/checkout/{compraId}/confirmar
  */
-export async function confirmarReserva(reservaId: number): Promise<CompraResponse> {
-  return apiPost<CompraResponse>(`${CHECKOUT_BASE}/${reservaId}/confirmar`, {});
+export async function confirmarPago(
+  compraId: number,
+  datos: ConfirmarPagoRequest
+): Promise<ConfirmarPagoResponse> {
+  return apiPost<ConfirmarPagoResponse>(`/checkout/${compraId}/confirmar`, datos);
 }
 
 /**
- * Cancelar una reserva
+ * Cancelar Compra
+ * POST /api/checkout/{compraId}/cancelar
  */
-export async function cancelarReserva(reservaId: number): Promise<void> {
-  return apiDelete<void>(`${CHECKOUT_BASE}/${reservaId}`);
-}
-
-/**
- * Obtener mis reservas activas
- */
-export async function obtenerMisReservas(): Promise<Reserva[]> {
-  return apiGet<Reserva[]>(`${CHECKOUT_BASE}/mis-reservas`);
+export async function cancelarCompra(
+  compraId: number,
+  datos: CancelarCompraRequest
+): Promise<CancelarCompraResponse> {
+  return apiPost<CancelarCompraResponse>(`/checkout/${compraId}/cancelar`, datos);
 }
 
 // ============================================================================
-// DATOS FISCALES
+// ENDPOINTS DE DATOS FISCALES
 // ============================================================================
 
 /**
- * Obtener todos los datos fiscales del usuario
+ * Obtener Datos Fiscales del Usuario
+ * GET /api/datos-fiscales/usuario/{usuarioId}
  */
-export async function obtenerDatosFiscales(): Promise<DatosFiscales[]> {
-  return apiGet<DatosFiscales[]>(DATOS_FISCALES_BASE);
+export async function obtenerDatosFiscalesUsuario(usuarioId: number): Promise<DatosFiscales[]> {
+  return apiGet<DatosFiscales[]>(`/datos-fiscales/usuario/${usuarioId}`);
 }
 
 /**
- * Obtener datos fiscales por ID
+ * Obtener Datos Fiscales por ID
+ * GET /api/datos-fiscales/{id}?usuarioId={usuarioId}
  */
-export async function obtenerDatosFiscalesById(id: number): Promise<DatosFiscales> {
-  return apiGet<DatosFiscales>(`${DATOS_FISCALES_BASE}/${id}`);
+export async function obtenerDatosFiscalesPorId(
+  id: number,
+  usuarioId: number
+): Promise<DatosFiscales> {
+  return apiGet<DatosFiscales>(`/datos-fiscales/${id}?usuarioId=${usuarioId}`);
 }
 
 /**
- * Crear nuevos datos fiscales
+ * Crear Datos Fiscales
+ * POST /api/datos-fiscales/usuario/{usuarioId}
  */
-export async function crearDatosFiscales(datos: DatosFiscales): Promise<DatosFiscales> {
-  return apiPost<DatosFiscales>(DATOS_FISCALES_BASE, datos);
+export async function crearDatosFiscales(
+  usuarioId: number,
+  datos: Omit<DatosFiscales, 'id' | 'usuarioId'>
+): Promise<DatosFiscales> {
+  return apiPost<DatosFiscales>(`/datos-fiscales/usuario/${usuarioId}`, datos);
 }
 
 /**
- * Actualizar datos fiscales existentes
+ * Actualizar Datos Fiscales
+ * PUT /api/datos-fiscales/{id}?usuarioId={usuarioId}
  */
 export async function actualizarDatosFiscales(
   id: number,
-  datos: DatosFiscales,
+  usuarioId: number,
+  datos: Partial<Omit<DatosFiscales, 'id' | 'usuarioId'>>
 ): Promise<DatosFiscales> {
-  return apiPut<DatosFiscales>(`${DATOS_FISCALES_BASE}/${id}`, datos);
+  return apiPut<DatosFiscales>(`/datos-fiscales/${id}?usuarioId=${usuarioId}`, datos);
 }
 
 /**
- * Eliminar datos fiscales
+ * Eliminar Datos Fiscales
+ * DELETE /api/datos-fiscales/{id}?usuarioId={usuarioId}
  */
-export async function eliminarDatosFiscales(id: number): Promise<void> {
-  return apiDelete<void>(`${DATOS_FISCALES_BASE}/${id}`);
+export async function eliminarDatosFiscales(
+  id: number,
+  usuarioId: number
+): Promise<EliminarDatosFiscalesResponse> {
+  return apiDelete<EliminarDatosFiscalesResponse>(`/datos-fiscales/${id}?usuarioId=${usuarioId}`);
 }
 
 /**
- * Establecer datos fiscales como principal
+ * Validar NIF
+ * POST /api/datos-fiscales/validar-nif
  */
-export async function establecerDatosFiscalesPrincipal(id: number): Promise<DatosFiscales> {
-  return apiPut<DatosFiscales>(`${DATOS_FISCALES_BASE}/${id}/principal`, {});
+export async function validarNif(nif: string): Promise<ValidarNifResponse> {
+  return apiPost<ValidarNifResponse>('/datos-fiscales/validar-nif', { nif });
 }
 
 // ============================================================================
-// ENTRADAS
+// UTILIDADES
 // ============================================================================
 
 /**
- * Obtener mis entradas
+ * Calcular total del checkout
  */
-export async function obtenerMisEntradas(): Promise<Entrada[]> {
-  return apiGet<Entrada[]>(`${ENTRADAS_BASE}/mis-entradas`);
+export function calcularTotalCheckout(items: ItemCheckout[], donacionExtra: number = 0): number {
+  const subtotal = items.reduce((total, item) => total + item.precio, 0);
+  return subtotal + donacionExtra;
 }
 
 /**
- * Obtener una entrada por ID
+ * Formatear precio
  */
-export async function obtenerEntradaById(id: number): Promise<Entrada> {
-  return apiGet<Entrada>(`${ENTRADAS_BASE}/${id}`);
+export function formatearPrecio(precio: number): string {
+  return new Intl.NumberFormat('es-ES', {
+    style: 'currency',
+    currency: 'EUR',
+  }).format(precio);
 }
 
 /**
- * Descargar PDF de una entrada
+ * Obtener estado de compra con color
  */
-export async function descargarPdfEntrada(entradaId: number): Promise<string> {
-  // Por ahora devuelve una URL simulada
-  // En producción, esto devolvería la URL real del PDF generado por el backend
-  return Promise.resolve(`/api/entradas/${entradaId}/pdf`);
+export function obtenerEstadoCompra(estado: DetallesCompra['estadoCompra']): {
+  label: string;
+  color: string;
+} {
+  switch (estado) {
+    case 'PENDIENTE':
+      return { label: 'Pendiente', color: 'yellow' };
+    case 'COMPLETADO':
+      return { label: 'Completado', color: 'green' };
+    case 'CANCELADO':
+      return { label: 'Cancelado', color: 'red' };
+    case 'FALLIDO':
+      return { label: 'Fallido', color: 'red' };
+    default:
+      return { label: 'Desconocido', color: 'gray' };
+  }
 }
 
 /**
- * Validar entrada con QR
+ * Validar formato de NIF español (básico)
  */
-export async function validarEntrada(codigo: string): Promise<Entrada> {
-  return apiPost<Entrada>(`${ENTRADAS_BASE}/validar`, { codigo });
+export function validarFormatoNif(nif: string): boolean {
+  // Formato: 8 dígitos + 1 letra (ej: 12345678A)
+  const regex = /^[0-9]{8}[A-Z]$/i;
+  return regex.test(nif);
 }
 

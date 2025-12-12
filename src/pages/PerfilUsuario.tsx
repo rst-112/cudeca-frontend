@@ -7,13 +7,14 @@ import { Input } from '../components/ui/Input';
 import { Label } from '../components/ui/Label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/Tabs';
 import {
-  obtenerMisEntradas,
-  obtenerDatosFiscales,
+  obtenerEntradasUsuario,
+  descargarPdfEntrada,
+} from '../services/perfil.service';
+import {
+  obtenerDatosFiscalesUsuario,
   crearDatosFiscales,
   actualizarDatosFiscales,
   eliminarDatosFiscales,
-  establecerDatosFiscalesPrincipal,
-  descargarPdfEntrada,
 } from '../services/checkout.service';
 import type { Entrada, DatosFiscales } from '../types/checkout.types';
 import {
@@ -43,7 +44,7 @@ export default function PerfilUsuario() {
 
   const [formularioDatos, setFormularioDatos] = useState<DatosFiscales>({
     nif: '',
-    nombreCompleto: '',
+    nombre: '',
     direccion: '',
     ciudad: '',
     codigoPostal: '',
@@ -61,10 +62,12 @@ export default function PerfilUsuario() {
   const cargarEntradas = async () => {
     setLoading(true);
     try {
-      const data = await obtenerMisEntradas();
+      // TODO: Obtener usuarioId del contexto de autenticación
+      const usuarioId = 1; // Temporal
+      const data = await obtenerEntradasUsuario(usuarioId);
       setEntradas(data);
-    } catch (error: any) {
-      toast.error('Error al cargar entradas: ' + error.message);
+    } catch (error) {
+      toast.error('Error al cargar entradas: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     } finally {
       setLoading(false);
     }
@@ -73,10 +76,12 @@ export default function PerfilUsuario() {
   const cargarDatosFiscales = async () => {
     setLoading(true);
     try {
-      const data = await obtenerDatosFiscales();
+      // TODO: Obtener usuarioId del contexto de autenticación
+      const usuarioId = 1; // Temporal
+      const data = await obtenerDatosFiscalesUsuario(usuarioId);
       setDatosFiscales(data);
-    } catch (error: any) {
-      toast.error('Error al cargar datos fiscales: ' + error.message);
+    } catch (error) {
+      toast.error('Error al cargar datos fiscales: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     } finally {
       setLoading(false);
     }
@@ -84,25 +89,30 @@ export default function PerfilUsuario() {
 
   const handleDescargarPdf = async (entradaId: number) => {
     try {
-      const url = await descargarPdfEntrada(entradaId);
-      toast.success('PDF descargado (simulado)');
-      // En producción: window.open(url, '_blank');
-      console.log('URL PDF:', url);
-    } catch (error: any) {
-      toast.error('Error al descargar PDF: ' + error.message);
+      // TODO: Obtener usuarioId del contexto de autenticación
+      const usuarioId = 1; // Temporal
+      const blob = await descargarPdfEntrada(usuarioId, entradaId);
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      toast.success('PDF descargado');
+    } catch (error) {
+      toast.error('Error al descargar PDF: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     }
   };
 
   const handleGuardarDatosFiscales = async () => {
     try {
+      // TODO: Obtener usuarioId del contexto de autenticación
+      const usuarioId = 1; // Temporal
+
       if (modoEdicion !== null) {
         // Actualizar existente
-        await actualizarDatosFiscales(modoEdicion, formularioDatos);
+        await actualizarDatosFiscales(modoEdicion, usuarioId, formularioDatos);
         toast.success('Datos fiscales actualizados');
         setModoEdicion(null);
       } else {
         // Crear nuevo
-        await crearDatosFiscales(formularioDatos);
+        await crearDatosFiscales(usuarioId, formularioDatos);
         toast.success('Datos fiscales creados');
         setMostrarFormularioNuevo(false);
       }
@@ -110,7 +120,7 @@ export default function PerfilUsuario() {
       // Resetear formulario
       setFormularioDatos({
         nif: '',
-        nombreCompleto: '',
+        nombre: '',
         direccion: '',
         ciudad: '',
         codigoPostal: '',
@@ -118,8 +128,8 @@ export default function PerfilUsuario() {
       });
 
       cargarDatosFiscales();
-    } catch (error: any) {
-      toast.error('Error al guardar: ' + error.message);
+    } catch (error) {
+      toast.error('Error al guardar: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     }
   };
 
@@ -127,21 +137,26 @@ export default function PerfilUsuario() {
     if (!confirm('¿Estás seguro de eliminar estos datos fiscales?')) return;
 
     try {
-      await eliminarDatosFiscales(id);
+      // TODO: Obtener usuarioId del contexto de autenticación
+      const usuarioId = 1; // Temporal
+      await eliminarDatosFiscales(id, usuarioId);
       toast.success('Datos fiscales eliminados');
       cargarDatosFiscales();
-    } catch (error: any) {
-      toast.error('Error al eliminar: ' + error.message);
+    } catch (error) {
+      toast.error('Error al eliminar: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     }
   };
 
   const handleEstablecerPrincipal = async (id: number) => {
     try {
-      await establecerDatosFiscalesPrincipal(id);
+      // TODO: Obtener usuarioId del contexto de autenticación
+      const usuarioId = 1; // Temporal
+      // Actualizar el registro para establecerlo como principal
+      await actualizarDatosFiscales(id, usuarioId, { esPrincipal: true });
       toast.success('Datos fiscales establecidos como principal');
       cargarDatosFiscales();
-    } catch (error: any) {
-      toast.error('Error: ' + error.message);
+    } catch (error) {
+      toast.error('Error: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     }
   };
 
@@ -156,7 +171,7 @@ export default function PerfilUsuario() {
     setMostrarFormularioNuevo(false);
     setFormularioDatos({
       nif: '',
-      nombreCompleto: '',
+      nombre: '',
       direccion: '',
       ciudad: '',
       codigoPostal: '',
@@ -213,10 +228,10 @@ export default function PerfilUsuario() {
                         <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
                           {entrada.eventoNombre}
                         </h3>
-                        {entrada.estadoEntrada === 'ACTIVA' && (
+                        {entrada.estadoEntrada === 'VALIDA' && (
                           <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full flex items-center gap-1">
                             <CheckCircle className="w-3 h-3" />
-                            Activa
+                            Válida
                           </span>
                         )}
                         {entrada.estadoEntrada === 'USADA' && (
@@ -235,14 +250,14 @@ export default function PerfilUsuario() {
                       <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4" />
-                          <span>{new Date(entrada.eventoFecha).toLocaleDateString('es-ES')}</span>
+                          <span>{new Date(entrada.fechaEvento).toLocaleDateString('es-ES')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <MapPin className="w-4 h-4" />
-                          <span>{entrada.zonaNombre} - {entrada.asientoEtiqueta}</span>
+                          <span>{entrada.zonaNombre || 'N/A'} - {entrada.asientoNumero}</span>
                         </div>
                         <div>
-                          <span className="font-semibold">Código:</span> {entrada.codigo}
+                          <span className="font-semibold">Código:</span> {entrada.codigo || entrada.codigoQR}
                         </div>
                       </div>
                     </div>
@@ -250,7 +265,7 @@ export default function PerfilUsuario() {
                     <div className="flex flex-col gap-2">
                       <div className="text-right mb-2">
                         <p className="text-2xl font-bold text-[#00A651]">
-                          {entrada.precio.toFixed(2)} €
+                          {entrada.precio?.toFixed(2) || 'N/A'} €
                         </p>
                       </div>
                       <Button
@@ -300,13 +315,13 @@ export default function PerfilUsuario() {
                   </div>
 
                   <div>
-                    <Label htmlFor="nombreCompleto">Nombre Completo *</Label>
+                    <Label htmlFor="nombre">Nombre Completo *</Label>
                     <Input
-                      id="nombreCompleto"
+                      id="nombre"
                       placeholder="Juan Pérez García"
-                      value={formularioDatos.nombreCompleto}
+                      value={formularioDatos.nombre}
                       onChange={(e) =>
-                        setFormularioDatos({ ...formularioDatos, nombreCompleto: e.target.value })
+                        setFormularioDatos({ ...formularioDatos, nombre: e.target.value })
                       }
                     />
                   </div>
@@ -385,9 +400,9 @@ export default function PerfilUsuario() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                          {datos.nombreCompleto}
+                          {datos.nombre}
                         </h3>
-                        {datos.isPrincipal && (
+                        {datos.esPrincipal && (
                           <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full flex items-center gap-1">
                             <Star className="w-3 h-3 fill-current" />
                             Principal
@@ -406,7 +421,7 @@ export default function PerfilUsuario() {
                     </div>
 
                     <div className="flex gap-2">
-                      {!datos.isPrincipal && (
+                      {!datos.esPrincipal && (
                         <Button
                           variant="outline"
                           size="sm"
