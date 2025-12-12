@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Bell, User, LogOut } from "lucide-react";
+import { ShoppingCart, User, LogOut } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 
 const navigationItems = [
@@ -10,7 +10,7 @@ const navigationItems = [
 
 export const HeaderSection = () => {
   const { isAuthenticated, user, logout } = useAuth();
-  const notificationCount = 2;
+  const cartItemCount = 2;
 
   const handleLogout = () => {
     logout();
@@ -48,27 +48,24 @@ export const HeaderSection = () => {
 
         {/* Acciones */}
         <div className="flex items-center gap-4">
-          {/* Notificaciones */}
           <button
             className="relative p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-            aria-label={`Notificaciones, ${notificationCount} sin leer`}
+            aria-label={`Carrito de compras, ${cartItemCount} artículos`}
           >
-            <Bell className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-            {notificationCount > 0 && (
-              <span className="absolute top-1 right-1 w-4 h-4 bg-[#00a651] text-white text-xs rounded-full flex items-center justify-center">
-                {notificationCount}
-              </span>
-            )}
+            <ShoppingCart className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+            <span className="absolute top-1 right-1 w-4 h-4 bg-[#00a651] text-white text-xs rounded-full flex items-center justify-center">
+              {cartItemCount}
+            </span>
           </button>
 
           {isAuthenticated ? (
             <>
               <Link
                 to="/perfil"
-                className="flex items-center gap-2 px-6 py-2 bg-[#00753e] hover:bg-[#00a651] text-white rounded-lg transition-colors"
+                className="flex items-center gap-2 px-6 py-2 bg-[#00753e] text-white rounded-lg hover:bg-[#005a2e] transition-colors"
               >
-                <User className="w-4 h-4" />
-                <span className="text-base">
+                <User size={18} />
+                <span className="text-sm font-medium">
                   {user?.nombre?.split(" ")[0] || "Perfil"}
                 </span>
               </Link>
@@ -84,13 +81,13 @@ export const HeaderSection = () => {
             <>
               <Link
                 to="/login"
-                className="px-4 py-2 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-medium text-sm"
+                className="px-6 py-2 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-medium text-sm"
               >
                 Iniciar sesión
               </Link>
               <Link
                 to="/registro"
-                className="px-4 py-2 bg-[#00a651] text-white rounded-lg hover:bg-[#008a43] transition-colors font-medium text-sm"
+                className="px-6 py-2 bg-[#00a651] text-white rounded-lg hover:bg-[#008a43] transition-colors font-medium text-sm"
               >
                 Regístrate
               </Link>

@@ -20,6 +20,9 @@ import { CompraUsuario } from './pages/public/CompraUsuario';
 import { PantallaDePerfil } from './pages/public/PerfilUsuario';
 import SandboxSeatMap from './pages/public/SandboxSeatMap';
 import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
+import { PantallaDeRecargar } from './pages/public/RecargaSaldo';
+import { DatosFiscales } from './pages/public/DatosFiscales';
+import { Suscripcion } from './pages/public/Suscripcion';
 import PerfilUsuario from './pages/PerfilUsuario';
 
 // Componentes temporales
@@ -70,6 +73,9 @@ function App() {
             <Route path="/dev/compra-invitado" element={<CompraInvitado />} />
             <Route path="/dev/compra-usuario" element={<CompraUsuario />} />
             <Route path="/dev/perfil-usuario" element={<PantallaDePerfil />} />
+            <Route path="/dev/recarga-saldo" element={<PantallaDeRecargar />} />
+            <Route path="/dev/datos-fiscales" element={<DatosFiscales />} />
+            <Route path="/dev/suscripcion" element={<Suscripcion />} />
 
             {/* Rutas de autenticación (redirige si ya está logueado) */}
             <Route
