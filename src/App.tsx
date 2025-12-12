@@ -17,6 +17,7 @@ import { CheckoutUsuario } from './pages/public/CheckoutUsuario';
 import { CheckoutInvitado } from './pages/public/CheckoutInvitado';
 import { CompraInvitado } from './pages/public/CompraInvitado';
 import { CompraUsuario } from './pages/public/CompraUsuario';
+import { PantallaDePerfil } from './pages/public/PerfilUsuario';
 import SandboxSeatMap from './pages/public/SandboxSeatMap';
 import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
 import PerfilUsuario from './pages/PerfilUsuario';
@@ -68,6 +69,7 @@ function App() {
             <Route path="/dev/checkout-invitado" element={<CheckoutInvitado />} />
             <Route path="/dev/compra-invitado" element={<CompraInvitado />} />
             <Route path="/dev/compra-usuario" element={<CompraUsuario />} />
+            <Route path="/dev/perfil-usuario" element={<PantallaDePerfil />} />
 
             {/* Rutas de autenticación (redirige si ya está logueado) */}
             <Route

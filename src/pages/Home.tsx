@@ -267,6 +267,28 @@ export default function Home() {
                 </Button>
               </div>
             </div>
+
+            <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
+              <div>
+                <h4 className="font-bold text-amber-900 dark:text-amber-400">Perfil de Usuario</h4>
+                <p className="text-sm text-amber-700 dark:text-amber-500">
+                  Pantalla de perfil con información del usuario y navegación por pestañas
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  asChild
+                  variant="default"
+                  size="sm"
+                  className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
+                >
+                  <Link to="/dev/perfil-usuario">
+                    Ver Perfil Usuario
+                    <ArrowRight size={16} />
+                  </Link>
+                </Button>
+              </div>
+            </div>
           </div>
         </section>
       )}
