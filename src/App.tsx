@@ -6,6 +6,8 @@ import MainLayout from './components/layout/MainLayout';
 import AuthPage from './features/auth/AuthPage';
 import { PrivateRoute } from './components/PrivateRoute';
 import AdminDashboard from './features/admin/AdminDashboard';
+import AdminLayout from './features/admin/AdminLayout';
+import CrearEvento from './features/admin/CrearEvento';
 import Dashboard from './features/dashboard/Dashboard';
 
 // Páginas públicas
@@ -14,6 +16,15 @@ import DetalleEvento from './pages/public/DetallesEvento';
 import Checkout from './pages/public/Checkout';
 import SandboxSeatMap from './pages/public/SandboxSeatMap';
 import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
+import { HomeInvitado } from './pages/public/homeInvitado/HomeInvitado';
+import { InfoEventoInvitado } from './pages/public/infoEventoInvitado/InfoEventoInvitado';
+import { HomeEventoLogeado } from './pages/public/homeEventoLogeado/HomeEventoLogeado';
+import { InfoEventoLogeado } from './pages/public/infoEventoLogeado/InfoEventoLogeado';
+
+// Páginas privadas
+import { CreacionDeEventos } from './pages/private/creaciondeeventos/CreacionDeEventos';
+import { EditarEntrada } from './pages/private/editarEntrada/EditarEntrada';
+import { TiposDeEntrada } from './pages/private/tiposentrada/TiposDeEntrada';
 
 // Componentes temporales
 const EventStaffDashboard = () => <div>Dashboard (Personal Evento)</div>;
@@ -54,9 +65,25 @@ function App() {
               <Route path="evento/:id" element={<DetalleEvento />} />
             </Route>
 
+            {/* === RUTAS PÚBLICAS SIN MAINLAYOUT === */}
+            <Route path="/home-invitado" element={<HomeInvitado />} />
+            <Route path="/evento-invitado" element={<InfoEventoInvitado />} />
+            <Route path="/home-logeado" element={<HomeEventoLogeado />} />
+            <Route path="/info-evento-logeado" element={<InfoEventoLogeado />} />
+            <Route path="/creacion-eventos" element={<CreacionDeEventos />} />
+            <Route path="/editar-entrada" element={<EditarEntrada />} />
+            <Route path="/tipos-entrada" element={<TiposDeEntrada />} />
+
             {/* === RUTA DE DESARROLLO - SANDBOX === */}
             <Route path="/dev/mapa" element={<SandboxSeatMap />} />
             <Route path="/dev/mapa/editor" element={<SandboxSeatMapEditor />} />
+
+            {/* Admin Dashboard - Público (sin protección de rol) */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="eventos" element={<AdminDashboard />} />
+              <Route path="eventos/crear" element={<CrearEvento />} />
+            </Route>
 
             {/* Rutas de autenticación (redirige si ya está logueado) */}
             <Route
@@ -81,10 +108,6 @@ function App() {
               <Route path="/checkout" element={<Checkout />} />
             </Route>
 
-            {/* Rutas protegidas por rol - Administrador */}
-            <Route element={<PrivateRoute requiredRole="ADMINISTRADOR" />}>
-              <Route path="/admin" element={<AdminDashboard />} />
-            </Route>
 
             {/* Rutas protegidas por rol - Comprador */}
             <Route element={<PrivateRoute requiredRole="COMPRADOR" />}>

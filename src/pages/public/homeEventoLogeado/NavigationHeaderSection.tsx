@@ -41,19 +41,11 @@ export const NavigationHeaderSection = (): JSX.Element => {
 
         <div className="flex items-center gap-4">
           <button
-            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-            aria-label="Buscar"
-            title="Buscar"
-          >
-            <span className="text-xl">🔍</span>
-          </button>
-
-          <button
             className="relative p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-            aria-label={`Notificaciones, ${notificationCount} sin leer`}
-            title="Notificaciones"
+            aria-label={`Carrito de compras, ${notificationCount} artículos`}
+            title="Carrito de compras"
           >
-            <span className="text-xl">🔔</span>
+            <span className="text-xl">🛒</span>
             {notificationCount > 0 && (
               <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 bg-[#00a651] dark:bg-[#00d66a] text-white dark:text-slate-900 text-xs font-bold rounded-full">
                 {notificationCount}

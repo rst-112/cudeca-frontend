@@ -1,8 +1,16 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { LogOut, Settings, ShoppingCart, Calendar } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
+import { useAuth } from '../../context/AuthContext';
 
 const AdminLayout = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
       {/* Menú Lateral */}
@@ -60,7 +68,11 @@ const AdminLayout = () => {
           </div>
         </nav>
         <div className="p-8 border-t dark:border-gray-700">
-          <Button variant="outline" className="w-full border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20">
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            className="w-full border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
+          >
             <LogOut size={18} className="mr-2" /> Salir
           </Button>
         </div>

@@ -41,13 +41,6 @@ export const NavigationHeaderSection = (): JSX.Element => {
         </nav>
 
         <div className="flex items-center gap-4">
-          <button
-            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-            aria-label="Buscar"
-            title="Buscar"
-          >
-            <span className="text-xl">🔍</span>
-          </button>
 
           <button
             className="relative p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"

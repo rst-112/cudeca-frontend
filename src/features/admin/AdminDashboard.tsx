@@ -11,9 +11,9 @@ export default function AdminDashboard() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Gestión de Eventos</h1>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Gestión de Eventos</h1>
         <Button asChild>
-          <Link to="/admin/eventos/crear">
+          <Link to="/creacion-eventos">
             <PlusCircle className="mr-2 h-4 w-4" /> Crear Evento
           </Link>
         </Button>
@@ -21,19 +21,19 @@ export default function AdminDashboard() {
 
       <div className="grid gap-6">
         {/* Card de Bienvenida (opcional, se puede quitar si prefieres) */}
-        <Card>
+        <Card className="bg-white dark:bg-slate-800 border-0 dark:border-slate-700">
           <CardHeader>
-            <CardTitle>Bienvenido, {user?.nombre}</CardTitle>
+            <CardTitle className="text-slate-900 dark:text-white">Bienvenido, {user?.nombre}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">
+            <p className="text-slate-600 dark:text-gray-400">
               Desde aquí podrás gestionar los eventos de la plataforma.
             </p>
           </CardContent>
         </Card>
 
         {/* Lista de Eventos */}
-        <Card>
+        <Card className="bg-white dark:bg-slate-800 border-0 dark:border-slate-700">
           <CardContent className="p-6">
             <ListaEventos />
           </CardContent>

@@ -1,10 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { Calendar, ShoppingCart, Settings, LogOut } from "lucide-react";
 
 interface NavItem {
   id: string;
   title: string;
-  subItems: string[];
+  icon: React.ReactNode;
+  subItems: { label: string; link?: string }[];
 }
 
 export const NavigationSidebarSection = (): JSX.Element => {
@@ -14,17 +16,24 @@ export const NavigationSidebarSection = (): JSX.Element => {
     {
       id: "eventos",
       title: "Eventos",
-      subItems: ["Gestión de eventos"],
+      icon: <Calendar size={20} />,
+      subItems: [{ label: "Gestión de eventos", link: "/admin" }],
     },
     {
       id: "ventas",
       title: "Ventas",
-      subItems: ["Ver Compras", "Reembolsos Manuales", "Más +"],
+      icon: <ShoppingCart size={20} />,
+      subItems: [
+        { label: "Ver Compras" },
+        { label: "Reembolsos Manuales" },
+        { label: "Más +" },
+      ],
     },
     {
       id: "configuracion",
       title: "Configuración",
-      subItems: ["Gestión de usuarios", "Exportar Datos"],
+      icon: <Settings size={20} />,
+      subItems: [{ label: "Gestión de usuarios" }, { label: "Exportar Datos" }],
     },
   ];
 
@@ -52,18 +61,27 @@ export const NavigationSidebarSection = (): JSX.Element => {
         {navigationItems.map((item) => (
           <div key={item.id} className="flex flex-col gap-2">
             <h3 className="text-base font-semibold text-[#00a651] dark:text-[#00d66a] flex items-center gap-2 [font-family:'Arimo-Regular',Helvetica]">
-              <div className="w-5 h-5 bg-[#00a651] dark:bg-[#00d66a] rounded" />
+              {item.icon}
               {item.title}
             </h3>
             <ul className="flex flex-col gap-2 ml-7">
               {item.subItems.map((subItem, index) => (
                 <li key={index}>
-                  <a
-                    href="#"
-                    className="text-sm text-slate-600 dark:text-slate-400 hover:text-[#00a651] dark:hover:text-[#00d66a] transition-colors [font-family:'Arimo-Regular',Helvetica]"
-                  >
-                    {subItem}
-                  </a>
+                  {subItem.link ? (
+                    <button
+                      onClick={() => navigate(subItem.link!)}
+                      className="text-sm text-slate-600 dark:text-slate-400 hover:text-[#00a651] dark:hover:text-[#00d66a] transition-colors [font-family:'Arimo-Regular',Helvetica] text-left"
+                    >
+                      {subItem.label}
+                    </button>
+                  ) : (
+                    <a
+                      href="#"
+                      className="text-sm text-slate-600 dark:text-slate-400 hover:text-[#00a651] dark:hover:text-[#00d66a] transition-colors [font-family:'Arimo-Regular',Helvetica]"
+                    >
+                      {subItem.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
@@ -79,7 +97,7 @@ export const NavigationSidebarSection = (): JSX.Element => {
           type="button"
           aria-label="Volver a inicio"
         >
-          ← Salir
+          <LogOut size={20} /> Salir
         </button>
       </footer>
     </nav>

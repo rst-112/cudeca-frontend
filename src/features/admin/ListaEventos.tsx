@@ -1,44 +1,43 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Progress } from '../../components/ui/Progress';
 import { Badge } from '../../components/ui/Badge';
-import { MoreVertical, Edit, Trash2, Eye } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../../components/ui/DropdownMenu';
+import { Edit, Trash2, Eye } from 'lucide-react';
 import { getEventos } from '../../services/eventos.service';
 import type { Evento, EstadoEvento } from '../../types/api.types';
 
 const getBadgeVariant = (estado: EstadoEvento) => {
   switch (estado) {
     case 'PUBLICADO':
-      return 'bg-green-100 text-green-800 border-green-300';
+      return 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700';
     case 'BORRADOR':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      return 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-700';
     case 'CANCELADO':
-      return 'bg-red-100 text-red-800 border-red-300';
+      return 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700';
     case 'FINALIZADO':
-      return 'bg-blue-100 text-blue-800 border-blue-300';
+      return 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-700';
     default:
-      return 'bg-gray-100 text-gray-800 border-gray-300';
+      return 'bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-700/50 dark:text-gray-300 dark:border-gray-600';
   }
 };
 
 const EventoCard = ({ evento }: { evento: Evento }) => {
+  const navigate = useNavigate();
   const progreso = (evento.recaudado / evento.objetivo) * 100;
 
   return (
-    <Card className="overflow-hidden transition-shadow hover:shadow-md">
+    <Card className="overflow-hidden transition-shadow hover:shadow-lg bg-white dark:bg-slate-800 border-0 dark:border-slate-700">
       <CardContent className="p-0">
-        <div className="flex items-center gap-6">
-          <img src={evento.imagenUrl} alt={evento.nombre} className="h-32 w-40 object-cover" />
-          <div className="flex-1 py-4">
-            <h3 className="font-bold text-lg">{evento.nombre}</h3>
-            <p className="text-sm text-gray-500">
+        <div className="flex items-center gap-0 h-32">
+          {/* Imagen */}
+          <img src={evento.imagenUrl} alt={evento.nombre} className="h-full w-40 object-cover flex-shrink-0" />
+
+          {/* Contenido principal */}
+          <div className="flex-1 px-6 py-4 flex flex-col justify-center">
+            <h3 className="font-bold text-base text-slate-900 dark:text-white">{evento.nombre}</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               {new Date(evento.fecha).toLocaleDateString('es-ES', {
                 day: '2-digit',
                 month: 'long',
@@ -48,37 +47,54 @@ const EventoCard = ({ evento }: { evento: Evento }) => {
               })}h
             </p>
           </div>
-          <div className="px-6">
-            <Badge variant="outline" className={`font-semibold ${getBadgeVariant(evento.estado)}`}>
+
+          {/* Badge de estado */}
+          <div className="flex-shrink-0 px-4">
+            <Badge variant="outline" className={`font-semibold text-xs ${getBadgeVariant(evento.estado)}`}>
               {evento.estado}
             </Badge>
           </div>
-          <div className="w-64 px-6">
-            <div className="flex justify-between text-sm text-gray-600 mb-1">
-              <span>{new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(evento.recaudado)}</span>
-              <span className="text-gray-400">{new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(evento.objetivo)}</span>
+
+          {/* Progreso de recaudación */}
+          <div className="flex-shrink-0 w-56 px-4">
+            <div className="flex justify-between text-xs mb-2">
+              <span className="text-gray-600 dark:text-gray-300 font-medium">
+                {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(evento.recaudado)}
+              </span>
+              <span className="text-gray-400 dark:text-gray-500">
+                {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(evento.objetivo)}
+              </span>
             </div>
-            <Progress value={progreso} />
+            <Progress value={progreso} className="h-2" />
           </div>
-          <div className="px-6">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreVertical className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>
-                  <Eye className="mr-2 h-4 w-4" /> Ver
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Edit className="mr-2 h-4 w-4" /> Editar
-                </DropdownMenuItem>
-                <DropdownMenuItem className="text-red-500">
-                  <Trash2 className="mr-2 h-4 w-4" /> Eliminar
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+
+          {/* Botones de acciones */}
+          <div className="flex-shrink-0 px-4 flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-gray-100 dark:hover:bg-slate-700"
+              title="Editar evento"
+              onClick={() => navigate('/editar-entrada')}
+            >
+              <Edit className="h-4 w-4 text-slate-600 dark:text-gray-400" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-gray-100 dark:hover:bg-slate-700"
+              title="Ver evento"
+            >
+              <Eye className="h-4 w-4 text-slate-600 dark:text-gray-400" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-gray-100 dark:hover:bg-slate-700"
+              title="Eliminar evento"
+            >
+              <Trash2 className="h-4 w-4 text-red-500 dark:text-red-400" />
+            </Button>
           </div>
         </div>
       </CardContent>
@@ -109,11 +125,11 @@ const ListaEventos = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center p-8">Cargando lista de eventos...</div>;
+    return <div className="text-center p-8 text-slate-900 dark:text-white">Cargando lista de eventos...</div>;
   }
 
   if (error) {
-    return <div className="text-center text-red-500 p-8">{error}</div>;
+    return <div className="text-center text-red-500 dark:text-red-400 p-8">{error}</div>;
   }
 
   return (

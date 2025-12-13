@@ -44,14 +44,6 @@ export const MainContentSection = (): JSX.Element => {
 
         <div className="flex items-center gap-4">
           <button
-            onClick={() => navigate("/login")}
-            className="px-6 py-2 bg-[#00753e] dark:bg-[#00a651] hover:bg-[#006633] dark:hover:bg-[#008a43] text-white font-semibold rounded-lg transition-colors text-sm [font-family:'Arimo-Regular',Helvetica]"
-            aria-label="Iniciar sesión"
-          >
-            INICIAR SESIÓN
-          </button>
-
-          <button
             className="relative p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
             aria-label={`Carrito de compras, ${cartItemCount} artículos`}
           >
@@ -61,6 +53,14 @@ export const MainContentSection = (): JSX.Element => {
                 {cartItemCount}
               </span>
             )}
+          </button>
+
+          <button
+            onClick={() => navigate("/login")}
+            className="px-6 py-2 bg-[#00753e] dark:bg-[#00a651] hover:bg-[#006633] dark:hover:bg-[#008a43] text-white font-semibold rounded-lg transition-colors text-sm [font-family:'Arimo-Regular',Helvetica]"
+            aria-label="Iniciar sesión"
+          >
+            INICIAR SESIÓN
           </button>
         </div>
       </div>

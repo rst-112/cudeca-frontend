@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface TicketEntry {
   id: string;
@@ -9,6 +10,7 @@ interface TicketEntry {
 }
 
 export const MainContentSection = (): JSX.Element => {
+  const navigate = useNavigate();
   const [existingTickets, setExistingTickets] = useState<TicketEntry[]>([
     {
       id: "1",
@@ -59,7 +61,10 @@ export const MainContentSection = (): JSX.Element => {
 
       {/* Tabs */}
       <nav className="px-8 border-b border-slate-200 dark:border-slate-700 flex gap-12">
-        <button className="py-4 px-2 font-normal [font-family:'Arimo-Regular',Helvetica] text-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">
+        <button
+          onClick={() => navigate('/creacion-eventos')}
+          className="py-4 px-2 font-normal [font-family:'Arimo-Regular',Helvetica] text-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
+        >
           Información General
         </button>
         <button className="py-4 px-2 font-normal [font-family:'Arimo-Regular',Helvetica] text-xl text-[#00a651] dark:text-[#00d66a] border-b-2 border-[#00a651] dark:border-[#00d66a]">
@@ -97,7 +102,10 @@ export const MainContentSection = (): JSX.Element => {
                   </div>
 
                   <div className="flex gap-3">
-                    <button className="px-4 py-2 border-2 border-[#00a651] dark:border-[#00d66a] text-[#00a651] dark:text-[#00d66a] rounded-lg hover:bg-[#00a651] hover:bg-opacity-10 dark:hover:bg-[#00d66a] dark:hover:bg-opacity-10 transition-colors font-bold text-sm [font-family:'Arimo-Regular',Helvetica]">
+                    <button
+                      onClick={() => navigate('/editar-entrada')}
+                      className="px-4 py-2 border-2 border-[#00a651] dark:border-[#00d66a] text-[#00a651] dark:text-[#00d66a] rounded-lg hover:bg-[#00a651] hover:bg-opacity-10 dark:hover:bg-[#00d66a] dark:hover:bg-opacity-10 transition-colors font-bold text-sm [font-family:'Arimo-Regular',Helvetica]"
+                    >
                       ✏️ Editar
                     </button>
                     <button

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface TicketEntry {
   id: string;
@@ -9,6 +10,7 @@ interface TicketEntry {
 }
 
 export const MainContentSection = (): JSX.Element => {
+  const navigate = useNavigate();
   const [existingTickets] = useState<TicketEntry[]>([
     {
       id: "1",
@@ -62,11 +64,14 @@ export const MainContentSection = (): JSX.Element => {
         role="navigation"
         aria-label="Pasos de creación de eventos"
       >
-        <div className="mt-2 w-auto flex">
+        <button
+          onClick={() => navigate('/creacion-eventos')}
+          className="mt-2 w-auto flex hover:text-[#00a651] dark:hover:text-[#00d66a] transition-colors text-left"
+        >
           <div className="h-8 [font-family:'Arimo-Regular',Helvetica] font-normal text-slate-600 dark:text-slate-400 text-xl text-center tracking-[0] leading-8 whitespace-nowrap">
             Información General
           </div>
-        </div>
+        </button>
 
         <div className="w-auto h-[52px] flex border-b-2 border-[#00a651] dark:border-[#00d66a]">
           <div className="mt-2 w-auto flex">

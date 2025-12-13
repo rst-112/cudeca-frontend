@@ -1,7 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const MainContentSection = (): JSX.Element => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"general" | "tickets">("general");
+  const [showBorrador, setShowBorrador] = useState(false);
+  const [showPublicado, setShowPublicado] = useState(false);
   const [formData, setFormData] = useState({
     eventName: "",
     description: "",
@@ -86,10 +90,14 @@ export const MainContentSection = (): JSX.Element => {
 
   const handleSaveDraft = () => {
     console.log("Saving draft:", formData);
+    setShowBorrador(true);
+    setTimeout(() => setShowBorrador(false), 3000);
   };
 
   const handlePublish = () => {
     console.log("Publishing event:", formData);
+    setShowPublicado(true);
+    setTimeout(() => setShowPublicado(false), 3000);
   };
 
   return (
@@ -106,7 +114,13 @@ export const MainContentSection = (): JSX.Element => {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => {
+              if (tab.id === "tickets") {
+                navigate("/tipos-entrada");
+              } else {
+                setActiveTab(tab.id);
+              }
+            }}
             className={`py-4 px-2 font-normal [font-family:'Arimo-Regular',Helvetica] text-xl transition-colors ${
               activeTab === tab.id
                 ? "text-[#00a651] dark:text-[#00d66a] border-b-2 border-[#00a651] dark:border-[#00d66a]"
@@ -206,6 +220,34 @@ export const MainContentSection = (): JSX.Element => {
           </button>
         </div>
       </main>
+
+      {/* Pop-up Evento en Borrador */}
+      {showBorrador && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg max-w-md text-center">
+            <h3 className="text-2xl font-bold text-[#00a651] dark:text-[#00d66a] mb-4">
+              ✓ Evento en Borrador
+            </h3>
+            <p className="text-slate-600 dark:text-slate-300 mb-6">
+              Tu evento ha sido guardado como borrador.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Pop-up Evento Publicado */}
+      {showPublicado && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg max-w-md text-center">
+            <h3 className="text-2xl font-bold text-[#00a651] dark:text-[#00d66a] mb-4">
+              ✓ Evento Publicado
+            </h3>
+            <p className="text-slate-600 dark:text-slate-300 mb-6">
+              Tu evento ha sido publicado exitosamente.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
