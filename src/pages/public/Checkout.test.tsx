@@ -442,10 +442,14 @@ describe('Checkout - Branches Coverage', () => {
 
   describe('Estados de carga', () => {
     it('debe deshabilitar botón durante la carga', async () => {
-      let resolveCheckout: ((value: unknown) => void) | undefined;
+      let resolveCheckout:
+        | ((
+            value: checkoutService.CheckoutResponse | PromiseLike<checkoutService.CheckoutResponse>,
+          ) => void)
+        | undefined;
       vi.mocked(checkoutService.procesarCheckout).mockImplementation(
         () =>
-          new Promise((resolve) => {
+          new Promise<checkoutService.CheckoutResponse>((resolve) => {
             resolveCheckout = resolve;
           }),
       );

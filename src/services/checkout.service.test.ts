@@ -237,7 +237,7 @@ describe('checkout.service', () => {
     });
 
     it('calcula el total con array vacío', () => {
-      const items: any[] = [];
+      const items: checkoutService.ItemCheckout[] = [];
 
       const total = checkoutService.calcularTotalCheckout(items);
 
@@ -291,7 +291,9 @@ describe('checkout.service', () => {
     });
 
     it('retorna estado desconocido para valores no válidos', () => {
-      const estado = checkoutService.obtenerEstadoCompra('INVALID' as any);
+      const estado = checkoutService.obtenerEstadoCompra(
+        'INVALID' as 'PENDIENTE' | 'COMPLETADO' | 'CANCELADO' | 'FALLIDO',
+      );
 
       expect(estado.label).toBe('Desconocido');
       expect(estado.color).toBe('gray');

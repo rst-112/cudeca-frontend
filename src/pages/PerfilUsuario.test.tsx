@@ -1,9 +1,10 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import PerfilUsuario from './PerfilUsuario';
 import * as perfilService from '../services/perfil.service';
 import * as checkoutService from '../services/checkout.service';
+import type { DatosFiscales } from '../types/checkout.types';
 
 // Mock de servicios
 vi.mock('../services/perfil.service', () => ({
@@ -26,12 +27,9 @@ vi.mock('sonner', () => ({
   },
 }));
 
-// Mock de window.open
-const mockWindowOpen = vi.fn();
-global.window.open = mockWindowOpen;
-
-// Mock de URL.createObjectURL
-global.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
+// Mocks de APIs del navegador usando spyOn sin asignar variables para evitar warnings de unused
+vi.spyOn(window, 'open').mockImplementation(() => null);
+vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url');
 
 describe('PerfilUsuario', () => {
   beforeEach(() => {
@@ -57,12 +55,12 @@ describe('PerfilUsuario', () => {
     const mockEntradas = [
       {
         id: 1,
-        eventoId: 1,
         eventoNombre: 'Evento Test',
-        eventoFecha: '2024-12-15',
-        asientoEtiqueta: 'A-1',
-        precio: 25,
-        estado: 'VALIDA' as const,
+        fechaEvento: '2024-12-15',
+        asientoNumero: '1',
+        estadoEntrada: 'VALIDA' as const,
+        codigoQR: 'qr-1',
+        fechaEmision: '2024-12-01',
       },
     ];
 
@@ -141,19 +139,18 @@ describe('PerfilUsuario', () => {
   });
 
   it('descarga PDF de entrada', async () => {
-    const { toast } = await import('sonner');
     const mockBlob = new Blob(['test'], { type: 'application/pdf' });
     vi.mocked(perfilService.descargarPdfEntrada).mockResolvedValue(mockBlob);
 
     const mockEntradas = [
       {
         id: 1,
-        eventoId: 1,
         eventoNombre: 'Evento Test',
-        eventoFecha: '2024-12-15',
-        asientoEtiqueta: 'A-1',
-        precio: 25,
-        estado: 'VALIDA' as const,
+        fechaEvento: '2024-12-15',
+        asientoNumero: '1',
+        estadoEntrada: 'VALIDA' as const,
+        codigoQR: 'qr-1',
+        fechaEmision: '2024-12-01',
       },
     ];
 
@@ -185,8 +182,17 @@ describe('PerfilUsuario', () => {
   });
 
   it('crea nuevos datos fiscales', async () => {
-    const { toast } = await import('sonner');
-    vi.mocked(checkoutService.crearDatosFiscales).mockResolvedValue({ id: 1 });
+    const nuevoDato: DatosFiscales = {
+      id: 1,
+      nif: '12345678A',
+      nombre: 'Nombre Test',
+      direccion: 'Calle Test',
+      ciudad: 'Madrid',
+      codigoPostal: '28001',
+      pais: 'España',
+      esPrincipal: true,
+    };
+    vi.mocked(checkoutService.crearDatosFiscales).mockResolvedValue(nuevoDato);
     vi.mocked(checkoutService.obtenerDatosFiscalesUsuario).mockResolvedValue([]);
 
     render(
@@ -201,17 +207,28 @@ describe('PerfilUsuario', () => {
   });
 
   it('actualiza datos fiscales existentes', async () => {
-    const { toast } = await import('sonner');
-    vi.mocked(checkoutService.actualizarDatosFiscales).mockResolvedValue({ id: 1 });
+    const actualizado: DatosFiscales = {
+      id: 1,
+      nif: '12345678A',
+      nombre: 'Nombre Actualizado',
+      direccion: 'Nueva Direccion',
+      ciudad: 'Madrid',
+      codigoPostal: '28001',
+      pais: 'España',
+      esPrincipal: true,
+    };
+    vi.mocked(checkoutService.actualizarDatosFiscales).mockResolvedValue(actualizado);
 
     // Esta prueba verificaría que se puede actualizar datos fiscales
     expect(checkoutService.actualizarDatosFiscales).toBeDefined();
   });
 
   it('elimina datos fiscales', async () => {
-    const { toast } = await import('sonner');
     const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    vi.mocked(checkoutService.eliminarDatosFiscales).mockResolvedValue(undefined);
+    vi.mocked(checkoutService.eliminarDatosFiscales).mockResolvedValue({
+      success: true,
+      message: 'Datos fiscales eliminados',
+    });
     vi.mocked(checkoutService.obtenerDatosFiscalesUsuario).mockResolvedValue([]);
 
     // Verificar que eliminarDatosFiscales está definido
@@ -220,18 +237,25 @@ describe('PerfilUsuario', () => {
     mockConfirm.mockRestore();
   });
 
-  it('cancela la eliminación de datos fiscales cuando el usuario rechaza', async () => {
-    const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+  it('cancela la eliminación de datos fiscales cuando el usuario rechaza', () => {
+    globalThis.confirm = vi.fn(() => false);
 
-    // Verificar que no se llama al servicio cuando se cancela
+    // Verificar que no se llama al servicio si el usuario cancela
     expect(checkoutService.eliminarDatosFiscales).toBeDefined();
-
-    mockConfirm.mockRestore();
   });
 
   it('establece datos fiscales como principal', async () => {
-    const { toast } = await import('sonner');
-    vi.mocked(checkoutService.actualizarDatosFiscales).mockResolvedValue({ id: 1 });
+    const actualizadoPrincipal: DatosFiscales = {
+      id: 1,
+      nif: '12345678A',
+      nombre: 'Nombre Test',
+      direccion: 'Calle Test',
+      ciudad: 'Madrid',
+      codigoPostal: '28001',
+      pais: 'España',
+      esPrincipal: true,
+    };
+    vi.mocked(checkoutService.actualizarDatosFiscales).mockResolvedValue(actualizadoPrincipal);
     vi.mocked(checkoutService.obtenerDatosFiscalesUsuario).mockResolvedValue([]);
 
     // Verificar funcionalidad de establecer como principal
@@ -239,7 +263,6 @@ describe('PerfilUsuario', () => {
   });
 
   it('maneja errores al guardar datos fiscales', async () => {
-    const { toast } = await import('sonner');
     vi.mocked(checkoutService.crearDatosFiscales).mockRejectedValue(new Error('Error al guardar'));
 
     render(
@@ -255,22 +278,19 @@ describe('PerfilUsuario', () => {
 
   it('maneja errores al eliminar datos fiscales', async () => {
     const { toast } = await import('sonner');
-    const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
     vi.mocked(checkoutService.eliminarDatosFiscales).mockRejectedValue(
       new Error('Error al eliminar'),
     );
 
-    // Verificar manejo de errores
-    expect(toast.error).toBeDefined();
+    globalThis.confirm = vi.fn(() => true);
 
-    mockConfirm.mockRestore();
+    expect(toast.error).toBeDefined();
   });
 
   it('maneja errores al establecer como principal', async () => {
     const { toast } = await import('sonner');
     vi.mocked(checkoutService.actualizarDatosFiscales).mockRejectedValue(new Error('Error'));
 
-    // Verificar manejo de errores
     expect(toast.error).toBeDefined();
   });
 
@@ -290,8 +310,17 @@ describe('PerfilUsuario', () => {
   });
 
   it('resetea el formulario después de guardar', async () => {
-    const { toast } = await import('sonner');
-    vi.mocked(checkoutService.crearDatosFiscales).mockResolvedValue({ id: 1 });
+    const creado: DatosFiscales = {
+      id: 1,
+      nombre: 'Test',
+      nif: '12345678A',
+      direccion: 'Calle Test',
+      ciudad: 'Madrid',
+      codigoPostal: '28001',
+      pais: 'España',
+      esPrincipal: true,
+    };
+    vi.mocked(checkoutService.crearDatosFiscales).mockResolvedValue(creado);
     vi.mocked(checkoutService.obtenerDatosFiscalesUsuario).mockResolvedValue([]);
 
     render(
@@ -348,7 +377,17 @@ describe('PerfilUsuario', () => {
 
   it('actualiza datos fiscales existentes', async () => {
     const { toast } = await import('sonner');
-    vi.mocked(checkoutService.actualizarDatosFiscales).mockResolvedValue({ id: 1 });
+    const actualizado: DatosFiscales = {
+      id: 1,
+      nombre: 'Test',
+      nif: '12345678A',
+      direccion: 'Calle Test',
+      ciudad: 'Madrid',
+      codigoPostal: '28001',
+      pais: 'España',
+      esPrincipal: true,
+    };
+    vi.mocked(checkoutService.actualizarDatosFiscales).mockResolvedValue(actualizado);
 
     // Esta prueba verificaría que se puede actualizar datos fiscales
     expect(checkoutService.actualizarDatosFiscales).toBeDefined();
@@ -356,9 +395,11 @@ describe('PerfilUsuario', () => {
   });
 
   it('elimina datos fiscales', async () => {
-    const { toast } = await import('sonner');
     const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    vi.mocked(checkoutService.eliminarDatosFiscales).mockResolvedValue(undefined);
+    vi.mocked(checkoutService.eliminarDatosFiscales).mockResolvedValue({
+      success: true,
+      message: 'Datos fiscales eliminados',
+    });
     vi.mocked(checkoutService.obtenerDatosFiscalesUsuario).mockResolvedValue([]);
 
     // Verificar que eliminarDatosFiscales está definido
@@ -368,7 +409,7 @@ describe('PerfilUsuario', () => {
   });
 
   it('cancela eliminación de datos fiscales cuando el usuario rechaza', () => {
-    global.confirm = vi.fn(() => false);
+    globalThis.confirm = vi.fn(() => false);
 
     // Verificar que no se llama al servicio si el usuario cancela
     expect(checkoutService.eliminarDatosFiscales).toBeDefined();
@@ -376,10 +417,17 @@ describe('PerfilUsuario', () => {
 
   it('establece datos fiscales como principal', async () => {
     const { toast } = await import('sonner');
-    vi.mocked(checkoutService.actualizarDatosFiscales).mockResolvedValue({
+    const actualizadoPrincipal: DatosFiscales = {
       id: 1,
+      nombre: 'Test',
+      nif: '12345678A',
+      direccion: 'Calle Test',
+      ciudad: 'Madrid',
+      codigoPostal: '28001',
+      pais: 'España',
       esPrincipal: true,
-    });
+    };
+    vi.mocked(checkoutService.actualizarDatosFiscales).mockResolvedValue(actualizadoPrincipal);
 
     expect(toast.success).toBeDefined();
   });
@@ -397,7 +445,7 @@ describe('PerfilUsuario', () => {
       new Error('Error al eliminar'),
     );
 
-    global.confirm = vi.fn(() => true);
+    globalThis.confirm = vi.fn(() => true);
 
     expect(toast.error).toBeDefined();
   });
@@ -413,7 +461,7 @@ describe('PerfilUsuario', () => {
     vi.mocked(perfilService.obtenerEntradasUsuario).mockResolvedValue([]);
     vi.mocked(checkoutService.obtenerDatosFiscalesUsuario).mockResolvedValue([]);
 
-    const { rerender } = render(
+    render(
       <MemoryRouter initialEntries={['/?tab=entradas']}>
         <PerfilUsuario />
       </MemoryRouter>,
@@ -425,7 +473,17 @@ describe('PerfilUsuario', () => {
   });
 
   it('resetea el formulario después de guardar', async () => {
-    vi.mocked(checkoutService.crearDatosFiscales).mockResolvedValue({ id: 1 });
+    const creado: DatosFiscales = {
+      id: 1,
+      nombre: 'Test',
+      nif: '12345678A',
+      direccion: 'Calle Test',
+      ciudad: 'Madrid',
+      codigoPostal: '28001',
+      pais: 'España',
+      esPrincipal: true,
+    };
+    vi.mocked(checkoutService.crearDatosFiscales).mockResolvedValue(creado);
     vi.mocked(checkoutService.obtenerDatosFiscalesUsuario).mockResolvedValue([]);
 
     render(
