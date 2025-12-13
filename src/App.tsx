@@ -5,9 +5,7 @@ import { Toaster } from 'sonner';
 import MainLayout from './components/layout/MainLayout';
 import AuthPage from './features/auth/AuthPage';
 import { PrivateRoute } from './components/PrivateRoute';
-import AdminLayout from './features/admin/AdminLayout';
 import AdminDashboard from './features/admin/AdminDashboard';
-import CrearEvento from './features/admin/CrearEvento';
 import Dashboard from './features/dashboard/Dashboard';
 
 // Páginas públicas
@@ -16,9 +14,6 @@ import DetalleEvento from './pages/public/DetallesEvento';
 import Checkout from './pages/public/Checkout';
 import SandboxSeatMap from './pages/public/SandboxSeatMap';
 import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
-import Eventos from './pages/public/Eventos';
-import Voluntariado from './pages/public/Voluntariado';
-import About from './pages/public/About';
 
 // Componentes temporales
 const EventStaffDashboard = () => <div>Dashboard (Personal Evento)</div>;
@@ -57,9 +52,6 @@ function App() {
             <Route path="/" element={<MainLayout />}>
               <Route index element={<Home />} />
               <Route path="evento/:id" element={<DetalleEvento />} />
-              <Route path="eventos" element={<Eventos />} />
-              <Route path="voluntariado" element={<Voluntariado />} />
-              <Route path="about" element={<About />} />
             </Route>
 
             {/* === RUTA DE DESARROLLO - SANDBOX === */}
@@ -91,11 +83,7 @@ function App() {
 
             {/* Rutas protegidas por rol - Administrador */}
             <Route element={<PrivateRoute requiredRole="ADMINISTRADOR" />}>
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<AdminDashboard />} />
-                <Route path="eventos/crear" element={<CrearEvento />} />
-                {/* Aquí irán más rutas de admin */}
-              </Route>
+              <Route path="/admin" element={<AdminDashboard />} />
             </Route>
 
             {/* Rutas protegidas por rol - Comprador */}

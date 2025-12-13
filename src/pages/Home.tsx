@@ -1,10 +1,12 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import campaignImage from '../assets/FotoLogin.png';
 import { ArrowRight, Heart, Calendar, Users, Sparkles, TestTube } from 'lucide-react';
 import { EventCarousel } from '../components/EventCarousel';
 
 export default function Home() {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col w-full">
       {/* === HERO SECTION === */}
@@ -60,6 +62,222 @@ export default function Home() {
               >
                 <Link to="/about">Saber más</Link>
               </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* === ACCESOS RÁPIDOS (Todas las herramientas disponibles) === */}
+      <section className="py-16 bg-slate-100 dark:bg-slate-900 relative overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 font-['Arimo']">
+              Accesos Rápidos
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 text-lg">
+              Herramientas administrativas y de gestión
+            </p>
+          </div>
+
+          <div className="space-y-3 max-w-4xl mx-auto">
+            {/* Admin Dashboard */}
+            <div className="flex items-start justify-between p-4 border-l-4 border-l-[#00A651] bg-white dark:bg-slate-800 rounded">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-base font-bold text-[#00A651] dark:text-[#00d66a]">
+                  Admin Dashboard
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-['Arimo']">
+                  Gestión completa de eventos, usuarios y administración
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/admin')}
+                className="px-4 py-2 bg-[#00A651] hover:bg-[#008a43] text-white font-bold rounded transition-all duration-200 hover:shadow-lg text-sm whitespace-nowrap ml-4"
+                title="Ir al admin dashboard"
+              >
+                Ver Admin →
+              </button>
+            </div>
+
+            {/* Crear Evento */}
+            <div className="flex items-start justify-between p-4 border-l-4 border-l-green-600 bg-white dark:bg-slate-800 rounded">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-base font-bold text-green-600 dark:text-green-400">
+                  Crear Evento
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-['Arimo']">
+                  Formulario para crear nuevos eventos
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/creacion-eventos')}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded transition-all duration-200 hover:shadow-lg text-sm whitespace-nowrap ml-4"
+                title="Ir a creación de eventos"
+              >
+                Crear →
+              </button>
+            </div>
+
+            {/* Editar Entrada */}
+            <div className="flex items-start justify-between p-4 border-l-4 border-l-cyan-600 bg-white dark:bg-slate-800 rounded">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-base font-bold text-cyan-600 dark:text-cyan-400">
+                  Editar Entrada
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-['Arimo']">
+                  Edición y gestión de entradas individuales
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/editar-entrada')}
+                className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded transition-all duration-200 hover:shadow-lg text-sm whitespace-nowrap ml-4"
+                title="Ir a editar entrada"
+              >
+                Editar →
+              </button>
+            </div>
+
+            {/* Editor de Asientos */}
+            <div className="flex items-start justify-between p-4 border-l-4 border-l-orange-500 bg-white dark:bg-slate-800 rounded">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-base font-bold text-orange-600 dark:text-orange-400">
+                  Editor de Asientos
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-['Arimo']">
+                  Editar mapa de asientos interactivo
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/dev/mapa/editor')}
+                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded transition-all duration-200 hover:shadow-lg text-sm whitespace-nowrap ml-4"
+                title="Editar mapa de asientos"
+              >
+                Ver Editor →
+              </button>
+            </div>
+
+            {/* Home Evento Logeado */}
+            <div className="flex items-start justify-between p-4 border-l-4 border-l-pink-500 bg-white dark:bg-slate-800 rounded">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-base font-bold text-pink-600 dark:text-pink-400">
+                  Home Evento Logeado
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-['Arimo']">
+                  Página principal de eventos para usuarios registrados
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/home-logeado')}
+                className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded transition-all duration-200 hover:shadow-lg text-sm whitespace-nowrap ml-4"
+                title="Ir a home evento logeado"
+              >
+                Ver →
+              </button>
+            </div>
+
+            {/* Home Invitado */}
+            <div className="flex items-start justify-between p-4 border-l-4 border-l-rose-500 bg-white dark:bg-slate-800 rounded">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-base font-bold text-rose-600 dark:text-rose-400">
+                  Home Invitado
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-['Arimo']">
+                  Página principal de eventos para usuarios no registrados
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/home-invitado')}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded transition-all duration-200 hover:shadow-lg text-sm whitespace-nowrap ml-4"
+                title="Ir a home invitado"
+              >
+                Ver →
+              </button>
+            </div>
+
+            {/* Info Evento Invitado */}
+            <div className="flex items-start justify-between p-4 border-l-4 border-l-violet-600 bg-white dark:bg-slate-800 rounded">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-base font-bold text-violet-600 dark:text-violet-400">
+                  Info Evento Invitado
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-['Arimo']">
+                  Página de información y venta de entradas para invitados
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/evento-invitado')}
+                className="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded transition-all duration-200 hover:shadow-lg text-sm whitespace-nowrap ml-4"
+                title="Ir a info evento invitado"
+              >
+                Ver →
+              </button>
+            </div>
+
+            {/* Info Evento Logeado */}
+            <div className="flex items-start justify-between p-4 border-l-4 border-l-indigo-500 bg-white dark:bg-slate-800 rounded">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-base font-bold text-indigo-600 dark:text-indigo-400">
+                  Info Evento Logeado
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-['Arimo']">
+                  Página de información y venta de entradas para usuarios logeados
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/info-evento-logeado')}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded transition-all duration-200 hover:shadow-lg text-sm whitespace-nowrap ml-4"
+                title="Ir a info evento logeado"
+              >
+                Ver →
+              </button>
+            </div>
+
+            {/* Mapa de Asientos */}
+            <div className="flex items-start justify-between p-4 border-l-4 border-l-purple-500 bg-white dark:bg-slate-800 rounded">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-base font-bold text-purple-600 dark:text-purple-400">
+                  Mapa de Asientos
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-['Arimo']">
+                  Visualizar mapa de asientos
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/dev/mapa')}
+                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded transition-all duration-200 hover:shadow-lg text-sm whitespace-nowrap ml-4"
+                title="Ver mapa de asientos"
+              >
+                Ver Mapa →
+              </button>
+            </div>
+
+            {/* Tipos de Entrada */}
+            <div className="flex items-start justify-between p-4 border-l-4 border-l-blue-600 bg-white dark:bg-slate-800 rounded">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-base font-bold text-blue-600 dark:text-blue-400">
+                  Tipos de Entrada
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-['Arimo']">
+                  Gestión de entradas y tipos de tickets
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/tipos-entrada')}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded transition-all duration-200 hover:shadow-lg text-sm whitespace-nowrap ml-4"
+                title="Ir a tipos de entrada"
+              >
+                Entradas →
+              </button>
             </div>
           </div>
         </div>
