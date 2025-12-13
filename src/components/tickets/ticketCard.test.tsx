@@ -10,17 +10,19 @@ vi.mock('../../services/ticketService', () => ({
 }));
 
 const mockTicket = {
-  id: 'TKT-123',
-  evento: 'Evento de Prueba',
-  fecha: '01 Ene 2025 • 20:00h',
-  lugar: 'Lugar de Prueba',
-  asistente: 'Juan Pérez',
-  qrData: 'QR_DATA_123',
+  id: '1',
+  codigoAsiento: 'TKT-123',
+  nombreEvento: 'Evento de Prueba',
+  fechaEventoFormato: '01 Ene 2025 • 20:00h',
+  lugarEvento: 'Lugar de Prueba',
+  nombreUsuario: 'Juan Pérez',
+  codigoQR: 'QR_DATA_123',
 };
 
 describe('TicketCard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   it('renderiza correctamente los detalles del ticket', () => {
@@ -55,9 +57,27 @@ describe('TicketCard', () => {
     expect(screen.getByText(/Generando.../i)).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(ticketService.downloadTicketPdf).toHaveBeenCalledWith('TKT-123', 'Evento de Prueba');
+      expect(ticketService.downloadTicketPdf).toHaveBeenCalledWith(mockTicket);
     });
 
+    await waitFor(() => {
+      expect(screen.queryByText(/Generando.../i)).not.toBeInTheDocument();
+    });
+  });
+
+  it('maneja errores de downloadTicketPdf correctamente', async () => {
+    vi.mocked(ticketService.downloadTicketPdf).mockRejectedValueOnce(new Error('PDF Error'));
+
+    render(<TicketCard ticket={mockTicket} />);
+
+    const pdfButton = screen.getByText(/PDF/i);
+    fireEvent.click(pdfButton);
+
+    await waitFor(() => {
+      expect(console.error).toHaveBeenCalledWith('Error descargando PDF:', expect.any(Error));
+    });
+
+    // El botón debería volver a su estado normal
     await waitFor(() => {
       expect(screen.queryByText(/Generando.../i)).not.toBeInTheDocument();
     });
@@ -72,11 +92,29 @@ describe('TicketCard', () => {
     expect(screen.getByText(/Enviando.../i)).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(ticketService.sendTicketEmail).toHaveBeenCalledWith('TKT-123');
+      expect(ticketService.sendTicketEmail).toHaveBeenCalledWith(mockTicket);
     });
 
     await waitFor(() => {
       expect(screen.getByText(/Enviado/i)).toBeInTheDocument();
+    });
+  });
+
+  it('maneja errores de sendTicketEmail correctamente', async () => {
+    vi.mocked(ticketService.sendTicketEmail).mockRejectedValueOnce(new Error('Email Error'));
+
+    render(<TicketCard ticket={mockTicket} />);
+
+    const emailButton = screen.getByText(/Email/i);
+    fireEvent.click(emailButton);
+
+    await waitFor(() => {
+      expect(console.error).toHaveBeenCalledWith('Error enviando email:', expect.any(Error));
+    });
+
+    // El botón debería volver a estado idle
+    await waitFor(() => {
+      expect(screen.getByText(/Email/i)).toBeInTheDocument();
     });
   });
 });

@@ -1,9 +1,9 @@
 export interface Ticket {
-  id: string;
-  evento: string;
-  fecha: string;
-  lugar: string;
-  asistente: string;
-  asiento?: string; // Opcional (por si es entrada general de pie)
-  qrData: string; // El texto que contendrá el QR
+  id: string; // Identificador único (UUID o similar)
+  codigoAsiento: string; // Código legible para mostrar (ej: TKT-001)
+  nombreEvento: string;
+  fechaEventoFormato: string;
+  lugarEvento: string;
+  nombreUsuario: string;
+  codigoQR: string;
 }

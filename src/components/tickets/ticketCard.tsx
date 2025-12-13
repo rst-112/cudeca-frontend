@@ -15,50 +15,56 @@ export const TicketCard = ({ ticket }: TicketCardProps) => {
 
   const handleDownload = async () => {
     setLoadingPdf(true);
-    await downloadTicketPdf(ticket.id, ticket.evento);
-    setLoadingPdf(false);
+    try {
+      await downloadTicketPdf(ticket);
+    } catch (error) {
+      console.error('Error descargando PDF:', error);
+    } finally {
+      setLoadingPdf(false);
+    }
   };
 
   const handleEmail = async () => {
     setEmailStatus('sending');
-    await sendTicketEmail(ticket.id);
-    setEmailStatus('sent');
-    setTimeout(() => setEmailStatus('idle'), 3000); // Resetear estado a los 3s
+    try {
+      await sendTicketEmail(ticket);
+      setEmailStatus('sent');
+      setTimeout(() => setEmailStatus('idle'), 3000);
+    } catch (error) {
+      console.error('Error enviando email:', error);
+      setEmailStatus('idle');
+    }
   };
 
   return (
     <Card className="w-full max-w-sm overflow-hidden border-cudeca-gris-borde/40 hover:shadow-lg transition-all duration-300">
-      {/* Tira verde decorativa (Branding) */}
       <div className="h-3 bg-cudeca-verde w-full" />
 
       <CardHeader className="text-center pb-2">
         <div className="mx-auto bg-green-50 w-10 h-10 rounded-full flex items-center justify-center mb-2">
           <QrCode className="text-cudeca-verde h-5 w-5" />
         </div>
-        <CardTitle className="text-lg leading-tight">{ticket.evento}</CardTitle>
+        <CardTitle className="text-lg leading-tight">{ticket.nombreEvento}</CardTitle>
         <span className="text-xs font-mono text-cudeca-gris-texto bg-gray-100 px-2 py-1 rounded inline-block mt-2">
-          #{ticket.id}
+          #{ticket.codigoAsiento}
         </span>
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {/* ZONA QR (Requisito ZXing visualizado) */}
-        {/* Usamos una API pública para pintar el QR real basado en el ID */}
         <div className="flex justify-center p-4 bg-gray-50 rounded-lg border border-dashed border-gray-200">
           <img
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${ticket.qrData}`}
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${ticket.codigoQR}`}
             alt="Código QR Entrada"
             className="mix-blend-multiply opacity-90 rounded"
           />
         </div>
 
-        {/* Datos del Evento */}
         <div className="space-y-3 text-sm">
           <div className="flex items-start gap-3">
             <Calendar className="w-4 h-4 text-cudeca-naranja mt-0.5 shrink-0" />
             <div>
               <p className="font-semibold text-gray-900">Fecha</p>
-              <p className="text-cudeca-gris-texto">{ticket.fecha}</p>
+              <p className="text-cudeca-gris-texto">{ticket.fechaEventoFormato}</p>
             </div>
           </div>
 
@@ -66,17 +72,16 @@ export const TicketCard = ({ ticket }: TicketCardProps) => {
             <MapPin className="w-4 h-4 text-cudeca-naranja mt-0.5 shrink-0" />
             <div>
               <p className="font-semibold text-gray-900">Ubicación</p>
-              <p className="text-cudeca-gris-texto">{ticket.lugar}</p>
+              <p className="text-cudeca-gris-texto">{ticket.lugarEvento}</p>
             </div>
           </div>
 
           <div className="pt-3 border-t border-gray-100 flex justify-between items-center mt-2">
             <span className="text-cudeca-gris-texto">Asistente:</span>
-            <span className="font-medium text-gray-900">{ticket.asistente}</span>
+            <span className="font-medium text-gray-900">{ticket.nombreUsuario}</span>
           </div>
         </div>
 
-        {/* ACCIONES (Motor PDF y Emailing) */}
         <div className="grid grid-cols-2 gap-3 pt-2">
           <Button
             variant="outline"

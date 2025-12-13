@@ -4,21 +4,22 @@ import type { Ticket } from '../../types';
 // Datos de prueba (Mocks)
 const MOCK_TICKETS: Ticket[] = [
   {
-    id: 'TKT-2025-001',
-    evento: 'Cena de Gala Benéfica',
-    fecha: '15 Oct 2025 • 21:00h',
-    lugar: 'Hotel Miramar, Málaga',
-    asistente: 'Fran García',
-    qrData: 'ACCESO_VALIDO_TKT_001',
+    id: '1',
+    codigoAsiento: 'TKT-2025-001',
+    nombreEvento: 'Cena de Gala Benéfica',
+    fechaEventoFormato: '15 Oct 2025 • 21:00h',
+    lugarEvento: 'Hotel Miramar, Málaga',
+    nombreUsuario: 'Fran García',
+    codigoQR: 'ACCESO_VALIDO_TKT_001',
   },
   {
-    id: 'TKT-2025-045',
-    evento: 'Concierto Solidario Rock',
-    fecha: '22 Nov 2025 • 20:00h',
-    lugar: 'Sala París 15, Málaga',
-    asistente: 'Fran García',
-    asiento: 'Pista General',
-    qrData: 'ACCESO_VALIDO_TKT_045',
+    id: '2',
+    codigoAsiento: 'TKT-2025-045',
+    nombreEvento: 'Concierto Solidario Rock',
+    fechaEventoFormato: '22 Nov 2025 • 20:00h',
+    lugarEvento: 'Sala París 15, Málaga',
+    nombreUsuario: 'Fran García',
+    codigoQR: 'ACCESO_VALIDO_TKT_045',
   },
 ];
 

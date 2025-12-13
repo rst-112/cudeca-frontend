@@ -7,7 +7,7 @@ import type { Ticket } from '../../types';
 vi.mock('../../components/tickets/ticketCard', () => ({
   TicketCard: ({ ticket }: { ticket: Ticket }) => (
     <div data-testid="mock-ticket-card">
-      {ticket.evento} - {ticket.asistente}
+      {ticket.nombreEvento} - {ticket.nombreUsuario}
     </div>
   ),
 }));
