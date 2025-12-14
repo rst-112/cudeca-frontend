@@ -107,7 +107,7 @@ beforeEach(() => {
             id: 1,
             email: loginData?.email || 'test@test.com',
             nombre: 'Usuario Demo',
-            rol: 'COMPRADOR',
+            roles: ['COMPRADOR'],
           },
         },
         status: 200,
@@ -154,7 +154,7 @@ describe('AuthContext', () => {
         id: 1,
         email: 'test@test.com',
         nombre: 'Test User',
-        rol: 'COMPRADOR',
+        roles: ['COMPRADOR'],
       };
       const mockToken = 'valid_token_123';
 
@@ -239,7 +239,7 @@ describe('AuthContext', () => {
         id: 1,
         email: 'test@test.com',
         nombre: 'Test User',
-        rol: 'COMPRADOR',
+        roles: ['COMPRADOR'],
       };
       localStorageMock.setItem('auth_user', JSON.stringify(mockUser));
 
@@ -261,7 +261,7 @@ describe('AuthContext', () => {
         id: 1,
         email: 'test@test.com',
         nombre: 'Test User',
-        rol: 'COMPRADOR',
+        roles: ['COMPRADOR'],
       };
       const mockToken = 'valid_token_123';
 
@@ -299,7 +299,7 @@ describe('AuthContext', () => {
       id: 1,
       email: 'test@test.com',
       nombre: 'Test User',
-      rol: 'COMPRADOR',
+      roles: ['COMPRADOR'],
     };
     localStorageMock.setItem('token', 'failing_token');
     localStorageMock.setItem('auth_user', JSON.stringify(mockUser));
@@ -348,7 +348,7 @@ describe('AuthContext', () => {
             id: 1,
             email,
             nombre: 'Usuario Demo',
-            rol: 'COMPRADOR',
+            roles: ['COMPRADOR'],
           },
         },
       };
@@ -425,7 +425,7 @@ describe('AuthContext', () => {
             id: 1,
             email: 'test@test.com',
             nombre: 'Usuario Demo',
-            rol: 'COMPRADOR',
+            roles: ['COMPRADOR'],
           },
         },
       });
@@ -445,7 +445,7 @@ describe('AuthContext', () => {
       expect(parsedUser).toHaveProperty('id');
       expect(parsedUser).toHaveProperty('email');
       expect(parsedUser).toHaveProperty('nombre');
-      expect(parsedUser).toHaveProperty('rol');
+      expect(parsedUser).toHaveProperty('roles');
     });
   });
 
@@ -521,7 +521,7 @@ describe('AuthContext', () => {
             id: 1,
             email: 'test@test.com',
             nombre: 'Usuario Demo',
-            rol: 'COMPRADOR',
+            roles: ['COMPRADOR'],
           },
         },
       });
@@ -560,7 +560,7 @@ describe('AuthContext', () => {
             id: 1,
             email: 'test@test.com',
             nombre: 'Usuario Demo',
-            rol: 'COMPRADOR',
+            roles: ['COMPRADOR'],
           },
         },
       });
@@ -589,7 +589,7 @@ describe('AuthContext', () => {
       id: 1,
       email: 'test@test.com',
       nombre: 'Test User',
-      rol: 'COMPRADOR',
+      roles: ['COMPRADOR'],
     };
     localStorageMock.setItem('token', 'invalid_token');
     localStorageMock.setItem('auth_user', JSON.stringify(mockUser));
@@ -649,7 +649,7 @@ describe('AuthContext', () => {
             id: 1,
             email: 'user@test.com',
             nombre: 'Usuario Demo',
-            rol: 'COMPRADOR',
+            roles: ['COMPRADOR'],
           },
         },
       });
@@ -697,7 +697,7 @@ describe('AuthContext', () => {
         id: 1,
         email: 'test@test.com',
         nombre: 'Test User',
-        rol: 'COMPRADOR',
+        roles: ['COMPRADOR'],
       };
       const mockToken = 'token_that_will_fail';
 
@@ -722,7 +722,7 @@ describe('AuthContext', () => {
       const invalidUser = {
         email: 'test@test.com',
         nombre: 'Test User',
-        rol: 'COMPRADOR',
+        roles: ['COMPRADOR'],
       };
 
       localStorageMock.setItem('token', 'token123');
@@ -749,7 +749,7 @@ describe('AuthContext', () => {
       const invalidUser = {
         id: 1,
         nombre: 'Test User',
-        rol: 'COMPRADOR',
+        roles: ['COMPRADOR'],
       };
 
       localStorageMock.setItem('token', 'token123');
@@ -770,7 +770,7 @@ describe('AuthContext', () => {
       expect(result.current.user).toBeNull();
     });
 
-    it('debe manejar usuario sin campo rol en localStorage', async () => {
+    it('debe manejar usuario sin campo roles en localStorage', async () => {
       const invalidUser = {
         id: 1,
         email: 'test@test.com',
@@ -810,7 +810,7 @@ describe('AuthContext', () => {
             id: 1,
             email: 'user1@test.com',
             nombre: 'Usuario 1',
-            rol: 'COMPRADOR',
+            roles: ['COMPRADOR'],
           },
         },
       });
@@ -833,7 +833,7 @@ describe('AuthContext', () => {
             id: 2,
             email: 'user2@test.com',
             nombre: 'Usuario 2',
-            rol: 'COMPRADOR',
+            roles: ['COMPRADOR'],
           },
         },
       });
@@ -883,7 +883,7 @@ describe('AuthContext', () => {
             id: 1,
             email: 'test@test.com',
             nombre: 'Usuario Demo',
-            rol: 'COMPRADOR',
+            roles: ['COMPRADOR'],
           },
         },
       });
@@ -909,7 +909,7 @@ describe('AuthContext', () => {
             id: 1,
             email: 'test@test.com',
             nombre: 'Usuario Demo',
-            rol: 'COMPRADOR',
+            roles: ['COMPRADOR'],
           },
         },
       });
@@ -970,7 +970,7 @@ describe('AuthContext', () => {
             id: 1,
             email: 'test@test.com',
             nombre: 'Usuario Demo',
-            rol: 'COMPRADOR',
+            roles: ['COMPRADOR'],
           },
         },
       });
@@ -1000,7 +1000,7 @@ describe('AuthContext', () => {
         id: 1,
         email: 'test@test.com',
         nombre: 'Test User',
-        rol: 'COMPRADOR',
+        roles: ['COMPRADOR'],
       };
       localStorageMock.setItem('token', 'invalid_token');
       localStorageMock.setItem('auth_user', JSON.stringify(mockUser));
@@ -1031,7 +1031,7 @@ describe('AuthContext', () => {
         id: 1,
         email: 'test@test.com',
         nombre: 'Test User',
-        rol: 'COMPRADOR',
+        roles: ['COMPRADOR'],
       };
       localStorageMock.setItem('token', 'network_error_token');
       localStorageMock.setItem('auth_user', JSON.stringify(mockUser));
@@ -1238,7 +1238,7 @@ describe('AuthContext', () => {
                 id: 2,
                 nombre: registerData.nombre,
                 email: registerData.email,
-                rol: 'COMPRADOR',
+                roles: ['COMPRADOR'],
               },
             },
             status: 201,
@@ -1255,7 +1255,7 @@ describe('AuthContext', () => {
                 id: 2,
                 nombre: registerData.nombre,
                 email: registerData.email,
-                rol: 'COMPRADOR',
+                roles: ['COMPRADOR'],
               },
             },
             status: 200,

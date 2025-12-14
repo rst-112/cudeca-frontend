@@ -4,6 +4,7 @@ import { Menu, X, Heart, Instagram, Facebook, Twitter } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { Button } from '../ui/Button';
+import { QrScannerFAB } from '../QrScannerFAB';
 import logoLight from '../../assets/ImagenLogoCudecaLigth.png';
 import logoDark from '../../assets/ImagenLogoCudecaDark.png';
 
@@ -224,6 +225,9 @@ const MainLayout = () => {
           </div>
         </div>
       </footer>
+
+      {/* Floating Action Button para Personal de Evento */}
+      <QrScannerFAB />
     </div>
   );
 };

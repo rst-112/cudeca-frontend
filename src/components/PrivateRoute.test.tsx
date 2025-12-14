@@ -82,6 +82,7 @@ describe('PrivateRoute', () => {
         isAuthenticated: false,
         isLoading: true, // ← Cargando
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -111,6 +112,7 @@ describe('PrivateRoute', () => {
         isAuthenticated: false,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -132,6 +134,7 @@ describe('PrivateRoute', () => {
         isAuthenticated: false,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -158,12 +161,13 @@ describe('PrivateRoute', () => {
           id: 1,
           email: 'test@test.com',
           nombre: 'Test User',
-          rol: 'COMPRADOR',
+          roles: ['COMPRADOR'],
         },
         token: 'valid_token_123',
         isAuthenticated: true,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -187,12 +191,13 @@ describe('PrivateRoute', () => {
           id: 1,
           email: 'test@test.com',
           nombre: 'Test User',
-          rol: 'ADMINISTRADOR',
+          roles: ['ADMINISTRADOR'],
         },
         token: 'admin_token',
         isAuthenticated: true,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -230,6 +235,7 @@ describe('PrivateRoute', () => {
         isAuthenticated: false,
         isLoading: true,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -253,12 +259,13 @@ describe('PrivateRoute', () => {
           id: 1,
           email: 'test@test.com',
           nombre: 'Test User',
-          rol: 'COMPRADOR',
+          roles: ['COMPRADOR'],
         },
         token: 'token123',
         isAuthenticated: true,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -288,6 +295,7 @@ describe('PrivateRoute', () => {
         isAuthenticated: false,
         isLoading: true,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -311,6 +319,7 @@ describe('PrivateRoute', () => {
         isAuthenticated: false,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -345,6 +354,7 @@ describe('PrivateRoute', () => {
         isAuthenticated: false, // ← Contradicción intencional
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -363,12 +373,13 @@ describe('PrivateRoute', () => {
           id: 1,
           email: 'test@test.com',
           nombre: 'Test User',
-          rol: 'COMPRADOR',
+          roles: ['COMPRADOR'],
         },
         token: null,
         isAuthenticated: false,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -392,12 +403,13 @@ describe('PrivateRoute', () => {
           id: 1,
           email: 'admin@test.com',
           nombre: 'Admin User',
-          rol: 'ADMINISTRADOR',
+          roles: ['ADMINISTRADOR'],
         },
         token: 'admin_token',
         isAuthenticated: true,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -423,12 +435,13 @@ describe('PrivateRoute', () => {
           id: 2,
           email: 'user@test.com',
           nombre: 'Regular User',
-          rol: 'COMPRADOR',
+          roles: ['COMPRADOR'],
         },
         token: 'user_token',
         isAuthenticated: true,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -456,12 +469,13 @@ describe('PrivateRoute', () => {
           id: 1,
           email: 'user@test.com',
           nombre: 'Any User',
-          rol: 'COMPRADOR',
+          roles: ['COMPRADOR'],
         },
         token: 'token',
         isAuthenticated: true,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
