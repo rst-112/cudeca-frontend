@@ -35,14 +35,14 @@ export default function Dashboard() {
               Eventos
             </Link>
             <Link
-              to="/tickets"
+              to="/dev/perfil-compras"
               className="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
             >
               <Ticket size={20} />
               Mis Entradas
             </Link>
             <Link
-              to="/perfil"
+              to="/dev/perfil-usuario"
               className="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
             >
               <User size={20} />
