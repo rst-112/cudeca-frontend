@@ -60,13 +60,7 @@ function App() {
         <AuthProvider>
           <Toaster position="top-right" richColors />
           <Routes>
-            {/* Rutas públicas con MainLayout */}
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<Home />} />
-              <Route path="evento/:id" element={<DetalleEvento />} />
-            </Route>
-
-            {/* === RUTA DE DESARROLLO - SANDBOX === */}
+            {/* === RUTAS DE DESARROLLO - SANDBOX (SIN LAYOUT) === */}
             <Route path="/dev/mapa" element={<SandboxSeatMap />} />
             <Route path="/dev/mapa/editor" element={<SandboxSeatMapEditor />} />
             <Route path="/dev/checkout-usuario" element={<CheckoutUsuario />} />
@@ -79,31 +73,7 @@ function App() {
             <Route path="/dev/suscripcion" element={<Suscripcion />} />
             <Route path="/dev/perfil-compras" element={<PerfilCompras />} />
 
-            {/* Rutas de autenticación (redirige si ya está logueado) */}
-            <Route
-              path="/login"
-              element={
-                <RedirectIfAuthenticated>
-                  <AuthPage />
-                </RedirectIfAuthenticated>
-              }
-            />
-            <Route
-              path="/registro"
-              element={
-                <RedirectIfAuthenticated>
-                  <AuthPage />
-                </RedirectIfAuthenticated>
-              }
-            />
-
-            {/* Rutas protegidas - Checkout */}
-            <Route element={<PrivateRoute />}>
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/checkout-usuario" element={<CheckoutUsuario />} />
-              <Route path="/perfil" element={<PerfilUsuario />} />
-            </Route>
-
+            {/* === DASHBOARDS CON LAYOUT PROPIO (SIN MAINLAYOUT) === */}
             {/* Rutas protegidas por rol - Administrador */}
             <Route element={<PrivateRoute requiredRole="ADMINISTRADOR" />}>
               <Route path="/admin" element={<AdminDashboard />} />
@@ -119,8 +89,40 @@ function App() {
               <Route path="/staff" element={<EventStaffDashboard />} />
             </Route>
 
-            {/* Redirección por defecto */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            {/* === RUTAS DE AUTENTICACIÓN (SIN NAVBAR) === */}
+            <Route
+              path="login"
+              element={
+                <RedirectIfAuthenticated>
+                  <AuthPage />
+                </RedirectIfAuthenticated>
+              }
+            />
+            <Route
+              path="registro"
+              element={
+                <RedirectIfAuthenticated>
+                  <AuthPage />
+                </RedirectIfAuthenticated>
+              }
+            />
+
+            {/* === TODAS LAS DEMÁS RUTAS CON MAINLAYOUT === */}
+            <Route path="/" element={<MainLayout />}>
+              {/* Rutas públicas */}
+              <Route index element={<Home />} />
+              <Route path="evento/:id" element={<DetalleEvento />} />
+
+              {/* Rutas protegidas - Checkout y Perfil */}
+              <Route element={<PrivateRoute />}>
+                <Route path="checkout" element={<Checkout />} />
+                <Route path="checkout-usuario" element={<CheckoutUsuario />} />
+                <Route path="perfil" element={<PerfilUsuario />} />
+              </Route>
+
+              {/* Redirección por defecto */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Route>
           </Routes>
         </AuthProvider>
       </ThemeProvider>
