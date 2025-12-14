@@ -1,7 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { ThemeToggle } from '../../components/ui/ThemeToggle';
-import { LogOut, User, Calendar, Ticket, Home as HomeIcon, Info, ArrowLeft } from 'lucide-react';
+import {
+  LogOut,
+  User,
+  Calendar,
+  Ticket,
+  Home as HomeIcon,
+  Info,
+  ArrowLeft,
+  Menu,
+  X,
+} from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import QrReaderComponent from '../../components/QrReaderComponent';
 import { QrScannerFAB } from '../../components/QrScannerFAB';
@@ -12,6 +22,7 @@ export default function Dashboard() {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [activeView, setActiveView] = useState<DashboardView>('home');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Verificar si se navegó aquí con una vista específica
   useEffect(() => {
@@ -46,7 +57,7 @@ export default function Dashboard() {
               activeView === 'home'
                 ? 'text-[#00A651] bg-[#00A651]/10'
                 : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-            }`}
+            } cursor-pointer`}
           >
             <HomeIcon size={20} />
             Inicio
@@ -77,7 +88,7 @@ export default function Dashboard() {
         <div className="p-4 border-t border-slate-200 dark:border-slate-800">
           <button
             onClick={logout}
-            className="flex items-center gap-3 px-4 py-3 w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg font-medium transition-colors"
+            className="flex items-center gap-3 px-4 py-3 w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg font-medium transition-colors cursor-pointer"
           >
             <LogOut size={20} />
             Cerrar Sesión
@@ -90,6 +101,15 @@ export default function Dashboard() {
         {/* Topbar */}
         <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 shrink-0">
           <div className="flex items-center gap-3">
+            {/* Botón menú móvil */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+              aria-label="Menu"
+            >
+              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+
             {activeView === 'scanner' && (
               <button
                 onClick={() => setActiveView('home')}
@@ -115,6 +135,62 @@ export default function Dashboard() {
             </div>
           </div>
         </header>
+
+        {/* Menú Móvil Desplegable */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 space-y-2 animate-in slide-in-from-top-5">
+            <button
+              onClick={() => {
+                setActiveView('home');
+                setIsMobileMenuOpen(false);
+              }}
+              className={`flex items-center gap-3 px-4 py-3 w-full rounded-lg font-medium transition-colors ${
+                activeView === 'home'
+                  ? 'text-[#00A651] bg-[#00A651]/10'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+              } cursor-pointer`}
+            >
+              <HomeIcon size={20} />
+              Inicio
+            </button>
+            <Link
+              to="/events"
+              className="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors cursor-pointer"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <Calendar size={20} />
+              Eventos
+            </Link>
+            <Link
+              to="/tickets"
+              className="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors cursor-pointer"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <Ticket size={20} />
+              Mis Entradas
+            </Link>
+            <Link
+              to="/profile"
+              className="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors cursor-pointer"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <User size={20} />
+              Mi Perfil
+            </Link>
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
+              <button
+                onClick={() => {
+                  logout();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="flex items-center gap-3 px-4 py-3 w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg font-medium transition-colors cursor-pointer"
+              >
+                <LogOut size={20} />
+                Cerrar Sesión
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Dashboard Content */}
         <div className="p-6 md:p-8 overflow-y-auto flex-1">

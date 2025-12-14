@@ -89,7 +89,7 @@ const QrReaderComponent: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center w-full gap-4 max-w-md mx-auto">
+    <div className="flex flex-col items-center w-full gap-4 max-w-md mx-auto py-6 md:py-0">
       <div className="w-full aspect-square relative rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950 shadow-2xl ring-1 ring-slate-200 dark:ring-slate-900/5">
         <Scanner
           onScan={handleScan}
@@ -190,7 +190,7 @@ const QrReaderComponent: React.FC = () => {
 
       {/* --- PANEL DE CONTROL DE RESULTADOS --- */}
       {scanResult && (
-        <div className="w-full animate-in slide-in-from-bottom-2 duration-300">
+        <div className="w-full px-4 animate-in slide-in-from-bottom-2 duration-300">
           <div
             className={`rounded-xl border shadow-sm p-4 mb-4 ${
               scanResult.status === 'success'
