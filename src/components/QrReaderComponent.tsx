@@ -118,19 +118,24 @@ const QrReaderComponent: React.FC = () => {
         {/* 0. Estado Inicial - Listo para comenzar */}
         {!isReady && !scanResult && !isProcessing && (
           <div className="absolute inset-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm flex flex-col items-center justify-center text-slate-900 dark:text-white z-30 p-6 rounded-xl">
-            <div className="bg-slate-100 dark:bg-slate-800/50 p-6 rounded-full mb-6 ring-4 ring-slate-200 dark:ring-slate-600/50">
-              <Camera className="w-20 h-20 text-amber-500" strokeWidth={1.5} />
+            <div className="bg-slate-100 dark:bg-slate-800/50 p-4 md:p-6 rounded-full mb-4 md:mb-6 ring-4 ring-slate-200 dark:ring-slate-600/50 transition-all">
+              <Camera
+                className="w-12 h-12 md:w-20 md:h-20 text-amber-500 transition-all"
+                strokeWidth={1.5}
+              />
             </div>
-            <h3 className="text-2xl font-bold mb-3">Escáner de Entradas</h3>
-            <p className="text-slate-600 dark:text-slate-300 text-center text-sm mb-8 max-w-xs leading-relaxed">
+            <h3 className="text-xl md:text-2xl font-bold mb-2 md:mb-3 transition-all">
+              Escáner de Entradas
+            </h3>
+            <p className="text-slate-600 dark:text-slate-300 text-center text-sm mb-6 md:mb-8 max-w-xs leading-relaxed transition-all">
               Presiona el botón para activar la cámara y comenzar a escanear códigos QR
             </p>
             <button
               onClick={startScanning}
-              className="flex items-center gap-3 bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-95 cursor-pointer"
+              className="flex items-center gap-2 md:gap-3 bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold py-3 px-6 md:py-4 md:px-8 rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-95 cursor-pointer"
             >
-              <Camera size={24} />
-              Iniciar Escaneo
+              <Camera className="w-5 h-5 md:w-6 md:h-6" />
+              <span className="text-base md:text-lg">Iniciar Escaneo</span>
             </button>
           </div>
         )}
