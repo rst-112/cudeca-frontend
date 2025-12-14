@@ -221,7 +221,7 @@ const QrReaderComponent: React.FC = () => {
 
           <button
             onClick={resetScan}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-slate-800 to-slate-900 dark:from-white dark:to-slate-100 hover:from-slate-900 hover:to-black dark:hover:from-slate-100 dark:hover:to-white text-white dark:text-slate-900 font-bold py-4 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-[0.98] cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-slate-800 to-slate-900 dark:from-white dark:to-slate-100 hover:from-slate-900 hover:to-black dark:hover:from-slate-100 dark:hover:to-white text-white dark:text-slate-900 font-bold py-4 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-[0.98] cursor-pointer"
           >
             <RotateCcw className="w-5 h-5" />
             Escanear Siguiente

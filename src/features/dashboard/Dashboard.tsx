@@ -1,18 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { ThemeToggle } from '../../components/ui/ThemeToggle';
-import {
-  LogOut,
-  User,
-  Calendar,
-  Ticket,
-  Home as HomeIcon,
-  ScanLine,
-  Info,
-  ArrowLeft,
-} from 'lucide-react';
+import { LogOut, User, Calendar, Ticket, Home as HomeIcon, Info, ArrowLeft } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import QrReaderComponent from '../../components/QrReaderComponent';
+import { QrScannerFAB } from '../../components/QrScannerFAB';
 
 type DashboardView = 'home' | 'scanner';
 
@@ -227,14 +219,9 @@ export default function Dashboard() {
 
       {/* Floating Action Button (FAB) - Solo visible para Personal de Evento */}
       {isStaff && (
-        <button
+        <QrScannerFAB
           onClick={() => setActiveView(activeView === 'scanner' ? 'home' : 'scanner')}
-          className="fixed bottom-8 right-8 h-24 w-24 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 dark:from-slate-600 dark:to-slate-700 hover:from-slate-800 hover:to-slate-900 dark:hover:from-slate-700 dark:hover:to-slate-800 text-white shadow-[0_8px_30px_rgb(0,0,0,0.4)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.5)] transition-all duration-300 flex items-center justify-center z-50 active:scale-95 ring-4 ring-slate-300 dark:ring-slate-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-950 hover:ring-slate-400 dark:hover:ring-slate-400 cursor-pointer"
-          aria-label="Escanear entrada"
-          title="Escanear entrada"
-        >
-          <ScanLine size={48} strokeWidth={3} />
-        </button>
+        />
       )}
     </div>
   );
