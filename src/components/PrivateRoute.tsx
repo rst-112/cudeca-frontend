@@ -15,10 +15,10 @@
 
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import type { User } from '../types/auth.types';
+import type { Role } from '../types/auth.types';
 
 interface PrivateRouteProps {
-  requiredRole?: User['rol'];
+  requiredRole?: Role;
 }
 
 export const PrivateRoute = ({ requiredRole }: PrivateRouteProps) => {
@@ -53,7 +53,7 @@ export const PrivateRoute = ({ requiredRole }: PrivateRouteProps) => {
    *
    * Si se requiere un rol específico y el usuario no lo tiene, redirigir al home.
    */
-  if (requiredRole && user?.rol !== requiredRole) {
+  if (requiredRole && !user?.roles?.includes(requiredRole)) {
     return <Navigate to="/" replace />;
   }
 
