@@ -15,9 +15,6 @@ import Checkout from './pages/public/Checkout';
 import SandboxSeatMap from './pages/public/SandboxSeatMap';
 import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
 
-// Componentes temporales
-const EventStaffDashboard = () => <div>Dashboard (Personal Evento)</div>;
-
 /**
  * RedirectIfAuthenticated - Redirige a home si ya está logueado
  */
@@ -89,11 +86,6 @@ function App() {
             {/* Rutas protegidas por rol - Comprador */}
             <Route element={<PrivateRoute requiredRole="COMPRADOR" />}>
               <Route path="/dashboard" element={<Dashboard />} />
-            </Route>
-
-            {/* Rutas protegidas por rol - Personal de Evento */}
-            <Route element={<PrivateRoute requiredRole="PERSONAL_EVENTO" />}>
-              <Route path="/staff" element={<EventStaffDashboard />} />
             </Route>
 
             {/* Redirección por defecto */}
