@@ -9,7 +9,7 @@
  */
 
 import { apiClient } from './api';
-import type { User, LoginCredentials, RegisterData, AuthResponse } from '../types/auth.types';
+import type { User, LoginCredentials, RegisterData, AuthResponse, Role } from '../types/auth.types';
 
 /**
  * Claves para localStorage - Centralizadas aquí para consistencia
@@ -34,8 +34,25 @@ export const authService = {
     const response = await apiClient.post<AuthResponse>('/auth/login', credentials);
 
     if (response.data.token && response.data.user) {
+      // El backend envía 'rol' como string separado por comas (ej: "COMPRADOR,PERSONAL_EVENTO")
+      // Convertirlo a 'roles' array para el frontend
+      const backendUser = response.data.user as User & { rol?: string };
+      const rolesArray: Role[] =
+        backendUser.roles ??
+        (backendUser.rol ? backendUser.rol.split(',').map((r) => r.trim() as Role) : []);
+
+      const user: User = {
+        id: backendUser.id,
+        email: backendUser.email,
+        nombre: backendUser.nombre,
+        roles: rolesArray,
+      };
+
       localStorage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.data.user));
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+
+      // Devolver la respuesta con el usuario normalizado
+      return { token: response.data.token, user };
     }
 
     return response.data;
@@ -51,8 +68,24 @@ export const authService = {
   register: async (data: RegisterData): Promise<AuthResponse> => {
     const response = await apiClient.post<AuthResponse>('/auth/register', data);
     if (response.data.token && response.data.user) {
+      // El backend envía 'rol' como string separado por comas (ej: "COMPRADOR,PERSONAL_EVENTO")
+      // Convertirlo a 'roles' array para el frontend
+      const backendUser = response.data.user as User & { rol?: string };
+      const rolesArray: Role[] =
+        backendUser.roles ??
+        (backendUser.rol ? backendUser.rol.split(',').map((r) => r.trim() as Role) : []);
+
+      const user: User = {
+        id: backendUser.id,
+        email: backendUser.email,
+        nombre: backendUser.nombre,
+        roles: rolesArray,
+      };
+
       localStorage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.data.user));
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+
+      return { token: response.data.token, user };
     }
 
     return response.data;

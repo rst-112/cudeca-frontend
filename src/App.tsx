@@ -7,7 +7,6 @@ import AuthPage from './features/auth/AuthPage';
 import { PrivateRoute } from './components/PrivateRoute';
 import AdminDashboard from './features/admin/AdminDashboard';
 import Dashboard from './features/dashboard/Dashboard';
-import QrReaderComponent from './components/QrReaderComponent';
 
 // Páginas públicas
 import Home from './pages/Home';
@@ -15,9 +14,6 @@ import DetalleEvento from './pages/public/DetallesEvento';
 import Checkout from './pages/public/Checkout';
 import SandboxSeatMap from './pages/public/SandboxSeatMap';
 import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
-
-// Componentes temporales
-const EventStaffDashboard = () => <div>Dashboard (Personal Evento)</div>;
 
 /**
  * RedirectIfAuthenticated - Redirige a home si ya está logueado
@@ -92,18 +88,9 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
             </Route>
 
-            {/* Rutas protegidas por rol - Personal de Evento */}
-            <Route element={<PrivateRoute requiredRole="PERSONAL_EVENTO" />}>
-              <Route path="/staff" element={<EventStaffDashboard />} />
-            </Route>
-
             {/* Redirección por defecto */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-          <div>
-            <h1>Staff App - QR Code Reader</h1>
-            <QrReaderComponent />
-          </div>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
