@@ -147,7 +147,7 @@ export default function Home() {
       {import.meta.env.DEV && (
         <section className="py-8 bg-amber-50 dark:bg-amber-950/20 border-y border-amber-200 dark:border-amber-900">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <TestTube className="text-amber-600" size={24} />
                 <div>

@@ -107,7 +107,7 @@ export default function AuthPage() {
 
         {/* --- VISTA MÓVIL (Simple Stack) --- */}
         <div className="lg:hidden absolute inset-0 bg-background flex flex-col p-4 overflow-y-auto overflow-x-hidden z-30">
-          <div className="flex-1 flex items-center justify-center py-8">
+          <div className="flex-1 flex items-center justify-center py-8 w-full max-w-md mx-auto">
             {isLogin ? (
               <LoginPage onSwitch={() => handleSwitch('/registro')} />
             ) : (
