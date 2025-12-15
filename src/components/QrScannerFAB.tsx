@@ -1,18 +1,24 @@
 import { ScanLine } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 interface QrScannerFABProps {
-  onClick?: () => void; // Callback opcional para manejar el click
+  onClick?: () => void; // Callback opcional por si quieres sobrescribir el comportamiento
 }
 
 /**
  * Floating Action Button para acceder al escáner QR
  * Solo visible para usuarios con rol PERSONAL_EVENTO
+ * * Comportamiento:
+ * - Si se pasa 'onClick', ejecuta esa función.
+ * - Si NO se pasa 'onClick', gestiona la navegación automáticamente:
+ * - Si ya estás en el scanner -> Va al Dashboard Home
+ * - Si estás en cualquier otro sitio -> Va al Scanner
  */
 export const QrScannerFAB = ({ onClick }: QrScannerFABProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Verificar si el usuario es personal de evento (staff)
   const isStaff = user?.roles?.includes('PERSONAL_EVENTO');
@@ -23,14 +29,18 @@ export const QrScannerFAB = ({ onClick }: QrScannerFABProps) => {
   }
 
   const handleClick = () => {
-    // Si se proporciona un onClick personalizado, usarlo
+    // 1. Prioridad a la lógica personalizada si existe
     if (onClick) {
       onClick();
       return;
     }
 
-    // Comportamiento por defecto: navegar al dashboard con vista de scanner
-    navigate('/dashboard', { state: { view: 'scanner' } });
+    // 2. Lógica automática de navegación (Toggle)
+    if (location.pathname === '/dashboard/scanner') {
+      navigate('/dashboard');
+    } else {
+      navigate('/dashboard/scanner');
+    }
   };
 
   return (
