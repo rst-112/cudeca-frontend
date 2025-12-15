@@ -118,6 +118,7 @@ function App() {
                 <Route path="checkout" element={<Checkout />} />
                 <Route path="checkout-usuario" element={<CheckoutUsuario />} />
                 <Route path="perfil" element={<PerfilUsuario />} />
+                <Route path="perfil-compras" element={<PerfilCompras />} />
               </Route>
 
               {/* Redirección por defecto */}

@@ -14,8 +14,10 @@ import type { DatosFiscales } from '../types/checkout.types';
 // ============================================================================
 
 export interface ItemCheckout {
-  asientoId: number;
-  precio: number;
+  tipo: 'ENTRADA' | 'DONACION'; // Java: String tipo
+  referenciaId: number;         // Java: Long referenciaId
+  cantidad: number;             // Java: Integer cantidad
+  precio: number;               // Java: Double precio
 }
 
 export interface CheckoutRequest {
@@ -40,6 +42,30 @@ export interface DetallesCompra {
   estadoCompra: 'PENDIENTE' | 'COMPLETADO' | 'CANCELADO' | 'FALLIDO';
   fechaCompra: string;
   items: ItemCheckout[];
+}
+
+export interface FiscalDataDTO {
+  nombre: string;
+  nif: string;
+  direccion: string;
+  cp: string; // Si tu Java lo pide, añádelo, si no, quítalo
+}
+
+export interface CheckoutRequest {
+  usuarioId: number;            // Java: Long usuarioId
+  emailContacto: string;        // Java: @NotBlank emailContacto
+  items: ItemCheckout[];        // Java: List<ItemDTO> items
+  donacionExtra: number;        // Java: Double donacionExtra
+  metodoPago: string;           // Java: "TARJETA" | "PAYPAL" | "BIZUM" | "MONEDERO"
+  datosFiscales?: FiscalDataDTO; // Opcional
+}
+
+export interface CheckoutResponse {
+  compraId: number;
+  estado: string;
+  total: number;
+  mensaje: string;
+  urlPasarela?: string;
 }
 
 export interface ConfirmarPagoRequest {

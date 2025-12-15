@@ -6,7 +6,7 @@ export const ConfirmationSection = () => {
   const userEmail = 'usuario.logueado@email.com';
 
   const handleViewPurchases = () => {
-    navigate('/perfil');
+    navigate('/dev/perfil-compras');
   };
 
   const handleGoBack = () => {

@@ -11,6 +11,15 @@ import { apiGet, apiPut } from './api';
 // TIPOS
 // ============================================================================
 
+export interface CompraResumen {
+  id: string;
+  title: string;
+  date: string;
+  tickets: string;
+  total: string;
+  status: string;
+}
+
 export interface PerfilUsuario {
   id: number;
   email: string;
@@ -46,6 +55,15 @@ export interface MovimientoMonedero {
   monto: number;
   descripcion: string;
   fecha: string;
+}
+
+export interface CompraResumen {
+  id: string;
+  title: string;
+  date: string;
+  tickets: string;
+  total: string;
+  status: string;
 }
 
 export interface ActualizarPerfilRequest {
@@ -132,6 +150,10 @@ export async function descargarPdfEntrada(usuarioId: number, entradaId: number):
  */
 export function generarUrlDescargaPdf(usuarioId: number, entradaId: number): string {
   return `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/perfil/${usuarioId}/entradas/${entradaId}/pdf`;
+}
+
+export async function obtenerHistorialCompras(usuarioId: number): Promise<CompraResumen[]> {
+  return apiGet<CompraResumen[]>(`/perfil/${usuarioId}/compras`);
 }
 
 // ============================================================================
