@@ -33,7 +33,7 @@ import { AxiosError } from 'axios';
  *
  * Cualquier componente que use useAuth() tendrá acceso a estas propiedades
  */
-interface AuthContextType {
+export interface AuthContextType {
   /** Usuario actual logueado (null si no hay sesión) */
   user: User | null;
 
