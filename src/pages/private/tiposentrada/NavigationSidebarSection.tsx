@@ -70,7 +70,7 @@ export const NavigationSidebarSection = (): JSX.Element => {
                   {subItem.link ? (
                     <button
                       onClick={() => navigate(subItem.link!)}
-                      className="text-sm text-slate-600 dark:text-slate-400 hover:text-[#00a651] dark:hover:text-[#00d66a] transition-colors [font-family:'Arimo-Regular',Helvetica] text-left"
+                      className="text-sm text-slate-600 dark:text-slate-400 hover:text-[#00a651] dark:hover:text-[#00d66a] transition-colors text-left"
                     >
                       {subItem.label}
                     </button>

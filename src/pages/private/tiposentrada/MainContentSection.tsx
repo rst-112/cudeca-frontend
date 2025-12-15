@@ -63,11 +63,11 @@ export const MainContentSection = (): JSX.Element => {
       <nav className="px-8 border-b border-slate-200 dark:border-slate-700 flex gap-12">
         <button
           onClick={() => navigate('/creacion-eventos')}
-          className="py-4 px-2 font-normal [font-family:'Arimo-Regular',Helvetica] text-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
+          className="py-4 px-2 font-normal text-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
         >
           Información General
         </button>
-        <button className="py-4 px-2 font-normal [font-family:'Arimo-Regular',Helvetica] text-xl text-[#00a651] dark:text-[#00d66a] border-b-2 border-[#00a651] dark:border-[#00d66a]">
+        <button className="py-4 px-2 font-normal text-xl text-[#00a651] dark:text-[#00d66a] border-b-2 border-[#00a651] dark:border-[#00d66a]">
           Tipos de Entrada
         </button>
       </nav>
@@ -140,7 +140,7 @@ export const MainContentSection = (): JSX.Element => {
                     value={ticketName}
                     onChange={(e) => setTicketName(e.target.value)}
                     placeholder="e.g. Entrada General"
-                    className="w-full h-16 px-6 rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white [font-family:'Arimo-Regular',Helvetica] text-lg placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
+                    className="w-full h-16 px-6 rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-lg placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
                   />
                 </div>
 
@@ -153,7 +153,7 @@ export const MainContentSection = (): JSX.Element => {
                     value={capacity}
                     onChange={(e) => setCapacity(e.target.value)}
                     placeholder="200"
-                    className="w-full h-16 px-6 rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white [font-family:'Arimo-Regular',Helvetica] text-lg placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
+                    className="w-full h-16 px-6 rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-lg placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
                   />
                 </div>
               </div>
@@ -170,14 +170,14 @@ export const MainContentSection = (): JSX.Element => {
                       value={basePrice}
                       onChange={(e) => setBasePrice(e.target.value)}
                       placeholder="Precio Base (€)"
-                      className="w-full h-16 px-6 rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white [font-family:'Arimo-Regular',Helvetica] text-lg placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
+                      className="w-full h-16 px-6 rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-lg placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
                     />
                     <input
                       type="number"
                       value={donation}
                       onChange={(e) => setDonation(e.target.value)}
                       placeholder="Donación (€)"
-                      className="w-full h-16 px-6 rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white [font-family:'Arimo-Regular',Helvetica] text-lg placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
+                      className="w-full h-16 px-6 rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-lg placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
                     />
                   </div>
                 </div>
@@ -191,7 +191,7 @@ export const MainContentSection = (): JSX.Element => {
                     value={purchaseLimit}
                     onChange={(e) => setPurchaseLimit(e.target.value)}
                     placeholder="10"
-                    className="w-full h-16 px-6 rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white [font-family:'Arimo-Regular',Helvetica] text-lg placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
+                    className="w-full h-16 px-6 rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-lg placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
                   />
                 </div>
               </div>
@@ -199,7 +199,7 @@ export const MainContentSection = (): JSX.Element => {
 
             <button
               type="submit"
-              className="w-full h-16 rounded-2xl bg-[#00a651] dark:bg-[#00a651] text-white font-bold [font-family:'Arimo-Regular',Helvetica] text-lg hover:bg-[#008a43] dark:hover:bg-[#008a43] transition-colors shadow-lg"
+              className="w-full h-16 rounded-2xl bg-[#00a651] dark:bg-[#00a651] text-white font-bold text-lg hover:bg-[#008a43] dark:hover:bg-[#008a43] transition-colors shadow-lg"
             >
               Añadir entrada
             </button>

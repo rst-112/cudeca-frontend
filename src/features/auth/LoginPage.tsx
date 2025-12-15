@@ -89,10 +89,10 @@ export default function LoginPage({ onSwitch }: LoginPageProps) {
 
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-5xl font-bold text-slate-900 dark:text-white font-['Arimo'] tracking-tight">
+        <h1 className="text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
           Inicia sesión
         </h1>
-        <p className="text-slate-600 dark:text-slate-400 text-lg font-['Arimo'] leading-relaxed">
+        <p className="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
           ¿No tienes cuenta?{' '}
           <button
             type="button"
@@ -151,7 +151,7 @@ export default function LoginPage({ onSwitch }: LoginPageProps) {
             </button>
           </div>
           {errors.password && (
-            <p className="text-sm text-red-600 dark:text-red-400 flex items-center gap-1.5 font-['Arimo'] animate-in fade-in slide-in-from-top-1 duration-200">
+            <p className="text-sm text-red-600 dark:text-red-400 flex items-center gap-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
               <span className="text-base" aria-hidden="true">
                 ⚠
               </span>{' '}

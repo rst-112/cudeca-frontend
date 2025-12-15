@@ -69,7 +69,7 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui'], // Cambiado a Inter
+        sans: ['Arimo', 'ui-sans-serif', 'system-ui'], // Cambiado a Arimo
       },
     },
   },

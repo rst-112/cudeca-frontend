@@ -103,10 +103,10 @@ export default function RegisterPage({ onSwitch }: RegisterPageProps) {
 
       {/* Header */}
       <div className="text-center space-y-3">
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-white font-['Arimo'] tracking-tight">
+        <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
           Regístrate gratis
         </h1>
-        <p className="text-slate-600 dark:text-slate-400 font-['Arimo'] leading-relaxed">
+        <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
           ¿Ya tienes cuenta?{' '}
           <button
             type="button"

@@ -54,7 +54,7 @@ export const MainContentSection = (): JSX.Element => {
   return (
     <div className="w-full h-full flex flex-col bg-white dark:bg-slate-900 overflow-y-auto">
       <div className="ml-12 w-auto mt-[45px] flex">
-        <h1 className="mt-[0.5px] h-12 [font-family:'Arimo-Regular',Helvetica] font-normal text-[#00a651] dark:text-[#00d66a] text-[42px] tracking-[0] leading-[48px] whitespace-nowrap">
+        <h1 className="mt-[0.5px] h-12 font-normal text-[#00a651] dark:text-[#00d66a] text-[42px] tracking-[0] leading-[48px] whitespace-nowrap">
           Formulario de creación de eventos
         </h1>
       </div>
@@ -68,7 +68,7 @@ export const MainContentSection = (): JSX.Element => {
           onClick={() => navigate('/creacion-eventos')}
           className="mt-2 w-auto flex hover:text-[#00a651] dark:hover:text-[#00d66a] transition-colors text-left"
         >
-          <div className="h-8 [font-family:'Arimo-Regular',Helvetica] font-normal text-slate-600 dark:text-slate-400 text-xl text-center tracking-[0] leading-8 whitespace-nowrap">
+          <div className="h-8 font-normal text-slate-600 dark:text-slate-400 text-xl text-center tracking-[0] leading-8 whitespace-nowrap">
             Información General
           </div>
         </button>
@@ -76,7 +76,7 @@ export const MainContentSection = (): JSX.Element => {
         <div className="w-auto h-[52px] flex border-b-2 border-[#00a651] dark:border-[#00d66a]">
           <div className="mt-2 w-auto flex">
             <div
-              className="h-8 [font-family:'Arimo-Regular',Helvetica] font-normal text-[#00a651] dark:text-[#00d66a] text-xl text-center tracking-[0] leading-8 whitespace-nowrap"
+              className="h-8 font-normal text-[#00a651] dark:text-[#00d66a] text-xl text-center tracking-[0] leading-8 whitespace-nowrap"
               aria-current="page"
             >
               Tipos de Entrada
@@ -94,7 +94,7 @@ export const MainContentSection = (): JSX.Element => {
             <div className="relative self-stretch w-full h-[39px]">
               <h2
                 id="existing-tickets-heading"
-                className="[font-family:'Arimo-Regular',Helvetica] font-normal text-slate-800 dark:text-white text-[26px] tracking-[0] leading-[39px] whitespace-nowrap"
+                className="font-normal text-slate-800 dark:text-white text-[26px] tracking-[0] leading-[39px] whitespace-nowrap"
               >
                 Entradas Existentes
               </h2>
@@ -107,16 +107,16 @@ export const MainContentSection = (): JSX.Element => {
               >
                 <div className="relative flex-1 grow h-[27px]">
                   <div className="absolute top-0 left-0 flex flex-col gap-2 lg:flex-row lg:gap-8">
-                    <div className="w-[200px] h-[27px] [font-family:'Arimo-Regular',Helvetica] font-normal text-slate-800 dark:text-white text-lg tracking-[0] leading-[27px] whitespace-nowrap">
+                    <div className="w-[200px] h-[27px] font-normal text-slate-800 dark:text-white text-lg tracking-[0] leading-[27px] whitespace-nowrap">
                       {ticket.name}
                     </div>
 
-                    <p className="w-auto h-[27px] [font-family:'Arimo-Regular',Helvetica] font-normal text-slate-800 dark:text-white text-lg tracking-[0] leading-[27px]">
+                    <p className="w-auto h-[27px] font-normal text-slate-800 dark:text-white text-lg tracking-[0] leading-[27px]">
                       {ticket.basePrice + ticket.donation}€ ({ticket.basePrice}€
                       + {ticket.donation}€ Donación)
                     </p>
 
-                    <div className="w-auto h-[27px] [font-family:'Arimo-Regular',Helvetica] font-normal text-slate-800 dark:text-white text-lg tracking-[0]">
+                    <div className="w-auto h-[27px] font-normal text-slate-800 dark:text-white text-lg tracking-[0]">
                       Aforo: {ticket.capacity}
                     </div>
                   </div>
@@ -125,7 +125,7 @@ export const MainContentSection = (): JSX.Element => {
                 <div className="flex w-auto h-[42px] items-start gap-2 relative">
                   <button
                     onClick={() => handleEditTicket(ticket.id)}
-                    className="px-4 py-2 rounded-[10px] border border-solid border-[#00a651] dark:border-[#00d66a] text-[#00a651] dark:text-[#00d66a] hover:bg-[#00a651] hover:text-white dark:hover:bg-[#00d66a] dark:hover:text-slate-900 transition-all [font-family:'Arimo-Regular',Helvetica] font-normal text-base text-center tracking-[0] leading-6"
+                    className="px-4 py-2 rounded-[10px] border border-solid border-[#00a651] dark:border-[#00d66a] text-[#00a651] dark:text-[#00d66a] hover:bg-[#00a651] hover:text-white dark:hover:bg-[#00d66a] dark:hover:text-slate-900 transition-all font-normal text-base text-center tracking-[0] leading-6"
                     type="button"
                     aria-label={`Editar ${ticket.name}`}
                   >
@@ -134,7 +134,7 @@ export const MainContentSection = (): JSX.Element => {
 
                   <button
                     onClick={() => handleDeleteTicket(ticket.id)}
-                    className="px-4 py-2 rounded-[10px] border border-solid border-[#fa2b36] dark:border-[#ff6b6b] text-[#fa2b36] dark:text-[#ff6b6b] hover:bg-[#fa2b36] hover:text-white dark:hover:bg-[#ff6b6b] dark:hover:text-white transition-all [font-family:'Arimo-Regular',Helvetica] font-normal text-base text-center tracking-[0] leading-6"
+                    className="px-4 py-2 rounded-[10px] border border-solid border-[#fa2b36] dark:border-[#ff6b6b] text-[#fa2b36] dark:text-[#ff6b6b] hover:bg-[#fa2b36] hover:text-white dark:hover:bg-[#ff6b6b] dark:hover:text-white transition-all font-normal text-base text-center tracking-[0] leading-6"
                     type="button"
                     aria-label={`Eliminar ${ticket.name}`}
                   >
@@ -152,7 +152,7 @@ export const MainContentSection = (): JSX.Element => {
             <div className="relative self-stretch w-full h-[33px]">
               <h2
                 id="edit-ticket-heading"
-                className="[font-family:'Arimo-Regular',Helvetica] font-normal text-slate-800 dark:text-white text-[22px] tracking-[0] leading-[33px] whitespace-nowrap"
+                className="font-normal text-slate-800 dark:text-white text-[22px] tracking-[0] leading-[33px] whitespace-nowrap"
               >
                 Editar entrada
               </h2>
@@ -171,7 +171,7 @@ export const MainContentSection = (): JSX.Element => {
                     <div className="relative self-stretch w-full h-[27px]">
                       <label
                         htmlFor="ticket-name"
-                        className="[font-family:'Arimo-Regular',Helvetica] font-normal text-slate-800 dark:text-white text-lg tracking-[0] leading-[27px] whitespace-nowrap"
+                        className="font-normal text-slate-800 dark:text-white text-lg tracking-[0] leading-[27px] whitespace-nowrap"
                       >
                         Nombre entrada
                       </label>
@@ -183,7 +183,7 @@ export const MainContentSection = (): JSX.Element => {
                       value={ticketName}
                       onChange={(e) => setTicketName(e.target.value)}
                       placeholder="e.g. Entrada General"
-                      className="flex h-[68px] items-center px-[22px] py-0 relative self-stretch w-full rounded-[18px] overflow-hidden border border-solid border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 [font-family:'Arimo-Regular',Helvetica] font-normal text-xl tracking-[0] leading-[normal] focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
+                      className="flex h-[68px] items-center px-[22px] py-0 relative self-stretch w-full rounded-[18px] overflow-hidden border border-solid border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 font-normal text-xl tracking-[0] leading-[normal] focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
                       aria-required="true"
                     />
                   </div>
@@ -192,7 +192,7 @@ export const MainContentSection = (): JSX.Element => {
                     <div className="relative self-stretch w-full h-[27px]">
                       <label
                         htmlFor="capacity"
-                        className="[font-family:'Arimo-Regular',Helvetica] font-normal text-slate-800 dark:text-white text-lg tracking-[0] leading-[27px] whitespace-nowrap"
+                        className="font-normal text-slate-800 dark:text-white text-lg tracking-[0] leading-[27px] whitespace-nowrap"
                       >
                         Aforo / Cantidad Total
                       </label>
@@ -204,7 +204,7 @@ export const MainContentSection = (): JSX.Element => {
                       value={capacity}
                       onChange={(e) => setCapacity(e.target.value)}
                       placeholder="200"
-                      className="flex h-[68px] items-center px-[22px] py-0 relative self-stretch w-full rounded-[18px] overflow-hidden border border-solid border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 [font-family:'Arimo-Regular',Helvetica] font-normal text-xl tracking-[0] leading-[normal] focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
+                      className="flex h-[68px] items-center px-[22px] py-0 relative self-stretch w-full rounded-[18px] overflow-hidden border border-solid border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 font-normal text-xl tracking-[0] leading-[normal] focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
                       aria-required="true"
                     />
                   </div>
@@ -213,7 +213,7 @@ export const MainContentSection = (): JSX.Element => {
                 <div className="flex flex-col gap-6">
                   <div className="flex flex-col gap-2 relative self-stretch w-full">
                     <div className="relative self-stretch w-full h-[27px]">
-                      <label className="[font-family:'Arimo-Regular',Helvetica] font-normal text-slate-800 dark:text-white text-lg tracking-[0] leading-[27px] whitespace-nowrap">
+                      <label className="font-normal text-slate-800 dark:text-white text-lg tracking-[0] leading-[27px] whitespace-nowrap">
                         Precio
                       </label>
                     </div>
@@ -225,7 +225,7 @@ export const MainContentSection = (): JSX.Element => {
                         value={basePrice}
                         onChange={(e) => setBasePrice(e.target.value)}
                         placeholder="Precio Base (€)"
-                        className="flex h-[68px] items-center px-[22px] py-0 rounded-[18px] overflow-hidden border border-solid border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 [font-family:'Arimo-Regular',Helvetica] font-normal text-xl tracking-[0] leading-[normal] focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
+                        className="flex h-[68px] items-center px-[22px] py-0 rounded-[18px] overflow-hidden border border-solid border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 font-normal text-xl tracking-[0] leading-[normal] focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
                         aria-label="Precio Base en euros"
                         aria-required="true"
                       />
@@ -236,7 +236,7 @@ export const MainContentSection = (): JSX.Element => {
                         value={donation}
                         onChange={(e) => setDonation(e.target.value)}
                         placeholder="Donación (€)"
-                        className="flex h-[68px] items-center px-[22px] py-0 rounded-[18px] overflow-hidden border border-solid border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 [font-family:'Arimo-Regular',Helvetica] font-normal text-xl tracking-[0] leading-[normal] focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
+                        className="flex h-[68px] items-center px-[22px] py-0 rounded-[18px] overflow-hidden border border-solid border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 font-normal text-xl tracking-[0] leading-[normal] focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
                         aria-label="Donación en euros"
                         aria-required="true"
                       />
@@ -247,7 +247,7 @@ export const MainContentSection = (): JSX.Element => {
                     <div className="relative self-stretch w-full h-[27px]">
                       <label
                         htmlFor="purchase-limit"
-                        className="[font-family:'Arimo-Regular',Helvetica] font-normal text-slate-800 dark:text-white text-lg tracking-[0] leading-[27px] whitespace-nowrap"
+                        className="font-normal text-slate-800 dark:text-white text-lg tracking-[0] leading-[27px] whitespace-nowrap"
                       >
                         Límite de compra por usuario
                       </label>
@@ -259,7 +259,7 @@ export const MainContentSection = (): JSX.Element => {
                       value={purchaseLimit}
                       onChange={(e) => setPurchaseLimit(e.target.value)}
                       placeholder="10"
-                      className="flex h-[68px] items-center px-[22px] py-0 relative self-stretch w-full rounded-[18px] overflow-hidden border border-solid border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 [font-family:'Arimo-Regular',Helvetica] font-normal text-xl tracking-[0] leading-[normal] focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
+                      className="flex h-[68px] items-center px-[22px] py-0 relative self-stretch w-full rounded-[18px] overflow-hidden border border-solid border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 font-normal text-xl tracking-[0] leading-[normal] focus:outline-none focus:border-[#00a651] dark:focus:border-[#00d66a] transition-colors"
                       aria-required="true"
                     />
                   </div>
@@ -268,7 +268,7 @@ export const MainContentSection = (): JSX.Element => {
 
               <button
                 type="submit"
-                className="w-full h-[70px] bg-[#00a651] dark:bg-[#00d66a] hover:bg-[#008a43] dark:hover:bg-[#00a651] rounded-[18px] cursor-pointer transition-all [font-family:'Arimo-Regular',Helvetica] font-normal text-white dark:text-slate-900 text-xl text-center tracking-[0] leading-[30px]"
+                className="w-full h-[70px] bg-[#00a651] dark:bg-[#00d66a] hover:bg-[#008a43] dark:hover:bg-[#00a651] rounded-[18px] cursor-pointer transition-all font-normal text-white dark:text-slate-900 text-xl text-center tracking-[0] leading-[30px]"
               >
                 Añadir entrada
               </button>

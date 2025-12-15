@@ -1,8 +1,10 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, ChevronDown, Calendar, MapPin } from 'lucide-react';
 
 const Eventos: React.FC = () => {
+  const navigate = useNavigate();
   const events = [
     {
       title: 'Concierto Solidario Rock',
@@ -82,7 +84,7 @@ const Eventos: React.FC = () => {
             <input
               type="search"
               placeholder="Buscar evento..."
-              className="flex-1 bg-transparent text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 outline-none [font-family:'Arimo-Regular',Helvetica]"
+              className="flex-1 bg-transparent text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 outline-none"
               aria-label="Buscar evento"
             />
           </div>
@@ -92,35 +94,35 @@ const Eventos: React.FC = () => {
             aria-label="Event category filters"
           >
             <button
-              className="px-6 py-2 rounded-full font-semibold transition-all [font-family:'Arimo-Regular',Helvetica] bg-[#00753e] dark:bg-[#00a651] text-white shadow-lg"
+              className="px-6 py-2 rounded-full font-semibold transition-all bg-[#00753e] dark:bg-[#00a651] text-white shadow-lg"
               aria-pressed="true"
               aria-label="Filter by Todos"
             >
               Todos
             </button>
             <button
-              className="px-6 py-2 rounded-full font-semibold transition-all [font-family:'Arimo-Regular',Helvetica] bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 hover:shadow-md"
+              className="px-6 py-2 rounded-full font-semibold transition-all bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 hover:shadow-md"
               aria-pressed="false"
               aria-label="Filter by Conciertos"
             >
               Conciertos
             </button>
             <button
-              className="px-6 py-2 rounded-full font-semibold transition-all [font-family:'Arimo-Regular',Helvetica] bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 hover:shadow-md"
+              className="px-6 py-2 rounded-full font-semibold transition-all bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 hover:shadow-md"
               aria-pressed="false"
               aria-label="Filter by Cenas"
             >
               Cenas
             </button>
             <button
-              className="px-6 py-2 rounded-full font-semibold transition-all [font-family:'Arimo-Regular',Helvetica] bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 hover:shadow-md"
+              className="px-6 py-2 rounded-full font-semibold transition-all bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 hover:shadow-md"
               aria-pressed="false"
               aria-label="Filter by Rifas"
             >
               Rifas
             </button>
             <button
-              className="px-6 py-2 rounded-full font-semibold transition-all [font-family:'Arimo-Regular',Helvetica] bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 hover:shadow-md"
+              className="px-6 py-2 rounded-full font-semibold transition-all bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 hover:shadow-md"
               aria-pressed="false"
               aria-label="Filter by Otros"
             >
@@ -129,7 +131,7 @@ const Eventos: React.FC = () => {
           </nav>
 
           <button
-            className="px-6 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 rounded-lg font-semibold hover:shadow-md transition-all [font-family:'Arimo-Regular',Helvetica] flex items-center gap-2"
+            className="px-6 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 rounded-lg font-semibold hover:shadow-md transition-all flex items-center gap-2"
             aria-label="Filtrar por fecha: Próximos eventos"
             aria-haspopup="listbox"
             aria-expanded="false"
@@ -141,10 +143,10 @@ const Eventos: React.FC = () => {
       <section className="w-full bg-white dark:bg-slate-900 py-16 px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col gap-4 mb-8">
-            <h2 className="text-4xl font-bold text-slate-900 dark:text-white [font-family:'Arimo-Bold',Helvetica]">
+            <h2 className="text-4xl font-bold text-slate-900 dark:text-white">
               Próximos Eventos
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 text-lg [font-family:'Arimo-Regular',Helvetica]">
+            <p className="text-slate-600 dark:text-slate-400 text-lg">
               Descubre todas las formas de apoyar a Fundación Cudeca
             </p>
           </div>
@@ -153,17 +155,17 @@ const Eventos: React.FC = () => {
               <div key={index} className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all flex flex-col">
                 <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-t-xl" />
                 <div className="p-5 flex flex-col flex-grow">
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 [font-family:'Arimo-Bold',Helvetica]">{event.title}</h3>
-                  <div className="flex items-center text-sm text-slate-600 dark:text-slate-400 mb-2 [font-family:'Arimo-Regular',Helvetica]">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{event.title}</h3>
+                  <div className="flex items-center text-sm text-slate-600 dark:text-slate-400 mb-2">
                     <Calendar className="w-4 h-4 mr-2" />
                     <span>{event.date}</span>
                   </div>
-                  <div className="flex items-center text-sm text-slate-600 dark:text-slate-400 mb-4 [font-family:'Arimo-Regular',Helvetica]">
+                  <div className="flex items-center text-sm text-slate-600 dark:text-slate-400 mb-4">
                     <MapPin className="w-4 h-4 mr-2" />
                     <span>{event.location}</span>
                   </div>
                   <div className="mb-4">
-                    <div className="flex justify-between items-center text-xs text-slate-600 dark:text-slate-400 uppercase [font-family:'Arimo-Regular',Helvetica]">
+                    <div className="flex justify-between items-center text-xs text-slate-600 dark:text-slate-400 uppercase">
                       <span>Recaudado</span>
                       <span className="text-slate-900 dark:text-white font-bold">{event.raised}</span>
                     </div>
@@ -172,19 +174,24 @@ const Eventos: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex justify-between items-center border-t border-slate-200 dark:border-slate-700 pt-4 mt-auto">
-                    <span className="text-lg font-bold text-slate-900 dark:text-white [font-family:'Arimo-Bold',Helvetica]">{event.price}</span>
-                    <button className="px-6 py-2 bg-[#00a651] text-white text-sm rounded-full font-semibold hover:bg-[#00753e] transition-all [font-family:'Arimo-Regular',Helvetica]">Entradas</button>
+                    <span className="text-lg font-bold text-slate-900 dark:text-white">{event.price}</span>
+                    <button
+                      onClick={() => navigate('/info-evento-invitado')}
+                      className="px-6 py-2 bg-[#00a651] text-white text-sm rounded-full font-semibold hover:bg-[#00753e] transition-all"
+                    >
+                      Entradas
+                    </button>
                   </div>
                 </div>
               </div>
             ))}
           </div>
           <div className="flex justify-center items-center gap-2 mt-12">
-            <button className="px-4 py-2 text-slate-600 dark:text-slate-400 [font-family:'Arimo-Regular',Helvetica]">« Anterior</button>
-            <button className="w-10 h-10 bg-[#00a651] text-white rounded-full font-semibold [font-family:'Arimo-Regular',Helvetica]">1</button>
-            <button className="w-10 h-10 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full border border-slate-300 dark:border-slate-600 font-semibold [font-family:'Arimo-Regular',Helvetica]">2</button>
-            <button className="w-10 h-10 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full border border-slate-300 dark:border-slate-600 font-semibold [font-family:'Arimo-Regular',Helvetica]">3</button>
-            <button className="px-4 py-2 text-slate-600 dark:text-slate-400 [font-family:'Arimo-Regular',Helvetica]">Siguiente »</button>
+            <button className="px-4 py-2 text-slate-600 dark:text-slate-400">« Anterior</button>
+            <button className="w-10 h-10 bg-[#00a651] text-white rounded-full font-semibold">1</button>
+            <button className="w-10 h-10 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full border border-slate-300 dark:border-slate-600 font-semibold">2</button>
+            <button className="w-10 h-10 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full border border-slate-300 dark:border-slate-600 font-semibold">3</button>
+            <button className="px-4 py-2 text-slate-600 dark:text-slate-400">Siguiente »</button>
           </div>
         </div>
       </section>

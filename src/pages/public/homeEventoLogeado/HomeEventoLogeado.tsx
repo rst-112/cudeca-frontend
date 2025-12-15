@@ -1,19 +1,18 @@
 import React from "react";
 import { EventCardsSection } from "./EventCardsSection";
 import { FeaturedEventSection } from "./FeaturedEventSection";
-import { FooterSection } from "./FooterSection";
+import { Header } from "../../../components/layout/Header";
 import { HeroBannerSection } from "./HeroBannerSection";
-import { NavigationHeaderSection } from "./NavigationHeaderSection";
+import Footer from "../../../components/layout/Footer";
 
 export const HomeEventoLogeado = (): JSX.Element => {
   return (
     <div className="w-full min-h-screen bg-white dark:bg-slate-900">
-      <NavigationHeaderSection />
+      <Header isLoggedIn={true} />
       <HeroBannerSection />
       <FeaturedEventSection />
       <EventCardsSection />
-      <FooterSection />
+      <Footer />
     </div>
   );
 };
-

@@ -29,7 +29,7 @@ export const MainContentSection = (): JSX.Element => {
           >
             <button
               onClick={() => navigate("/home-invitado")}
-              className="pb-2 text-base transition-colors [font-family:'Arimo-Regular',Helvetica] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              className="pb-2 text-base transition-colors text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               aria-label="Ir a inicio"
             >
               Inicio
@@ -43,7 +43,7 @@ export const MainContentSection = (): JSX.Element => {
             </button>
             <button
               onClick={() => navigate("/home-invitado")}
-              className="pb-2 text-base transition-colors [font-family:'Arimo-Regular',Helvetica] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              className="pb-2 text-base transition-colors text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               aria-label="Ir a contacto"
             >
               Contacto

@@ -1,23 +1,24 @@
 import { useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
-import { Menu, X, Heart, Instagram, Facebook, Twitter } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { Button } from '../ui/Button';
 import logoLight from '../../assets/ImagenLogoCudecaLigth.png';
 import logoDark from '../../assets/ImagenLogoCudecaDark.png';
+import Footer from './Footer'; // Importar el nuevo componente
 
 const MainLayout = () => {
   const { isAuthenticated, user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300 font-['Arimo']">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300">
       {/* Navbar Sticky con efecto blur */}
       <nav className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           {/* Logo Dinámico */}
-          <Link to="/" className="relative h-12 w-40 group transition-transform hover:scale-105">
+          <Link to={isAuthenticated ? "/home-logeado" : "/home-invitado"} className="relative h-12 w-40 group transition-transform hover:scale-105">
             <img
               src={logoLight}
               alt="Fundación Cudeca"
@@ -33,7 +34,7 @@ const MainLayout = () => {
           {/* Navegación Desktop */}
           <div className="hidden md:flex items-center gap-8">
             <Link
-              to="/"
+              to={isAuthenticated ? "/home-logeado" : "/home-invitado"}
               className="text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-[#00A651] dark:hover:text-[#00A651] transition-colors"
             >
               Inicio
@@ -89,7 +90,7 @@ const MainLayout = () => {
         {isMenuOpen && (
           <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 space-y-4 animate-in slide-in-from-top-5">
             <Link
-              to="/"
+              to={isAuthenticated ? "/home-logeado" : "/home-invitado"}
               className="block px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-md"
               onClick={() => setIsMenuOpen(false)}
             >
@@ -131,99 +132,8 @@ const MainLayout = () => {
         <Outlet />
       </main>
 
-      {/* Footer Mejorado */}
-      <footer className="bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pt-16 pb-8">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-            {/* Columna 1: Info */}
-            <div className="space-y-4">
-              <h3 className="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
-                <Heart className="text-[#00A651] fill-current" size={20} /> Fundación Cudeca
-              </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                Cuidamos al final de la vida. Añadimos vida a los días. Tu ayuda hace posible
-                nuestra labor asistencial gratuita.
-              </p>
-            </div>
-
-            {/* Columna 2: Enlaces */}
-            <div className="space-y-4">
-              <h4 className="font-bold text-slate-900 dark:text-white">Enlaces Rápidos</h4>
-              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li>
-                  <Link to="/about" className="hover:text-[#00A651] transition-colors">
-                    Sobre Nosotros
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/eventos" className="hover:text-[#00A651] transition-colors">
-                    Eventos Solidarios
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/tiendas" className="hover:text-[#00A651] transition-colors">
-                    Tiendas Benéficas
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Columna 3: Legal */}
-            <div className="space-y-4">
-              <h4 className="font-bold text-slate-900 dark:text-white">Legal</h4>
-              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li>
-                  <Link to="/privacidad" className="hover:text-[#00A651] transition-colors">
-                    Política de Privacidad
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/cookies" className="hover:text-[#00A651] transition-colors">
-                    Política de Cookies
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/terminos" className="hover:text-[#00A651] transition-colors">
-                    Términos de Uso
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Columna 4: Social */}
-            <div className="space-y-4">
-              <h4 className="font-bold text-slate-900 dark:text-white">Síguenos</h4>
-              <div className="flex gap-4">
-                <a
-                  href="#"
-                  className="p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-[#00A651] hover:text-white transition-all"
-                >
-                  <Facebook size={20} />
-                </a>
-                <a
-                  href="#"
-                  className="p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-[#00A651] hover:text-white transition-all"
-                >
-                  <Instagram size={20} />
-                </a>
-                <a
-                  href="#"
-                  className="p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-[#00A651] hover:text-white transition-all"
-                >
-                  <Twitter size={20} />
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-8 border-t border-slate-200 dark:border-slate-800 text-center">
-            <p className="text-sm text-slate-500 dark:text-slate-500">
-              © {new Date().getFullYear()} Fundación Cudeca. Todos los derechos reservados.
-              Desarrollado con ❤️ por Sapitos Team.
-            </p>
-          </div>
-        </div>
-      </footer>
+      {/* Footer Reutilizable */}
+      <Footer />
     </div>
   );
 };

@@ -83,7 +83,7 @@ export const FooterSection = (): JSX.Element => {
 
           <button
             onClick={() => navigate("/")}
-            className="mx-auto px-4 py-2 text-sm text-[#00a651] hover:text-[#00d66a] transition-colors [font-family:'Arimo-Regular',Helvetica] font-semibold"
+            className="mx-auto px-4 py-2 text-sm text-[#00a651] hover:text-[#00d66a] transition-colors font-semibold"
           >
             ← Volver a inicio
           </button>

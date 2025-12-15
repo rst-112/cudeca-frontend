@@ -60,7 +60,7 @@ const CrearEvento = () => {
 
   return (
     <div>
-      <h1 className="text-4xl font-bold text-green-600 font-['Arimo'] mb-8">
+      <h1 className="text-4xl font-bold text-green-600 mb-8">
         Formulario de creación de eventos
       </h1>
 

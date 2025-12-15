@@ -1701,7 +1701,7 @@ export const SeatMapEditor: React.FC<SeatMapEditorProps> = ({
                             y={displayY}
                             textAnchor="middle"
                             dy={4}
-                            className="text-[10px] font-bold pointer-events-none select-none font-['Arimo'] fill-slate-700 dark:fill-slate-300"
+                            className="text-[10px] font-bold pointer-events-none select-none fill-slate-700 dark:fill-slate-300"
                           >
                             {obj.etiqueta || obj.tipo}
                           </text>

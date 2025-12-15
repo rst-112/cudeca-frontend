@@ -1,13 +1,14 @@
 import React from "react";
 import { EventInfoSection } from "./EventInfoSection";
-import { FooterSection } from "./FooterSection";
+import { Header } from "../../../components/layout/Header";
 import { MainContentSection } from "./MainContentSection";
 import { TicketSelectionSection } from "./TicketSelectionSection";
+import Footer from "../../../components/layout/Footer";
 
 export const InfoEventoInvitado = (): JSX.Element => {
   return (
     <div className="w-full min-h-screen bg-white dark:bg-slate-900">
-      <MainContentSection />
+      <Header isLoggedIn={false} />
       <div className="flex flex-col lg:flex-row gap-8 w-full max-w-7xl mx-auto px-4 py-8">
         <div className="flex-1">
           <EventInfoSection />
@@ -16,8 +17,7 @@ export const InfoEventoInvitado = (): JSX.Element => {
           <TicketSelectionSection />
         </div>
       </div>
-      <FooterSection />
+      <Footer />
     </div>
   );
 };
-

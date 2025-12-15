@@ -1,10 +1,14 @@
 import React from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export const NavigationHeaderSection = (): JSX.Element => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const navigationLinks = [
-    { id: 1, label: "Inicio", href: "#inicio", isActive: true },
-    { id: 2, label: "Eventos", href: "#eventos", isActive: false },
-    { id: 3, label: "Contacto", href: "#contacto", isActive: false },
+    { id: 1, label: "Inicio", href: "/home-logeado" },
+    { id: 2, label: "Eventos", href: "/eventos" },
+    { id: 3, label: "Contacto", href: "#contacto" },
   ];
 
   const [notificationCount] = React.useState(2);
@@ -13,9 +17,9 @@ export const NavigationHeaderSection = (): JSX.Element => {
     <header className="w-full bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-8 flex items-center justify-between h-20">
         <div className="flex items-center gap-2">
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white [font-family:'Arimo-Bold',Helvetica]">
+          <Link to="/home-logeado" className="text-xl font-bold text-slate-900 dark:text-white">
             Fundación Cudeca
-          </h1>
+          </Link>
         </div>
 
         <nav
@@ -23,20 +27,35 @@ export const NavigationHeaderSection = (): JSX.Element => {
           role="navigation"
           aria-label="Navegación principal"
         >
-          {navigationLinks.map((link) => (
-            <a
-              key={link.id}
-              href={link.href}
-              className={`pb-2 text-base transition-colors [font-family:'Arimo-Regular',Helvetica] ${
-                link.isActive
+          {navigationLinks.map((link) => {
+            const isActive = location.pathname === link.href;
+
+            if (link.href.startsWith("#")) {
+              return (
+                <a
+                  key={link.id}
+                  href={link.href}
+                  className="pb-2 text-base transition-colors text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                >
+                  {link.label}
+                </a>
+              );
+            }
+
+            return (
+              <Link
+                key={link.id}
+                to={link.href}
+                className={`pb-2 text-base transition-colors ${isActive
                   ? "font-bold text-slate-900 dark:text-white border-b-2 border-[#00753e] dark:border-[#00a651]"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
-              aria-current={link.isActive ? "page" : undefined}
-            >
-              {link.label}
-            </a>
-          ))}
+                  }`}
+                aria-current={isActive ? "page" : undefined}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="flex items-center gap-4">
@@ -54,7 +73,8 @@ export const NavigationHeaderSection = (): JSX.Element => {
           </button>
 
           <button
-            className="px-6 py-2 bg-[#00753e] dark:bg-[#00a651] hover:bg-[#006835] dark:hover:bg-[#008a43] text-white font-semibold rounded-lg transition-colors text-sm [font-family:'Arimo-Regular',Helvetica] flex items-center gap-2"
+            onClick={() => navigate("/mi-perfil")}
+            className="px-6 py-2 bg-[#00753e] dark:bg-[#00a651] hover:bg-[#006835] dark:hover:bg-[#008a43] text-white font-semibold rounded-lg transition-colors text-sm flex items-center gap-2"
             aria-label="Mi Perfil"
             title="Mi Perfil"
           >
@@ -66,4 +86,3 @@ export const NavigationHeaderSection = (): JSX.Element => {
     </header>
   );
 };
-

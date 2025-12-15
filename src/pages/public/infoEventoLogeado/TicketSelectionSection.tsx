@@ -114,7 +114,7 @@ export const TicketSelectionSection = (): JSX.Element => {
 
             {ticket.available && (
               <button
-                className={`w-full py-3 rounded-lg font-semibold transition-all [font-family:'Arimo-Regular',Helvetica] ${
+                className={`w-full py-3 rounded-lg font-semibold transition-all ${
                   selectedTicket === ticket.id
                     ? "bg-[#00753e] dark:bg-[#00a651] text-white font-bold"
                     : "border-2 border-[#00753e] dark:border-[#00a651] text-[#00753e] dark:text-[#00a651] hover:bg-[#00753e] dark:hover:bg-[#00a651] hover:text-white dark:hover:text-slate-900"
@@ -149,7 +149,7 @@ export const TicketSelectionSection = (): JSX.Element => {
               type="number"
               value={additionalDonation}
               onChange={handleDonationChange}
-              className="flex-1 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white [font-family:'Arimo-Regular',Helvetica] focus:outline-none focus:border-[#00753e] dark:focus:border-[#00a651]"
+              className="flex-1 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:border-[#00753e] dark:focus:border-[#00a651]"
               aria-label="Cantidad de donación adicional"
               min="0"
             />
@@ -186,7 +186,7 @@ export const TicketSelectionSection = (): JSX.Element => {
         </div>
 
         <button
-          className="w-full py-4 bg-[#00753e] dark:bg-[#00a651] hover:bg-[#006633] dark:hover:bg-[#008a43] text-white font-bold rounded-lg transition-all text-base [font-family:'Arimo-Regular',Helvetica] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-4 bg-[#00753e] dark:bg-[#00a651] hover:bg-[#006633] dark:hover:bg-[#008a43] text-white font-bold rounded-lg transition-all text-base disabled:opacity-50 disabled:cursor-not-allowed"
           type="button"
           aria-label="Comprar entradas"
           disabled={!selectedTicket}

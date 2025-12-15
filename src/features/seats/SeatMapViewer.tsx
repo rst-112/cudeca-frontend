@@ -331,7 +331,7 @@ export const SeatMapViewer: React.FC<SeatMapViewerProps> = ({
                       x={escenarioCentroX}
                       y={escenarioY + 28}
                       textAnchor="middle"
-                      className="text-xs font-bold fill-slate-400 font-['Arimo'] tracking-wider"
+                      className="text-xs font-bold fill-slate-400 tracking-wider"
                     >
                       {tituloEscenario}
                     </text>
@@ -357,7 +357,7 @@ export const SeatMapViewer: React.FC<SeatMapViewerProps> = ({
                       y={obj.y}
                       textAnchor="middle"
                       dy={4}
-                      className="text-[10px] font-bold select-none font-['Arimo'] fill-slate-700 dark:fill-slate-300"
+                      className="text-[10px] font-bold select-none fill-slate-700 dark:fill-slate-300"
                     >
                       {obj.etiqueta || obj.tipo}
                     </text>
