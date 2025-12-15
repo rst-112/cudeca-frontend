@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { TicketCard } from './ticketCard';
+import { TicketCard } from './TicketCard';
 import * as ticketService from '../../services/ticketService';
 
 // Mock del servicio
