@@ -111,17 +111,7 @@ export const EventHighlightsSection = (): JSX.Element => {
             </article>
           ))}
         </div>
-
-        <div className="flex justify-center">
-          <button
-            className="px-6 py-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-lg border-2 border-slate-300 dark:border-slate-600 transition-all [font-family:'Arimo-Regular',Helvetica]"
-            aria-label="Ver más eventos"
-          >
-            Ver más eventos →
-          </button>
-        </div>
       </div>
     </section>
   );
 };
-

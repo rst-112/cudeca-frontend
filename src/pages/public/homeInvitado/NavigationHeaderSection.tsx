@@ -1,22 +1,23 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export const NavigationHeaderSection = (): JSX.Element => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const navigationLinks = [
-    { label: "Inicio", href: "#", isActive: true },
-    { label: "Eventos", href: "#eventos", isActive: false },
-    { label: "Contacto", href: "#contacto", isActive: false },
+    { label: "Inicio", href: "/" },
+    { label: "Eventos", href: "/eventos" },
+    { label: "Contacto", href: "#contacto" },
   ];
 
   return (
     <header className="w-full bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-8 flex items-center justify-between h-20">
         <div className="flex items-center gap-2">
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white [font-family:'Arimo-Bold',Helvetica]">
+          <Link to="/" className="text-xl font-bold text-slate-900 dark:text-white [font-family:'Arimo-Bold',Helvetica]">
             Fundación Cudeca
-          </h1>
+          </Link>
         </div>
 
         <nav
@@ -24,20 +25,34 @@ export const NavigationHeaderSection = (): JSX.Element => {
           role="navigation"
           aria-label="Navegación principal"
         >
-          {navigationLinks.map((link, index) => (
-            <a
-              key={index}
-              href={link.href}
-              className={`pb-2 text-base transition-colors [font-family:'Arimo-Regular',Helvetica] ${
-                link.isActive
-                  ? "font-bold text-slate-900 dark:text-white border-b-2 border-[#00753e] dark:border-[#00a651]"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
-              aria-current={link.isActive ? "page" : undefined}
-            >
-              {link.label}
-            </a>
-          ))}
+          {navigationLinks.map((link, index) => {
+            const isActive = location.pathname === link.href;
+            if (link.href.startsWith("#")) {
+              return (
+                <a
+                  key={index}
+                  href={link.href}
+                  className={`pb-2 text-base transition-colors [font-family:'Arimo-Regular',Helvetica] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white`}
+                >
+                  {link.label}
+                </a>
+              );
+            }
+            return (
+              <Link
+                key={index}
+                to={link.href}
+                className={`pb-2 text-base transition-colors [font-family:'Arimo-Regular',Helvetica] ${
+                  isActive
+                    ? "font-bold text-slate-900 dark:text-white border-b-2 border-[#00753e] dark:border-[#00a651]"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                }`}
+                aria-current={isActive ? "page" : undefined}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="flex items-center gap-4">
@@ -66,4 +81,3 @@ export const NavigationHeaderSection = (): JSX.Element => {
     </header>
   );
 };
-

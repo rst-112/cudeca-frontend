@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface EventData {
   id: number;
@@ -103,7 +103,6 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 
 export const EventCardsSection = (): JSX.Element => {
   const [visibleCount, setVisibleCount] = useState(6);
-  const navigate = useNavigate();
 
   const displayedEvents = eventsData.slice(0, visibleCount);
   const hasMore = visibleCount < eventsData.length;
@@ -128,17 +127,16 @@ export const EventCardsSection = (): JSX.Element => {
 
         {hasMore && (
           <div className="flex justify-center">
-            <button
-              onClick={() => setVisibleCount(visibleCount + 3)}
+            <Link
+              to="/eventos"
               className="px-6 py-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-lg border-2 border-slate-300 dark:border-slate-600 transition-all [font-family:'Arimo-Regular',Helvetica]"
               aria-label="Ver más eventos"
             >
               Ver más eventos →
-            </button>
+            </Link>
           </div>
         )}
       </div>
     </section>
   );
 };
-

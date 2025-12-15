@@ -20,6 +20,7 @@ import { HomeInvitado } from './pages/public/homeInvitado/HomeInvitado';
 import { InfoEventoInvitado } from './pages/public/infoEventoInvitado/InfoEventoInvitado';
 import { HomeEventoLogeado } from './pages/public/homeEventoLogeado/HomeEventoLogeado';
 import { InfoEventoLogeado } from './pages/public/infoEventoLogeado/InfoEventoLogeado';
+import Eventos from './pages/public/Eventos';
 
 // Páginas privadas
 import { CreacionDeEventos } from './pages/private/creaciondeeventos/CreacionDeEventos';
@@ -63,6 +64,7 @@ function App() {
             <Route path="/" element={<MainLayout />}>
               <Route index element={<Home />} />
               <Route path="evento/:id" element={<DetalleEvento />} />
+              <Route path="eventos" element={<Eventos />} />
             </Route>
 
             {/* === RUTAS PÚBLICAS SIN MAINLAYOUT === */}
@@ -73,6 +75,7 @@ function App() {
             <Route path="/creacion-eventos" element={<CreacionDeEventos />} />
             <Route path="/editar-entrada" element={<EditarEntrada />} />
             <Route path="/tipos-entrada" element={<TiposDeEntrada />} />
+            
 
             {/* === RUTA DE DESARROLLO - SANDBOX === */}
             <Route path="/dev/mapa" element={<SandboxSeatMap />} />

@@ -1,10 +1,13 @@
 import React from "react";
+import { Link, useLocation } from "react-router-dom";
 
 export const NavigationHeaderSection = (): JSX.Element => {
+  const location = useLocation();
+
   const navigationLinks = [
-    { id: 1, label: "Inicio", href: "#inicio", isActive: true },
-    { id: 2, label: "Eventos", href: "#eventos", isActive: false },
-    { id: 3, label: "Contacto", href: "#contacto", isActive: false },
+    { id: 1, label: "Inicio", href: "/" },
+    { id: 2, label: "Eventos", href: "/eventos" },
+    { id: 3, label: "Contacto", href: "/contacto" },
   ];
 
   const [notificationCount] = React.useState(2);
@@ -24,18 +27,18 @@ export const NavigationHeaderSection = (): JSX.Element => {
           aria-label="Navegación principal"
         >
           {navigationLinks.map((link) => (
-            <a
+            <Link
               key={link.id}
-              href={link.href}
+              to={link.href}
               className={`pb-2 text-base transition-colors [font-family:'Arimo-Regular',Helvetica] ${
-                link.isActive
+                location.pathname === link.href
                   ? "font-bold text-slate-900 dark:text-white border-b-2 border-[#00753e] dark:border-[#00a651]"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
-              aria-current={link.isActive ? "page" : undefined}
+              aria-current={location.pathname === link.href ? "page" : undefined}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -74,4 +77,3 @@ export const NavigationHeaderSection = (): JSX.Element => {
     </header>
   );
 };
-

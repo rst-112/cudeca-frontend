@@ -1,17 +1,20 @@
 import React from "react";
-import { EventHighlightsSection } from "./EventHighlightsSection";
-import { FeaturedEventSection } from "./FeaturedEventSection";
 import { NavigationHeaderSection } from "./NavigationHeaderSection";
+import { FeaturedEventSection } from "./FeaturedEventSection";
 import { UpcomingEventsSection } from "./UpcomingEventsSection";
+import { EventHighlightsSection } from "./EventHighlightsSection";
+import { FooterSection } from "../homeEventoLogeado/FooterSection";
 
 export const HomeInvitado = (): JSX.Element => {
   return (
-    <div className="w-full min-h-screen bg-white dark:bg-slate-900">
+    <div className="flex flex-col min-h-screen">
       <NavigationHeaderSection />
-      <FeaturedEventSection />
-      <UpcomingEventsSection />
-      <EventHighlightsSection />
+      <main className="flex-grow">
+        <FeaturedEventSection />
+        <UpcomingEventsSection />
+        <EventHighlightsSection />
+      </main>
+      <FooterSection />
     </div>
   );
 };
-

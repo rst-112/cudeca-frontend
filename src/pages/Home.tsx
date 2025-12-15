@@ -279,6 +279,26 @@ export default function Home() {
                 Entradas →
               </button>
             </div>
+            
+            {/* Eventos */}
+            <div className="flex items-start justify-between p-4 border-l-4 border-l-teal-500 bg-white dark:bg-slate-800 rounded">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-base font-bold text-teal-600 dark:text-teal-400">
+                  Eventos
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-['Arimo']">
+                  Lista de próximos eventos
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/eventos')}
+                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded transition-all duration-200 hover:shadow-lg text-sm whitespace-nowrap ml-4"
+                title="Ir a la lista de eventos"
+              >
+                Ver Eventos →
+              </button>
+            </div>
           </div>
         </div>
       </section>
