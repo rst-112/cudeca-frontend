@@ -71,10 +71,10 @@ export default function RegisterPage({ onSwitch }: RegisterPageProps) {
   };
 
   return (
-    <div className="w-full space-y-7">
+    <div className="w-full space-y-6 py-4">
       {/* Logo con Transición Suave */}
       <div className="text-center">
-        <Link to="/" className="inline-block group relative h-24 w-64 mx-auto">
+        <Link to="/" className="inline-block group relative h-20 w-56 mx-auto">
           {/* Logo para Modo Claro (Verde) */}
           <img
             src={logoLight}
@@ -103,10 +103,10 @@ export default function RegisterPage({ onSwitch }: RegisterPageProps) {
 
       {/* Header */}
       <div className="text-center space-y-3">
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-white font-['Arimo'] tracking-tight">
+        <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white font-['Arimo'] tracking-tight">
           Regístrate gratis
         </h1>
-        <p className="text-slate-600 dark:text-slate-400 font-['Arimo'] leading-relaxed">
+        <p className="text-slate-600 dark:text-slate-400 text-sm md:text-base font-['Arimo'] leading-relaxed">
           ¿Ya tienes cuenta?{' '}
           <button
             type="button"

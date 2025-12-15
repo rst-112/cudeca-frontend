@@ -1,75 +1,127 @@
+import { useState } from 'react';
+import { Outlet, NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { ThemeToggle } from '../../components/ui/ThemeToggle';
-import { LogOut, User, Calendar, Ticket, Home as HomeIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import {
+  LogOut,
+  User,
+  Calendar,
+  Ticket,
+  Home as HomeIcon,
+  Menu,
+  X,
+  ArrowLeft,
+  ScanLine,
+} from 'lucide-react';
+import { QrScannerFAB } from '../../components/QrScannerFAB';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Verificamos si es personal
+  const isStaff = user?.roles?.includes('PERSONAL_EVENTO');
+
+  // Determinar título basado en la ruta actual
+  const getTitle = () => {
+    if (location.pathname.includes('/tickets')) return 'Mis Entradas';
+    if (location.pathname.includes('/events')) return 'Eventos';
+    if (location.pathname.includes('/profile')) return 'Mi Perfil';
+    if (location.pathname.includes('/scanner')) return 'Escanear Entradas';
+    return 'Panel de Control';
+  };
+
+  // Helper para estilos de links activos
+  const getLinkClass = ({ isActive }: { isActive: boolean }) => {
+    const base =
+      'flex items-center gap-3 px-4 py-3 w-full rounded-lg font-medium transition-colors cursor-pointer';
+    const active = 'text-[#00A651] bg-[#00A651]/10';
+    const inactive =
+      'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800';
+    return `${base} ${isActive ? active : inactive}`;
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300">
       {/* Sidebar */}
-      <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 hidden md:flex flex-col">
+      <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 hidden md:flex flex-col shrink-0">
         <div className="p-6 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-full bg-[#00A651] flex items-center justify-center text-white font-bold shadow-sm">
               C
             </div>
             <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight font-['Arimo']">
               cudeca
             </span>
-          </div>
+          </Link>
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
-          <Link
-            to="/dashboard"
-            className="flex items-center gap-3 px-4 py-3 text-[#00A651] bg-[#00A651]/10 rounded-lg font-medium transition-colors"
-          >
-            <HomeIcon size={20} />
-            Inicio
-          </Link>
-          <Link
-            to="/events"
-            className="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
-          >
-            <Calendar size={20} />
-            Eventos
-          </Link>
-          <Link
-            to="/tickets"
-            className="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
-          >
-            <Ticket size={20} />
-            Mis Entradas
-          </Link>
-          <Link
-            to="/profile"
-            className="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
-          >
-            <User size={20} />
-            Mi Perfil
-          </Link>
+          <NavLink to="/dashboard" end className={getLinkClass}>
+            <HomeIcon size={20} /> Inicio
+          </NavLink>
+
+          <NavLink to="/dashboard/tickets" className={getLinkClass}>
+            <Ticket size={20} /> Mis Entradas
+          </NavLink>
+
+          <NavLink to="/dashboard/events" className={getLinkClass}>
+            <Calendar size={20} /> Eventos
+          </NavLink>
+
+          <NavLink to="/dashboard/profile" className={getLinkClass}>
+            <User size={20} /> Mi Perfil
+          </NavLink>
+
+          {/* Opción de Escáner en el menú lateral (Solo Staff) */}
+          {isStaff && (
+            <>
+              <div className="my-2 h-px bg-slate-200 dark:bg-slate-800" />
+              <NavLink to="/dashboard/scanner" className={getLinkClass}>
+                <ScanLine size={20} /> Escáner QR
+              </NavLink>
+            </>
+          )}
         </nav>
 
         <div className="p-4 border-t border-slate-200 dark:border-slate-800">
           <button
             onClick={logout}
-            className="flex items-center gap-3 px-4 py-3 w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg font-medium transition-colors"
+            className="flex items-center gap-3 px-4 py-3 w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg font-medium transition-colors cursor-pointer"
           >
-            <LogOut size={20} />
-            Cerrar Sesión
+            <LogOut size={20} /> Cerrar Sesión
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         {/* Topbar */}
-        <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6">
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white font-['Arimo']">
-            Panel de Control
-          </h1>
+        <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 shrink-0">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+            >
+              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+
+            {/* Botón Volver inteligente */}
+            {location.pathname !== '/dashboard' && (
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="md:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+              >
+                <ArrowLeft size={20} />
+              </button>
+            )}
+
+            <h1 className="text-xl font-bold text-slate-900 dark:text-white font-['Arimo']">
+              {getTitle()}
+            </h1>
+          </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-slate-600 dark:text-slate-400 hidden sm:block">
               Hola,{' '}
@@ -78,64 +130,72 @@ export default function Dashboard() {
               </span>
             </span>
             <ThemeToggle />
-            <div className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 font-bold">
+            <Link
+              to="/dashboard/profile"
+              className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 font-bold hover:ring-2 hover:ring-[#00A651] transition-all"
+            >
               {user?.nombre?.charAt(0) || 'U'}
-            </div>
+            </Link>
           </div>
         </header>
 
-        {/* Dashboard Content */}
-        <div className="p-6 md:p-8 overflow-y-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {/* Stats Cards */}
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-slate-500 dark:text-slate-400 font-medium">Eventos Próximos</h3>
-                <Calendar className="text-[#00A651]" size={24} />
-              </div>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">3</p>
-            </div>
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-slate-500 dark:text-slate-400 font-medium">Mis Entradas</h3>
-                <Ticket className="text-blue-500" size={24} />
-              </div>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">12</p>
-            </div>
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-slate-500 dark:text-slate-400 font-medium">Donaciones</h3>
-                <div className="text-purple-500 font-bold">€</div>
-              </div>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">150€</p>
-            </div>
-          </div>
+        {/* Menú Móvil */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 space-y-2 animate-in slide-in-from-top-5 absolute w-full z-50 shadow-xl">
+            <NavLink
+              to="/dashboard"
+              end
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 w-full rounded-lg font-medium ${isActive ? 'text-[#00A651] bg-[#00A651]/10' : 'text-slate-600 dark:text-slate-400'}`
+              }
+            >
+              <HomeIcon size={20} /> Inicio
+            </NavLink>
+            <NavLink
+              to="/dashboard/tickets"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 w-full rounded-lg font-medium ${isActive ? 'text-[#00A651] bg-[#00A651]/10' : 'text-slate-600 dark:text-slate-400'}`
+              }
+            >
+              <Ticket size={20} /> Mis Entradas
+            </NavLink>
 
-          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
-              Actividad Reciente
-            </h2>
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-4 p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50"
-                >
-                  <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                    <Ticket size={20} />
-                  </div>
-                  <div>
-                    <p className="font-medium text-slate-900 dark:text-white">
-                      Compra de entradas - Concierto Benéfico
-                    </p>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Hace {i} días</p>
-                  </div>
-                </div>
-              ))}
+            {isStaff && (
+              <NavLink
+                to="/dashboard/scanner"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 w-full rounded-lg font-medium ${isActive ? 'text-[#00A651] bg-[#00A651]/10' : 'text-slate-600 dark:text-slate-400'}`
+                }
+              >
+                <ScanLine size={20} /> Escáner QR
+              </NavLink>
+            )}
+
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
+              <button
+                onClick={() => {
+                  logout();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="flex items-center gap-3 px-4 py-3 w-full text-red-500 font-medium"
+              >
+                <LogOut size={20} /> Cerrar Sesión
+              </button>
             </div>
           </div>
+        )}
+
+        {/* ÁREA DE CONTENIDO DINÁMICO */}
+        <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950 p-6 md:p-8">
+          <Outlet />
         </div>
       </main>
+
+      {/* FAB: Se usa sin onClick, aprovechando la lógica interna del componente */}
+      {isStaff && <QrScannerFAB />}
     </div>
   );
 }

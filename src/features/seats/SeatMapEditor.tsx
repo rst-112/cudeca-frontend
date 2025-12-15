@@ -107,7 +107,19 @@ export const SeatMapEditor: React.FC<SeatMapEditorProps> = ({
   );
 
   // Tipos de entrada (grupos VIP, VIP1, VIP2, Normal, etc.)
-  const [tiposEntrada, setTiposEntrada] = useState<TipoEntrada[]>(mapaInicial?.tiposEntrada || []);
+  const [tiposEntrada, setTiposEntrada] = useState<TipoEntrada[]>(
+    mapaInicial?.tiposEntrada && mapaInicial.tiposEntrada.length > 0
+      ? mapaInicial.tiposEntrada
+      : [
+          {
+            id: 1,
+            nombre: 'General',
+            precio: 20,
+            color: '#00A651',
+            descripcion: 'Entrada general',
+          },
+        ],
+  );
   const [editandoTipoEntrada, setEditandoTipoEntrada] = useState<TipoEntrada | null>(null);
 
   // Forma de asiento activa para nuevos asientos
@@ -771,9 +783,9 @@ export const SeatMapEditor: React.FC<SeatMapEditorProps> = ({
   const asientoActual = asientos.find((s) => s.id === asientoSeleccionado);
 
   return (
-    <div className="flex h-screen gap-4 bg-slate-50 dark:bg-slate-950">
+    <div className="flex h-full gap-3 bg-slate-50 dark:bg-slate-950">
       {/* Panel izquierdo - Herramientas */}
-      <aside className="w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-4 flex flex-col gap-4 overflow-y-auto">
+      <aside className="w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-3 flex flex-col gap-3 overflow-y-auto">
         {/* Herramientas básicas */}
         <div className="space-y-2">
           <h3 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wide">
@@ -1081,13 +1093,13 @@ export const SeatMapEditor: React.FC<SeatMapEditorProps> = ({
                           );
                           setEditandoTipoEntrada(null);
                         }}
-                        className="flex-1 px-2 py-1 text-xs bg-[#00A651] text-white rounded hover:bg-[#008a43]"
+                        className="flex-1 px-2 py-1 text-xs bg-[#00A651] text-white rounded hover:bg-[#008a43] cursor-pointer transition-colors"
                       >
                         Guardar
                       </button>
                       <button
                         onClick={() => setEditandoTipoEntrada(null)}
-                        className="flex-1 px-2 py-1 text-xs bg-slate-300 dark:bg-slate-700 rounded hover:bg-slate-400 dark:hover:bg-slate-600"
+                        className="flex-1 px-2 py-1 text-xs bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded hover:bg-slate-300 dark:hover:bg-slate-600 cursor-pointer transition-colors"
                       >
                         Cancelar
                       </button>
@@ -1108,7 +1120,7 @@ export const SeatMapEditor: React.FC<SeatMapEditorProps> = ({
                     </div>
                     <button
                       onClick={() => setEditandoTipoEntrada(tipo)}
-                      className="px-2 py-1 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded"
+                      className="px-2 py-1 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded cursor-pointer transition-colors"
                       title="Editar"
                     >
                       ✏️
@@ -1120,7 +1132,7 @@ export const SeatMapEditor: React.FC<SeatMapEditorProps> = ({
                             setTiposEntrada((prev) => prev.filter((t) => t.id !== tipo.id));
                           }
                         }}
-                        className="px-2 py-1 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                        className="px-2 py-1 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded cursor-pointer transition-colors"
                         title="Eliminar"
                       >
                         🗑️
@@ -1558,15 +1570,15 @@ export const SeatMapEditor: React.FC<SeatMapEditorProps> = ({
       </aside>
 
       {/* Área de trabajo - Canvas SVG */}
-      <main className="flex-1 bg-slate-100 dark:bg-slate-950 p-4 overflow-hidden flex flex-col">
+      <main className="flex-1 bg-slate-100 dark:bg-slate-950 p-2 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 bg-slate-950 rounded-xl shadow-lg overflow-hidden relative">
           <TransformWrapper
             initialScale={1}
             minScale={0.5}
             maxScale={3}
-            wheel={{ step: 0.1 }}
+            wheel={{ step: 0.1, activationKeys: ['Control', 'Meta'] }}
             doubleClick={{ disabled: true }}
-            panning={{ disabled: false }}
+            panning={{ disabled: false, velocityDisabled: false }}
           >
             {({ zoomIn, zoomOut, resetTransform }) => (
               <>
@@ -1618,7 +1630,7 @@ export const SeatMapEditor: React.FC<SeatMapEditorProps> = ({
                     className={cn(
                       'w-full h-full',
                       herramientaActiva === 'add' && 'cursor-crosshair',
-                      herramientaActiva === 'select' && !arrastrando && 'cursor-default',
+                      herramientaActiva === 'delete' && 'cursor-pointer',
                       arrastrando && 'cursor-move',
                     )}
                     onClick={handleAddSeat}
@@ -1832,10 +1844,13 @@ export const SeatMapEditor: React.FC<SeatMapEditorProps> = ({
         </div>
 
         {/* Instrucciones compactas */}
-        <div className="mt-3 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded text-xs text-blue-800 dark:text-blue-200">
-          {herramientaActiva === 'add' && '✏️ Click para añadir asientos'}
-          {herramientaActiva === 'select' && '🖱️ Arrastra para mover • Click para editar'}
-          {herramientaActiva === 'delete' && '🗑️ Click para eliminar'}
+        <div className="mt-2 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded text-xs text-blue-800 dark:text-blue-200 shrink-0">
+          {herramientaActiva === 'add' &&
+            '✏️ Click para añadir asientos • Arrastra para mover vista • Ctrl+Rueda para zoom'}
+          {herramientaActiva === 'select' &&
+            '🖱️ Click para editar asientos • Arrastra para mover vista • Ctrl+Rueda para zoom'}
+          {herramientaActiva === 'delete' &&
+            '🗑️ Click para eliminar asientos • Arrastra para mover vista • Ctrl+Rueda para zoom'}
           <span className="ml-2 opacity-75">
             | <kbd className="px-1 bg-blue-100 dark:bg-blue-800 rounded">Ctrl+Z</kbd> Deshacer
           </span>

@@ -46,7 +46,7 @@ export default function Home() {
                 size="lg"
                 className="text-lg px-8 h-14 bg-[#00A651] hover:bg-[#008a43] border-none shadow-lg hover:shadow-[#00A651]/20 hover:scale-105 transition-all duration-300"
               >
-                <Link to="/registro">
+                <Link to="/registro" className="inline-flex items-center">
                   Únete ahora <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -94,9 +94,9 @@ export default function Home() {
               </p>
               <Link
                 to="/registro"
-                className="inline-flex items-center text-[#00A651] font-semibold hover:underline underline-offset-4"
+                className="inline-flex items-center gap-1 text-[#00A651] font-semibold hover:underline underline-offset-4"
               >
-                Colaborar <ArrowRight size={16} className="ml-1" />
+                Colaborar <ArrowRight size={16} />
               </Link>
             </div>
 
@@ -114,9 +114,9 @@ export default function Home() {
               </p>
               <Link
                 to="/eventos"
-                className="inline-flex items-center text-blue-600 font-semibold hover:underline underline-offset-4"
+                className="inline-flex items-center gap-1 text-blue-600 font-semibold hover:underline underline-offset-4"
               >
-                Ver agenda <ArrowRight size={16} className="ml-1" />
+                Ver agenda <ArrowRight size={16} />
               </Link>
             </div>
 
@@ -134,9 +134,9 @@ export default function Home() {
               </p>
               <Link
                 to="/voluntariado"
-                className="inline-flex items-center text-purple-600 font-semibold hover:underline underline-offset-4"
+                className="inline-flex items-center gap-1 text-purple-600 font-semibold hover:underline underline-offset-4"
               >
-                Infórmate <ArrowRight size={16} className="ml-1" />
+                Infórmate <ArrowRight size={16} />
               </Link>
             </div>
           </div>
@@ -147,7 +147,7 @@ export default function Home() {
       {import.meta.env.DEV && (
         <section className="py-8 bg-amber-50 dark:bg-amber-950/20 border-y border-amber-200 dark:border-amber-900">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <TestTube className="text-amber-600" size={24} />
                 <div>
@@ -172,7 +172,7 @@ export default function Home() {
                   size="sm"
                   className="gap-2 bg-amber-600 hover:bg-amber-700 text-white"
                 >
-                  <Link to="/dev/mapa/editor">
+                  <Link to="/dev/mapa/editor" className="inline-flex items-center gap-2">
                     Editor
                     <ArrowRight size={16} />
                   </Link>

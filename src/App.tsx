@@ -6,7 +6,11 @@ import MainLayout from './components/layout/MainLayout';
 import AuthPage from './features/auth/AuthPage';
 import { PrivateRoute } from './components/PrivateRoute';
 import AdminDashboard from './features/admin/AdminDashboard';
+
+// Dashboard y sus sub-vistas
 import Dashboard from './features/dashboard/Dashboard';
+import DashboardHome from './features/dashboard/DashboardHome';
+import ScannerView from './features/dashboard/ScannerView';
 
 // Páginas públicas
 import Home from './pages/Home';
@@ -16,29 +20,11 @@ import SandboxSeatMap from './pages/public/SandboxSeatMap';
 import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
 import MisEntradas from './pages/public/MisEntradas';
 
-// Componentes temporales
-const EventStaffDashboard = () => <div>Dashboard (Personal Evento)</div>;
-
-/**
- * RedirectIfAuthenticated - Redirige a home si ya está logueado
- */
 function RedirectIfAuthenticated({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <span className="text-lg text-gray-600">Cargando...</span>
-      </div>
-    );
-  }
-
-  // Si está autenticado, redirigir a home
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-
-  // Si no está autenticado, mostrar el login/register
+  if (isLoading)
+    return <div className="flex items-center justify-center min-h-screen">Cargando...</div>;
+  if (isAuthenticated) return <Navigate to="/" replace />;
   return <>{children}</>;
 }
 
@@ -49,18 +35,17 @@ function App() {
         <AuthProvider>
           <Toaster position="top-right" richColors />
           <Routes>
-            {/* Rutas públicas con MainLayout */}
+            {/* Rutas públicas */}
             <Route path="/" element={<MainLayout />}>
               <Route index element={<Home />} />
               <Route path="evento/:id" element={<DetalleEvento />} />
-              <Route path="/mis-entradas" element={<MisEntradas />} />
             </Route>
 
-            {/* === RUTA DE DESARROLLO - SANDBOX === */}
+            {/* Sandbox */}
             <Route path="/dev/mapa" element={<SandboxSeatMap />} />
             <Route path="/dev/mapa/editor" element={<SandboxSeatMapEditor />} />
 
-            {/* Rutas de autenticación (redirige si ya está logueado) */}
+            {/* Auth */}
             <Route
               path="/login"
               element={
@@ -78,28 +63,33 @@ function App() {
               }
             />
 
-            {/* Rutas protegidas - Checkout */}
+            {/* Checkout Protegido */}
             <Route element={<PrivateRoute />}>
               <Route path="/checkout" element={<Checkout />} />
             </Route>
 
-            {/* Rutas protegidas por rol - Administrador */}
+            {/* Admin */}
             <Route element={<PrivateRoute requiredRole="ADMINISTRADOR" />}>
               <Route path="/admin" element={<AdminDashboard />} />
             </Route>
 
-            {/* Rutas protegidas por rol - Comprador */}
+            {/* === DASHBOARD ENTERPRISE ROUTING === */}
             <Route element={<PrivateRoute requiredRole="COMPRADOR" />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/mis-entradas" element={<MisEntradas />} />
+              {/* Dashboard es el Layout Padre */}
+              <Route path="/dashboard" element={<Dashboard />}>
+                {/* Index: Lo que se ve en /dashboard */}
+                <Route index element={<DashboardHome />} />
+
+                {/* Rutas Hijas: Se renderizan en el <Outlet /> del Dashboard */}
+                <Route path="tickets" element={<MisEntradas />} />
+                <Route path="events" element={<div>Eventos (Dashboard)</div>} />
+                <Route path="profile" element={<div>Perfil (Dashboard)</div>} />
+
+                {/* Ruta Scanner */}
+                <Route path="scanner" element={<ScannerView />} />
+              </Route>
             </Route>
 
-            {/* Rutas protegidas por rol - Personal de Evento */}
-            <Route element={<PrivateRoute requiredRole="PERSONAL_EVENTO" />}>
-              <Route path="/staff" element={<EventStaffDashboard />} />
-            </Route>
-
-            {/* Redirección por defecto */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AuthProvider>

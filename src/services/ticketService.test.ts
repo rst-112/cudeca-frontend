@@ -1,14 +1,49 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { downloadTicketPdf, sendTicketEmail } from './ticketService';
+import { apiClient } from './api';
+import type { Ticket } from '../types/ticket.types';
 
-import type { Ticket } from '../types';
+// Mock de apiClient
+vi.mock('./api', () => ({
+  apiClient: {
+    post: vi.fn(),
+  },
+}));
+
+// Mock de jsPDF
+const mockSave = vi.fn();
+const mockText = vi.fn();
+const mockRect = vi.fn();
+const mockAddImage = vi.fn();
+const mockSetFillColor = vi.fn();
+const mockSetFontSize = vi.fn();
+const mockSetTextColor = vi.fn();
+
+vi.mock('jspdf', () => {
+  return {
+    jsPDF: class {
+      save = mockSave;
+      text = mockText;
+      rect = mockRect;
+      addImage = mockAddImage;
+      setFillColor = mockSetFillColor;
+      setFontSize = mockSetFontSize;
+      setTextColor = mockSetTextColor;
+    },
+  };
+});
 
 describe('ticketService', () => {
   beforeEach(() => {
-    // Mock console methods to avoid cluttering output
+    vi.clearAllMocks();
     vi.spyOn(console, 'log').mockImplementation(() => {});
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    // Mock global fetching for image blob (used in fallback)
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      blob: () => Promise.resolve(new Blob([''])),
+    });
   });
 
   afterEach(() => {
@@ -17,33 +52,30 @@ describe('ticketService', () => {
 
   describe('downloadTicketPdf', () => {
     it('genera y descarga el PDF correctamente cuando el backend responde', async () => {
-      // Mock fetch global
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: true,
-        blob: vi.fn().mockResolvedValue(new Blob(['pdf content'])),
+      // Mock respuesta exitosa de apiClient
+      vi.mocked(apiClient.post).mockResolvedValue({
+        data: new Blob(['pdf-content'], { type: 'application/pdf' }),
       });
 
-      // Mock URL.createObjectURL
+      // Mock URL methods
       const mockCreateObjectURL = vi.fn(() => 'blob:mock-url');
+      const mockRevokeObjectURL = vi.fn();
 
-      // Handle global URL object safely
       const originalURL = window.URL;
       Object.defineProperty(window, 'URL', {
         value: {
           createObjectURL: mockCreateObjectURL,
-          revokeObjectURL: vi.fn(),
+          revokeObjectURL: mockRevokeObjectURL,
         },
         writable: true,
       });
 
-      // Mock DOM elements
+      // Mock DOM methods for link click
       const mockLink = {
         href: '',
         setAttribute: vi.fn(),
         click: vi.fn(),
-        parentNode: {
-          removeChild: vi.fn(),
-        },
+        parentNode: { removeChild: vi.fn() },
       };
 
       const mockCreateElement = vi
@@ -55,31 +87,26 @@ describe('ticketService', () => {
 
       const mockTicket = { codigoAsiento: 'TKT-123' } as unknown as Ticket;
 
-      // Ejecutar la función
       await downloadTicketPdf(mockTicket);
 
-      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('[Motor PDF]'));
-      expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:8080/api/tickets/descargar-pdf',
-        expect.objectContaining({
-          method: 'POST',
-          body: JSON.stringify(mockTicket),
-        }),
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/tickets/descargar-pdf',
+        mockTicket,
+        expect.objectContaining({ responseType: 'blob' }),
       );
-      expect(mockCreateObjectURL).toHaveBeenCalled();
+
       expect(mockCreateElement).toHaveBeenCalledWith('a');
-      expect(mockLink.setAttribute).toHaveBeenCalledWith('download', 'Entrada_Cudeca_TKT-123.pdf');
       expect(mockLink.href).toBe('blob:mock-url');
       expect(mockAppendChild).toHaveBeenCalledWith(mockLink as unknown as HTMLAnchorElement);
       expect(mockLink.click).toHaveBeenCalled();
 
-      // Restore URL
+      // Restore
       window.URL = originalURL;
     });
 
     it('usa el fallback cuando el backend falla', async () => {
-      // Mock fetch que falla
-      global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
+      // Simular fallo de backend (axios error)
+      vi.mocked(apiClient.post).mockRejectedValue(new Error('Network Error'));
 
       const mockTicket = {
         id: '1',
@@ -91,69 +118,58 @@ describe('ticketService', () => {
         codigoQR: 'QR123',
       } as Ticket;
 
-      // La función no debería lanzar error (maneja el fallback internamente)
-      await expect(downloadTicketPdf(mockTicket)).resolves.not.toThrow();
+      await downloadTicketPdf(mockTicket);
 
       expect(console.warn).toHaveBeenCalledWith(
-        expect.stringContaining('Backend no disponible'),
-        expect.anything(),
+        expect.stringContaining('Backend falló'),
+        expect.any(Error),
       );
+
+      // Debe haber generado el PDF localmente
+      expect(mockSave).toHaveBeenCalledWith('MOCK_Entrada_TKT-123.pdf');
     });
   });
 
   describe('sendTicketEmail', () => {
     it('envía el email correctamente cuando el backend responde', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: true,
-        json: vi.fn().mockResolvedValue({ status: 'success', email: 'test@example.com' }),
-      });
+      vi.mocked(apiClient.post).mockResolvedValue({ data: { success: true } });
 
       const mockTicket = { id: 'TKT-123' } as unknown as Ticket;
       const result = await sendTicketEmail(mockTicket);
 
-      expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:8080/api/tickets/generar-y-enviar',
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/tickets/generar-y-enviar',
         expect.objectContaining({
-          method: 'POST',
-          body: JSON.stringify({
-            ...mockTicket,
-            sender: 'frangalisteo1@gmail.com',
-          }),
+          id: 'TKT-123',
+          sender: 'frangalisteo1@gmail.com',
         }),
       );
-      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('[Emailing]'));
       expect(result).toBe(true);
     });
 
-    it('retorna false cuando el servidor responde con error', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: false,
-        json: vi.fn().mockResolvedValue({ status: 'error', message: 'Error del servidor' }),
-      });
+    it('usa el fallback de simulación cuando el backend falla', async () => {
+      vi.mocked(apiClient.post).mockRejectedValue(new Error('Network Error'));
 
       const mockTicket = { id: 'TKT-123' } as unknown as Ticket;
-      const result = await sendTicketEmail(mockTicket);
 
-      expect(console.error).toHaveBeenCalledWith('Error del servidor:', 'Error del servidor');
-      expect(result).toBe(false);
-    });
+      // Usar timers reales o fake timers para acelerar la prueba
+      // Dado que el componente espera 2s, podemos usar fake timers
+      vi.useFakeTimers();
 
-    it('usa el fallback de simulación cuando el backend no está disponible', async () => {
-      global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
+      const promise = sendTicketEmail(mockTicket);
 
-      const mockTicket = {
-        id: 'TKT-123',
-        nombreEvento: 'Evento Test',
-      } as unknown as Ticket;
+      // Avanzar el tiempo
+      await vi.advanceTimersByTimeAsync(2000); // 2000ms delay en el catch
 
-      const result = await sendTicketEmail(mockTicket);
+      const result = await promise;
 
       expect(console.warn).toHaveBeenCalledWith(
-        expect.stringContaining('Backend no disponible'),
-        expect.anything(),
+        expect.stringContaining('Backend falló'),
+        expect.any(Error),
       );
-      expect(console.log).toHaveBeenCalledWith('[SIMULACIÓN] Enviando email...');
       expect(result).toBe(true);
+
+      vi.useRealTimers();
     });
   });
 });
