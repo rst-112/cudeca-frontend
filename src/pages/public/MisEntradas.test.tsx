@@ -5,7 +5,7 @@ import MisEntradas from './MisEntradas';
 import type { Ticket } from '../../types/ticket.types';
 
 // Mock del componente TicketCard para aislar la prueba de la página
-vi.mock('../../components/tickets/ticketCard', () => ({
+vi.mock('../../components/tickets/TicketCard', () => ({
   TicketCard: ({ ticket }: { ticket: Ticket }) => (
     <div data-testid="mock-ticket-card">
       {ticket.nombreEvento} - {ticket.nombreUsuario}

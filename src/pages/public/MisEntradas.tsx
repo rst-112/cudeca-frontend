@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { TicketCard } from '../../components/tickets/ticketCard';
+import { TicketCard } from '../../components/tickets/TicketCard';
 import type { Ticket } from '../../types/ticket.types';
 import { apiClient } from '../../services/api';
 import { Loader2, Ticket as TicketIcon, DatabaseZap } from 'lucide-react';
