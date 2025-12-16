@@ -9,6 +9,7 @@ import Checkout from './Checkout';
 import DetallesEvento from './DetallesEvento';
 import Home from '../../pages/Home';
 import PerfilUsuario from '../../pages/PerfilUsuario';
+import { CartProvider } from '../../context/CartContext';
 
 // Mock del AuthContext con vi.hoisted
 const { mockLogin, mockRegister, mockUseAuth } = vi.hoisted(() => ({
@@ -87,7 +88,7 @@ describe('Páginas Públicas (Cobertura)', () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123');
+      expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123', false);
     });
   });
 
@@ -121,10 +122,12 @@ describe('Páginas Públicas (Cobertura)', () => {
   });
 
   it('renderiza la página de Checkout', () => {
-    // Checkout requiere AuthProvider mockeado que ya está configurado
+    // Checkout requiere AuthProvider y CartProvider mockeados
     const { container } = render(
       <MemoryRouter>
-        <Checkout />
+        <CartProvider>
+          <Checkout />
+        </CartProvider>
       </MemoryRouter>,
     );
     // Solo verificamos que se renderiza sin crash

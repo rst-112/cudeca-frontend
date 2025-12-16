@@ -28,10 +28,14 @@ export const authService = {
    * login - Inicia sesión con email y contraseña
    *
    * @param credentials - Email y contraseña del usuario
+   * @param rememberMe - Si es true usa localStorage (por defecto), si es false usa sessionStorage
    * @returns Promise con el token y datos del usuario
    * @throws Error si las credenciales son inválidas
    */
-  login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
+  login: async (
+    credentials: LoginCredentials,
+    rememberMe: boolean = true,
+  ): Promise<AuthResponse> => {
     const response = await apiClient.post<AuthResponse>('/auth/login', credentials);
 
     if (response.data.token && response.data.user) {
@@ -49,8 +53,10 @@ export const authService = {
         roles: rolesArray,
       };
 
-      localStorage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+      // Usar localStorage si rememberMe es true, sessionStorage si es false
+      const storage = rememberMe ? localStorage : sessionStorage;
+      storage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
+      storage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
 
       // Devolver la respuesta con el usuario normalizado
       return { token: response.data.token, user };
@@ -113,21 +119,24 @@ export const authService = {
   /**
    * logout - Cierra sesión del usuario
    *
-   * Limpia todos los datos de autenticación del localStorage
+   * Limpia todos los datos de autenticación del localStorage y sessionStorage
    */
   logout: (): void => {
     localStorage.removeItem(STORAGE_KEYS.TOKEN);
     localStorage.removeItem(STORAGE_KEYS.USER);
+    sessionStorage.removeItem(STORAGE_KEYS.TOKEN);
+    sessionStorage.removeItem(STORAGE_KEYS.USER);
   },
 
   /**
-   * getCurrentUser - Obtiene el usuario actual del localStorage
+   * getCurrentUser - Obtiene el usuario actual del localStorage o sessionStorage
    *
    * @returns User | null - Usuario actual o null si no hay sesión
    */
   getCurrentUser: (): User | null => {
     try {
-      const userStr = localStorage.getItem(STORAGE_KEYS.USER);
+      const userStr =
+        localStorage.getItem(STORAGE_KEYS.USER) || sessionStorage.getItem(STORAGE_KEYS.USER);
       if (!userStr) return null;
       return JSON.parse(userStr);
     } catch (error) {
@@ -137,11 +146,11 @@ export const authService = {
   },
 
   /**
-   * getToken - Obtiene el token actual del localStorage
+   * getToken - Obtiene el token actual del localStorage o sessionStorage
    *
    * @returns string | null - Token JWT o null si no hay sesión
    */
   getToken: (): string | null => {
-    return localStorage.getItem(STORAGE_KEYS.TOKEN);
+    return localStorage.getItem(STORAGE_KEYS.TOKEN) || sessionStorage.getItem(STORAGE_KEYS.TOKEN);
   },
 };

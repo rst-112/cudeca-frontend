@@ -238,13 +238,23 @@ export default function RegisterPage({ onSwitch }: RegisterPageProps) {
             <Checkbox id="terms" {...register('terms')} className="mt-1" />
             <Label htmlFor="terms" className="text-sm font-normal leading-relaxed cursor-pointer">
               Acepto los{' '}
-              <a href="#" className="text-[#00A651] hover:underline font-semibold">
+              <Link
+                to="/terminos"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#00A651] hover:underline font-semibold"
+              >
                 Términos
-              </a>{' '}
+              </Link>{' '}
               y la{' '}
-              <a href="#" className="text-[#00A651] hover:underline font-semibold">
+              <Link
+                to="/privacidad"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#00A651] hover:underline font-semibold"
+              >
                 Política de Privacidad
-              </a>
+              </Link>
             </Label>
           </div>
           {errors.terms && (
