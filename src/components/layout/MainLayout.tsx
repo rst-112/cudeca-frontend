@@ -18,7 +18,7 @@ const MainLayout = () => {
       <nav className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           {/* Logo Dinámico */}
-          <Link to={isAuthenticated ? "/home-logeado" : "/home-invitado"} className="relative h-12 w-40 group transition-transform hover:scale-105">
+          <Link to="/" className="relative h-12 w-40 group transition-transform hover:scale-105">
             <img
               src={logoLight}
               alt="Fundación Cudeca"
@@ -34,7 +34,7 @@ const MainLayout = () => {
           {/* Navegación Desktop */}
           <div className="hidden md:flex items-center gap-8">
             <Link
-              to={isAuthenticated ? "/home-logeado" : "/home-invitado"}
+              to="/"
               className="text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-[#00A651] dark:hover:text-[#00A651] transition-colors"
             >
               Inicio
@@ -90,7 +90,7 @@ const MainLayout = () => {
         {isMenuOpen && (
           <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 space-y-4 animate-in slide-in-from-top-5">
             <Link
-              to={isAuthenticated ? "/home-logeado" : "/home-invitado"}
+              to="/"
               className="block px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-md"
               onClick={() => setIsMenuOpen(false)}
             >

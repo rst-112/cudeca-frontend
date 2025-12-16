@@ -16,8 +16,10 @@ const AdminLayout = () => {
       {/* Menú Lateral */}
       <aside className="w-80 bg-white dark:bg-gray-800 border-r dark:border-gray-700 flex flex-col">
         <div className="p-8 border-b dark:border-gray-700">
-          <h1 className="text-2xl font-bold font-['Arimo']">Fundación Cudeca</h1>
-          <p className="text-gray-500 dark:text-gray-400">Cudeca Admin</p>
+          <Link to="/" className="block">
+            <h1 className="text-2xl font-bold font-['Arimo'] text-[#00a651] hover:text-[#00753e] transition-colors">Fundación Cudeca</h1>
+            <p className="text-gray-500 dark:text-gray-400">Cudeca Admin</p>
+          </Link>
         </div>
         <nav className="flex-1 p-8 space-y-8">
           <div>

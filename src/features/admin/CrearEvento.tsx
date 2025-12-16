@@ -5,20 +5,18 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Textarea } from '../../components/ui/Textarea';
-import { Label } from '../../components/ui/Label';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../components/ui/Form';
-import { createEvento } from '../../services/eventos.service';
+import { createEvent } from '../../services/eventService';
 import { toast } from 'sonner';
 
-// Esquema de validación con Zod
+// Esquema de validación con Zod - Campos alineados con EventCreationRequest del backend
 const eventoSchema = z.object({
-  nombre: z.string().min(3, 'El nombre debe tener al menos 3 caracteres'),
-  descripcion: z.string().min(10, 'La descripción debe tener al menos 10 caracteres'),
-  imagenUrl: z.string().url('Debe ser una URL válida'),
-  fecha: z.string().refine((val) => !isNaN(Date.parse(val)), 'Fecha inválida'),
-  ubicacion: z.string().min(3, 'La ubicación es requerida'),
-  capacidad: z.coerce.number().int().positive('La capacidad debe ser un número positivo'),
-  objetivo: z.coerce.number().positive('El objetivo debe ser un número positivo'),
+  nombre: z.string().min(3, 'El nombre debe tener al menos 3 caracteres').max(150, 'El nombre no puede exceder 150 caracteres'),
+  descripcion: z.string().min(10, 'La descripción debe tener al menos 10 caracteres').max(2000, 'La descripción no puede exceder 2000 caracteres').optional().or(z.literal('')),
+  imagenUrl: z.string().url('Debe ser una URL válida').optional().or(z.literal('')),
+  fechaInicio: z.string().refine((val) => !isNaN(Date.parse(val)), 'Fecha inválida'),
+  lugar: z.string().min(3, 'El lugar es requerido'),
+  objetivoRecaudacion: z.coerce.number().nonnegative('El objetivo debe ser un número no negativo').optional(),
 });
 
 type EventoFormData = z.infer<typeof eventoSchema>;
@@ -31,21 +29,23 @@ const CrearEvento = () => {
       nombre: '',
       descripcion: '',
       imagenUrl: '',
-      fecha: '',
-      ubicacion: '',
-      capacidad: 0,
-      objetivo: 0,
+      fechaInicio: '',
+      lugar: '',
+      objetivoRecaudacion: 0,
     },
   });
 
   const onSubmit = async (data: EventoFormData) => {
-    const promise = createEvento({
-      ...data,
-      fecha: new Date(data.fecha).toISOString(),
-      // Valores por defecto para los campos que no están en el formulario
-      estado: 'BORRADOR',
-      recaudado: 0,
-      categoria: 'Otro',
+    // Convertir la fecha a formato ISO 8601 con zona horaria (OffsetDateTime)
+    const fechaInicio = new Date(data.fechaInicio).toISOString();
+
+    const promise = createEvent({
+      nombre: data.nombre,
+      descripcion: data.descripcion || undefined,
+      fechaInicio,
+      lugar: data.lugar,
+      objetivoRecaudacion: data.objetivoRecaudacion || undefined,
+      imagenUrl: data.imagenUrl || undefined,
     });
 
     toast.promise(promise, {
@@ -115,10 +115,10 @@ const CrearEvento = () => {
               <div className="space-y-4">
                 <FormField
                   control={form.control}
-                  name="fecha"
+                  name="fechaInicio"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Fecha y Hora</FormLabel>
+                      <FormLabel>Fecha y Hora de Inicio</FormLabel>
                       <FormControl>
                         <Input type="datetime-local" {...field} />
                       </FormControl>
@@ -128,7 +128,7 @@ const CrearEvento = () => {
                 />
                 <FormField
                   control={form.control}
-                  name="ubicacion"
+                  name="lugar"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Lugar de evento</FormLabel>
@@ -141,20 +141,7 @@ const CrearEvento = () => {
                 />
                 <FormField
                   control={form.control}
-                  name="capacidad"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Capacidad máxima</FormLabel>
-                      <FormControl>
-                        <Input type="number" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="objetivo"
+                  name="objetivoRecaudacion"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Objetivo de recaudación (€)</FormLabel>

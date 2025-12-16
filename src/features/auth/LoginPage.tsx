@@ -47,7 +47,7 @@ export default function LoginPage({ onSwitch }: LoginPageProps) {
       toast.success('¡Sesión iniciada correctamente!', {
         description: 'Bienvenido de vuelta',
       });
-      navigate('/dashboard');
+      navigate('/creacion-eventos');
     } catch (error) {
       console.error('Login failed:', error);
       toast.error('Error al iniciar sesión', {

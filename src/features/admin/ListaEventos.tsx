@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { Progress } from '../../components/ui/Progress';
 import { Badge } from '../../components/ui/Badge';
-import { Edit, Trash2, Eye } from 'lucide-react';
-import { getEventos } from '../../services/eventos.service';
+import { Progress } from '../../components/ui/Progress';
+import { Edit, Trash2, CheckCircle } from 'lucide-react';
+import { getEventos, publicarEvento } from '../../services/eventos.service';
 import type { Evento, EstadoEvento } from '../../types/api.types';
+import { toast } from 'sonner';
 
 const getBadgeVariant = (estado: EstadoEvento) => {
   switch (estado) {
@@ -23,28 +24,33 @@ const getBadgeVariant = (estado: EstadoEvento) => {
   }
 };
 
-const EventoCard = ({ evento }: { evento: Evento }) => {
+const EventoCard = ({ evento, onPublish }: { evento: Evento; onPublish: (id: number) => void }) => {
   const navigate = useNavigate();
-  const progreso = (evento.recaudado / evento.objetivo) * 100;
+  // Recaudado inicial en 0
+  const recaudadoActual = 0;
+  const progreso = evento.objetivoRecaudacion ? (recaudadoActual / evento.objetivoRecaudacion) * 100 : 0;
 
   return (
     <Card className="overflow-hidden transition-shadow hover:shadow-lg bg-white dark:bg-slate-800 border-0 dark:border-slate-700">
       <CardContent className="p-0">
         <div className="flex items-center gap-0 h-32">
           {/* Imagen */}
-          <img src={evento.imagenUrl} alt={evento.nombre} className="h-full w-40 object-cover flex-shrink-0" />
+          <img src={evento.imagenUrl || 'https://via.placeholder.com/160x128'} alt={evento.nombre} className="h-full w-40 object-cover flex-shrink-0" />
 
           {/* Contenido principal */}
           <div className="flex-1 px-6 py-4 flex flex-col justify-center">
             <h3 className="font-bold text-base text-slate-900 dark:text-white">{evento.nombre}</h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              {new Date(evento.fecha).toLocaleDateString('es-ES', {
+              {new Date(evento.fechaInicio).toLocaleDateString('es-ES', {
                 day: '2-digit',
                 month: 'long',
                 year: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit',
-              })}h
+              })}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              📍 {evento.lugar}
             </p>
           </div>
 
@@ -56,17 +62,19 @@ const EventoCard = ({ evento }: { evento: Evento }) => {
           </div>
 
           {/* Progreso de recaudación */}
-          <div className="flex-shrink-0 w-56 px-4">
-            <div className="flex justify-between text-xs mb-2">
-              <span className="text-gray-600 dark:text-gray-300 font-medium">
-                {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(evento.recaudado)}
-              </span>
-              <span className="text-gray-400 dark:text-gray-500">
-                {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(evento.objetivo)}
-              </span>
+          {evento.objetivoRecaudacion && evento.objetivoRecaudacion > 0 && (
+            <div className="flex-shrink-0 w-56 px-4">
+              <div className="flex justify-between text-xs mb-2">
+                <span className="text-gray-600 dark:text-gray-300 font-medium">
+                  {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(recaudadoActual)}
+                </span>
+                <span className="text-gray-400 dark:text-gray-500">
+                  {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(evento.objetivoRecaudacion)}
+                </span>
+              </div>
+              <Progress value={progreso} className="h-2" />
             </div>
-            <Progress value={progreso} className="h-2" />
-          </div>
+          )}
 
           {/* Botones de acciones */}
           <div className="flex-shrink-0 px-4 flex items-center gap-2">
@@ -79,14 +87,17 @@ const EventoCard = ({ evento }: { evento: Evento }) => {
             >
               <Edit className="h-4 w-4 text-slate-600 dark:text-gray-400" />
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:bg-gray-100 dark:hover:bg-slate-700"
-              title="Ver evento"
-            >
-              <Eye className="h-4 w-4 text-slate-600 dark:text-gray-400" />
-            </Button>
+            {evento.estado === 'BORRADOR' && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 hover:bg-green-100 dark:hover:bg-green-900/30"
+                title="Publicar evento"
+                onClick={() => onPublish(evento.id)}
+              >
+                <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon"
@@ -106,6 +117,7 @@ const ListaEventos = () => {
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [publishingId, setPublishingId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchEventos = async () => {
@@ -124,6 +136,37 @@ const ListaEventos = () => {
     fetchEventos();
   }, []);
 
+  const handlePublish = async (id: number) => {
+    // Mostrar diálogo de confirmación
+    const confirmar = window.confirm('¿Estás seguro de que deseas publicar este evento? Una vez publicado, será visible para todos los usuarios.');
+
+    if (!confirmar) {
+      return;
+    }
+
+    setPublishingId(id);
+
+    try {
+      // Llamada real al backend para publicar el evento
+      await publicarEvento(id);
+
+      // Recargar la lista de eventos para obtener el estado actualizado
+      const data = await getEventos();
+      setEventos(data);
+
+      toast.success('¡Evento publicado!', {
+        description: 'El evento ahora es visible para todos los usuarios.',
+      });
+    } catch (err) {
+      console.error('Error al publicar evento:', err);
+      toast.error('Error al publicar evento', {
+        description: 'Por favor, inténtalo de nuevo.',
+      });
+    } finally {
+      setPublishingId(null);
+    }
+  };
+
   if (loading) {
     return <div className="text-center p-8 text-slate-900 dark:text-white">Cargando lista de eventos...</div>;
   }
@@ -132,10 +175,19 @@ const ListaEventos = () => {
     return <div className="text-center text-red-500 dark:text-red-400 p-8">{error}</div>;
   }
 
+  if (eventos.length === 0) {
+    return (
+      <div className="text-center p-12">
+        <p className="text-slate-600 dark:text-slate-400 text-lg">No hay eventos creados aún.</p>
+        <p className="text-slate-500 dark:text-slate-500 text-sm mt-2">Crea tu primer evento usando el botón "Crear Evento"</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {eventos.map((evento) => (
-        <EventoCard key={evento.id} evento={evento} />
+        <EventoCard key={evento.id} evento={evento} onPublish={handlePublish} />
       ))}
     </div>
   );

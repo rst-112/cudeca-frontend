@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { createEvent } from "../../../services/eventService";
+import type { EventCreationRequest } from "../../../services/eventService";
 
 export const MainContentSection = (): JSX.Element => {
   const navigate = useNavigate();
@@ -46,14 +48,14 @@ export const MainContentSection = (): JSX.Element => {
     {
       id: "startDate",
       label: "Fecha de inicio",
-      placeholder: "dia/mes/año",
-      type: "text" as const,
+      placeholder: "",
+      type: "datetime-local" as const,
     },
     {
       id: "endDate",
       label: "Fecha de fin",
-      placeholder: "dia/mes/año",
-      type: "text" as const,
+      placeholder: "",
+      type: "datetime-local" as const,
     },
     {
       id: "location",
@@ -63,9 +65,9 @@ export const MainContentSection = (): JSX.Element => {
     },
     {
       id: "fundraisingGoal",
-      label: "Objetivo de recaudación",
+      label: "Objetivo de recaudación (€)",
       placeholder: "Introduzca un objetivo en euros",
-      type: "text" as const,
+      type: "number" as const,
     },
   ];
 
@@ -88,16 +90,74 @@ export const MainContentSection = (): JSX.Element => {
     });
   };
 
-  const handleSaveDraft = () => {
-    console.log("Saving draft:", formData);
-    setShowBorrador(true);
-    setTimeout(() => setShowBorrador(false), 3000);
+  // Función para convertir fecha del input datetime-local a ISO 8601
+  const parseDate = (dateStr: string): string => {
+    if (!dateStr || dateStr.trim() === "") {
+      return new Date().toISOString(); // Si está vacía, usa fecha actual
+    }
+
+    // Los inputs datetime-local ya devuelven formato YYYY-MM-DDTHH:mm
+    // Solo necesitamos convertirlo a ISO 8601
+    const date = new Date(dateStr);
+    return isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
   };
 
-  const handlePublish = () => {
-    console.log("Publishing event:", formData);
-    setShowPublicado(true);
-    setTimeout(() => setShowPublicado(false), 3000);
+  const handleSaveDraft = async () => {
+    try {
+      const eventData: EventCreationRequest = {
+        nombre: formData.eventName,
+        descripcion: formData.description || undefined,
+        fechaInicio: parseDate(formData.startDate),
+        fechaFin: formData.endDate ? parseDate(formData.endDate) : undefined,
+        lugar: formData.location,
+        objetivoRecaudacion: formData.fundraisingGoal ? parseFloat(formData.fundraisingGoal) : undefined,
+        imagenUrl: formData.imageUrl || undefined,
+      };
+
+      console.log("Guardando borrador:", eventData);
+      const createdEvent = await createEvent(eventData);
+      console.log("Evento creado:", createdEvent);
+
+      setShowBorrador(true);
+      setTimeout(() => setShowBorrador(false), 3000);
+
+      // Limpiar formulario después de guardar
+      setTimeout(() => {
+        handleDiscard();
+      }, 3000);
+    } catch (error) {
+      console.error("Error al guardar evento:", error);
+      alert("Error al guardar el evento. Por favor verifica los datos e intenta de nuevo.");
+    }
+  };
+
+  const handlePublish = async () => {
+    try {
+      const eventData: EventCreationRequest = {
+        nombre: formData.eventName,
+        descripcion: formData.description || undefined,
+        fechaInicio: parseDate(formData.startDate),
+        fechaFin: formData.endDate ? parseDate(formData.endDate) : undefined,
+        lugar: formData.location,
+        objetivoRecaudacion: formData.fundraisingGoal ? parseFloat(formData.fundraisingGoal) : undefined,
+        imagenUrl: formData.imageUrl || undefined,
+      };
+
+      console.log("Publicando evento:", eventData);
+      const createdEvent = await createEvent(eventData);
+      console.log("Evento creado:", createdEvent);
+
+      setShowPublicado(true);
+      setTimeout(() => setShowPublicado(false), 3000);
+
+      // Limpiar formulario después de publicar
+      setTimeout(() => {
+        handleDiscard();
+      }, 3000);
+    } catch (error) {
+      console.error("Error al publicar evento:", error);
+      alert("Error al publicar el evento. Por favor verifica los datos e intenta de nuevo.");
+    }
   };
 
   return (
@@ -121,11 +181,10 @@ export const MainContentSection = (): JSX.Element => {
                 setActiveTab(tab.id);
               }
             }}
-            className={`py-4 px-2 font-normal [font-family:'Arimo-Regular',Helvetica] text-xl transition-colors ${
-              activeTab === tab.id
-                ? "text-[#00a651] dark:text-[#00d66a] border-b-2 border-[#00a651] dark:border-[#00d66a]"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-            }`}
+            className={`py-4 px-2 font-normal [font-family:'Arimo-Regular',Helvetica] text-xl transition-colors ${activeTab === tab.id
+              ? "text-[#00a651] dark:text-[#00d66a] border-b-2 border-[#00a651] dark:border-[#00d66a]"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              }`}
           >
             {tab.label}
           </button>

@@ -11,7 +11,6 @@ import CrearEvento from './features/admin/CrearEvento';
 import Dashboard from './features/dashboard/Dashboard';
 
 // Páginas públicas
-import Home from './pages/Home';
 import DetalleEvento from './pages/public/DetallesEvento';
 import Checkout from './pages/public/Checkout';
 import SandboxSeatMap from './pages/public/SandboxSeatMap';
@@ -63,7 +62,7 @@ function App() {
           <Routes>
             {/* Rutas públicas con MainLayout */}
             <Route path="/" element={<MainLayout />}>
-              <Route index element={<Home />} />
+              <Route index element={<HomeInvitado />} />
               <Route path="evento/:id" element={<DetalleEvento />} />
               <Route path="eventos" element={<Eventos />} />
             </Route>
