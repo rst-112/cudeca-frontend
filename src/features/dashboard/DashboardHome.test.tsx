@@ -11,25 +11,17 @@ describe('DashboardHome', () => {
       </BrowserRouter>,
     );
 
-    expect(screen.getByText('Eventos Próximos')).toBeInTheDocument();
-    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(screen.getByText('Resumen de Actividad')).toBeInTheDocument();
 
-    expect(screen.getByText('Mis Entradas')).toBeInTheDocument();
-    expect(screen.getByText('12')).toBeInTheDocument();
+    // Stats Cards
+    expect(screen.getByText('Asistentes Hoy')).toBeInTheDocument();
+    expect(screen.getByText('124')).toBeInTheDocument();
 
-    expect(screen.getByText('Donaciones')).toBeInTheDocument();
-    expect(screen.getByText('150€')).toBeInTheDocument();
-  });
+    expect(screen.getByText('Entradas Vendidas')).toBeInTheDocument();
+    expect(screen.getByText('1,450')).toBeInTheDocument();
 
-  it('tiene un enlace correcto a mis entradas', () => {
-    render(
-      <BrowserRouter>
-        <DashboardHome />
-      </BrowserRouter>,
-    );
-
-    const link = screen.getByRole('link', { name: /mis entradas/i });
-    expect(link).toHaveAttribute('href', '/dashboard/tickets');
+    expect(screen.getByText('Próximo Evento')).toBeInTheDocument();
+    expect(screen.getByText('Gala Benéfica')).toBeInTheDocument();
   });
 
   it('renderiza la sección de actividad reciente', () => {
@@ -39,10 +31,10 @@ describe('DashboardHome', () => {
       </BrowserRouter>,
     );
 
-    expect(screen.getByText('Actividad Reciente')).toBeInTheDocument();
+    expect(screen.getByText('Registros Recientes')).toBeInTheDocument();
 
-    // Debería haber 3 items de actividad según el mock
-    const items = screen.getAllByText(/Compra de entradas - Concierto Benéfico/i);
-    expect(items).toHaveLength(3);
+    // Debería haber items de actividad
+    const items = screen.getAllByText(/Entrada validada/i);
+    expect(items.length).toBeGreaterThan(0);
   });
 });

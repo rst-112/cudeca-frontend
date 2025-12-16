@@ -2,12 +2,13 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { Toaster } from 'sonner';
+import { ScrollToTop } from './components/ScrollToTop';
 import MainLayout from './components/layout/MainLayout';
 import AuthPage from './features/auth/AuthPage';
 import { PrivateRoute } from './components/PrivateRoute';
 import AdminDashboard from './features/admin/AdminDashboard';
 
-// Dashboard y sus sub-vistas
+// Dashboard (Backoffice SOLO para Staff/Admin)
 import Dashboard from './features/dashboard/Dashboard';
 import DashboardHome from './features/dashboard/DashboardHome';
 import ScannerView from './features/dashboard/ScannerView';
@@ -15,10 +16,18 @@ import ScannerView from './features/dashboard/ScannerView';
 // Páginas públicas
 import Home from './pages/Home';
 import DetalleEvento from './pages/public/DetallesEvento';
+
+// === PÁGINAS UNIFICADAS ===
 import Checkout from './pages/public/Checkout';
+import ConfirmationPage from './pages/public/Confirmation';
+import PerfilUsuario from './pages/PerfilUsuario';
+
+// Herramientas de Desarrollo
 import SandboxSeatMap from './pages/public/SandboxSeatMap';
 import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
-import MisEntradas from './pages/public/MisEntradas';
+
+// Componente temporal para staff
+const EventStaffDashboard = () => <div>Dashboard (Personal Evento)</div>;
 
 function RedirectIfAuthenticated({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -31,21 +40,39 @@ function RedirectIfAuthenticated({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <AuthProvider>
           <Toaster position="top-right" richColors />
           <Routes>
-            {/* Rutas públicas */}
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<Home />} />
-              <Route path="evento/:id" element={<DetalleEvento />} />
-            </Route>
-
-            {/* Sandbox */}
+            {/* === RUTAS DE DESARROLLO === */}
             <Route path="/dev/mapa" element={<SandboxSeatMap />} />
             <Route path="/dev/mapa/editor" element={<SandboxSeatMapEditor />} />
 
-            {/* Auth */}
+            {/* Redirecciones de compatibilidad (para no romper links antiguos) */}
+            <Route path="/dev/checkout-usuario" element={<Checkout />} />
+            <Route path="/dev/checkout-invitado" element={<Checkout />} />
+            <Route path="/dev/compra-invitado" element={<ConfirmationPage />} />
+            <Route path="/dev/compra-usuario" element={<ConfirmationPage />} />
+            <Route path="/dev/perfil-usuario" element={<PerfilUsuario />} />
+            <Route
+              path="/dev/datos-fiscales"
+              element={<Navigate to="/perfil?tab=fiscales" replace />}
+            />
+            <Route
+              path="/dev/recarga-saldo"
+              element={<Navigate to="/perfil?tab=monedero" replace />}
+            />
+            <Route
+              path="/dev/suscripcion"
+              element={<Navigate to="/perfil?tab=suscripcion" replace />}
+            />
+            <Route
+              path="/dev/perfil-compras"
+              element={<Navigate to="/perfil?tab=compras" replace />}
+            />
+
+            {/* === AUTH === */}
             <Route
               path="/login"
               element={
@@ -63,30 +90,36 @@ function App() {
               }
             />
 
-            {/* Checkout Protegido */}
-            <Route element={<PrivateRoute />}>
-              <Route path="/checkout" element={<Checkout />} />
-            </Route>
-
-            {/* Admin */}
+            {/* === ADMIN GLOBAL === */}
             <Route element={<PrivateRoute requiredRole="ADMINISTRADOR" />}>
               <Route path="/admin" element={<AdminDashboard />} />
             </Route>
 
-            {/* === DASHBOARD ENTERPRISE ROUTING === */}
-            <Route element={<PrivateRoute requiredRole="COMPRADOR" />}>
-              {/* Dashboard es el Layout Padre */}
+            {/* === STAFF & ADMIN (Backoffice/Trabajo) === */}
+            {/* Solo tienen acceso Staff y Admins. Aquí gestionan el evento. */}
+            <Route element={<PrivateRoute requiredRole={['ADMINISTRADOR', 'PERSONAL_EVENTO']} />}>
               <Route path="/dashboard" element={<Dashboard />}>
-                {/* Index: Lo que se ve en /dashboard */}
                 <Route index element={<DashboardHome />} />
-
-                {/* Rutas Hijas: Se renderizan en el <Outlet /> del Dashboard */}
-                <Route path="tickets" element={<MisEntradas />} />
-                <Route path="events" element={<div>Eventos (Dashboard)</div>} />
-                <Route path="profile" element={<div>Perfil (Dashboard)</div>} />
-
-                {/* Ruta Scanner */}
                 <Route path="scanner" element={<ScannerView />} />
+                <Route path="events" element={<div>Gestión de Eventos</div>} />
+              </Route>
+            </Route>
+
+            {/* === STAFF (Ruta legacy, opcional si ya usan /dashboard) === */}
+            <Route element={<PrivateRoute requiredRole="PERSONAL_EVENTO" />}>
+              <Route path="/staff" element={<EventStaffDashboard />} />
+            </Route>
+
+            {/* === WEB PÚBLICA Y ZONA PERSONAL (Layout Principal) === */}
+            <Route path="/" element={<MainLayout />}>
+              <Route index element={<Home />} />
+              <Route path="evento/:id" element={<DetalleEvento />} />
+              <Route path="checkout" element={<Checkout />} />
+              <Route path="confirmacion" element={<ConfirmationPage />} />
+
+              {/* ZONA PERSONAL (Accesible para TODOS los roles) */}
+              <Route element={<PrivateRoute />}>
+                <Route path="perfil" element={<PerfilUsuario />} />
               </Route>
             </Route>
 

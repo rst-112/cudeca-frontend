@@ -46,7 +46,7 @@ export default function Home() {
                 size="lg"
                 className="text-lg px-8 h-14 bg-[#00A651] hover:bg-[#008a43] border-none shadow-lg hover:shadow-[#00A651]/20 hover:scale-105 transition-all duration-300"
               >
-                <Link to="/registro" className="inline-flex items-center">
+                <Link to="/registro">
                   Únete ahora <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -94,9 +94,9 @@ export default function Home() {
               </p>
               <Link
                 to="/registro"
-                className="inline-flex items-center gap-1 text-[#00A651] font-semibold hover:underline underline-offset-4"
+                className="inline-flex items-center text-[#00A651] font-semibold hover:underline underline-offset-4"
               >
-                Colaborar <ArrowRight size={16} />
+                Colaborar <ArrowRight size={16} className="ml-1" />
               </Link>
             </div>
 
@@ -114,9 +114,9 @@ export default function Home() {
               </p>
               <Link
                 to="/eventos"
-                className="inline-flex items-center gap-1 text-blue-600 font-semibold hover:underline underline-offset-4"
+                className="inline-flex items-center text-blue-600 font-semibold hover:underline underline-offset-4"
               >
-                Ver agenda <ArrowRight size={16} />
+                Ver agenda <ArrowRight size={16} className="ml-1" />
               </Link>
             </div>
 
@@ -134,49 +134,88 @@ export default function Home() {
               </p>
               <Link
                 to="/voluntariado"
-                className="inline-flex items-center gap-1 text-purple-600 font-semibold hover:underline underline-offset-4"
+                className="inline-flex items-center text-purple-600 font-semibold hover:underline underline-offset-4"
               >
-                Infórmate <ArrowRight size={16} />
+                Infórmate <ArrowRight size={16} className="ml-1" />
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* === SANDBOX DEV (TEMPORAL) === */}
+      {/* === SANDBOX DEV (SOLO DESARROLLO) === */}
       {import.meta.env.DEV && (
         <section className="py-8 bg-amber-50 dark:bg-amber-950/20 border-y border-amber-200 dark:border-amber-900">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <TestTube className="text-amber-600" size={24} />
                 <div>
                   <h3 className="font-bold text-amber-900 dark:text-amber-400">Modo Desarrollo</h3>
                   <p className="text-sm text-amber-700 dark:text-amber-500">
-                    Sistema de Mapa de Asientos Interactivo (Viewer + Editor)
+                    Herramientas y accesos directos (Invisible en Producción)
                   </p>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="gap-2 border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30"
-                >
-                  <Link to="/dev/mapa">Viewer</Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="default"
-                  size="sm"
-                  className="gap-2 bg-amber-600 hover:bg-amber-700 text-white"
-                >
-                  <Link to="/dev/mapa/editor" className="inline-flex items-center gap-2">
-                    Editor
-                    <ArrowRight size={16} />
-                  </Link>
-                </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Mapa */}
+              <div className="p-4 bg-white dark:bg-slate-900 rounded-lg border border-amber-200 dark:border-amber-800">
+                <h4 className="font-bold text-amber-800 dark:text-amber-500 mb-2">
+                  Mapa de Asientos
+                </h4>
+                <div className="flex gap-2">
+                  <Button asChild variant="outline" size="sm" className="w-full">
+                    <Link to="/dev/mapa">Viewer</Link>
+                  </Button>
+                  <Button asChild size="sm" className="w-full bg-amber-600 hover:bg-amber-700">
+                    <Link to="/dev/mapa/editor">Editor</Link>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Checkouts */}
+              <div className="p-4 bg-white dark:bg-slate-900 rounded-lg border border-amber-200 dark:border-amber-800">
+                <h4 className="font-bold text-amber-800 dark:text-amber-500 mb-2">Checkouts</h4>
+                <div className="flex gap-2">
+                  <Button asChild size="sm" className="w-full bg-green-600 hover:bg-green-700">
+                    <Link to="/dev/checkout-usuario">Usuario</Link>
+                  </Button>
+                  <Button asChild size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+                    <Link to="/dev/checkout-invitado">Invitado</Link>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Confirmaciones */}
+              <div className="p-4 bg-white dark:bg-slate-900 rounded-lg border border-amber-200 dark:border-amber-800">
+                <h4 className="font-bold text-amber-800 dark:text-amber-500 mb-2">
+                  Confirmaciones
+                </h4>
+                <div className="flex gap-2">
+                  <Button asChild size="sm" className="w-full bg-purple-600 hover:bg-purple-700">
+                    <Link to="/dev/compra-invitado">Invitado</Link>
+                  </Button>
+                  <Button asChild size="sm" className="w-full bg-teal-600 hover:bg-teal-700">
+                    <Link to="/dev/compra-usuario">Usuario</Link>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Usuario / Perfil */}
+              <div className="p-4 bg-white dark:bg-slate-900 rounded-lg border border-amber-200 dark:border-amber-800">
+                <h4 className="font-bold text-amber-800 dark:text-amber-500 mb-2">
+                  Mi Perfil (Auth)
+                </h4>
+                <div className="flex gap-2">
+                  <Button asChild size="sm" className="w-full bg-indigo-600 hover:bg-indigo-700">
+                    <Link to="/dev/perfil-usuario">Ver Perfil</Link>
+                  </Button>
+                  <Button asChild size="sm" className="w-full bg-orange-600 hover:bg-orange-700">
+                    <Link to="/dev/datos-fiscales">Datos Fiscales</Link>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
