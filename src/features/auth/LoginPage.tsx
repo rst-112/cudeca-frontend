@@ -43,7 +43,7 @@ export default function LoginPage({ onSwitch }: LoginPageProps) {
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      await login(data.email, data.password);
+      await login(data.email, data.password, data.rememberMe ?? false);
       toast.success('¡Sesión iniciada correctamente!', {
         description: 'Bienvenido de vuelta',
       });

@@ -5,6 +5,7 @@ import Checkout from './Checkout';
 import * as checkoutService from '../../services/checkout.service';
 import { toast } from 'sonner';
 import { useAuth } from '../../context/AuthContext';
+import { CartProvider } from '../../context/CartContext';
 
 // Mock de servicios
 vi.mock('../../services/checkout.service');
@@ -54,6 +55,21 @@ describe('Checkout - Branches Coverage', () => {
     vi.clearAllMocks();
     vi.mocked(checkoutService.obtenerDatosFiscalesUsuario).mockResolvedValue(mockDatosFiscales);
 
+    // Mock cart items in localStorage
+    const mockCartItems = [
+      {
+        id: 'test-item-1',
+        eventoId: 1,
+        eventoNombre: 'Evento Test',
+        eventoFecha: '2024-12-25',
+        tipoEntradaId: 1,
+        tipoEntradaNombre: 'General',
+        precio: 50,
+        cantidad: 1,
+      },
+    ];
+    localStorage.setItem('cudeca-cart', JSON.stringify(mockCartItems));
+
     // Mock default useAuth values
     vi.mocked(useAuth).mockReturnValue({
       user: { id: 1, nombre: 'Test User', email: 'test@example.com', roles: ['COMPRADOR'] },
@@ -67,7 +83,11 @@ describe('Checkout - Branches Coverage', () => {
   });
 
   const renderWithRouter = (component: React.ReactElement) => {
-    return render(<BrowserRouter>{component}</BrowserRouter>);
+    return render(
+      <BrowserRouter>
+        <CartProvider>{component}</CartProvider>
+      </BrowserRouter>,
+    );
   };
 
   describe('Carga inicial y datos fiscales', () => {
@@ -473,10 +493,12 @@ describe('Checkout - Branches Coverage', () => {
     it('debe calcular correctamente el total con comisión', () => {
       renderWithRouter(<Checkout />);
 
-      // Los asientos demo son: 2 x 25€ = 50€
+      // Los asientos demo son: 1 x 50€ = 50€
       // Comisión 5%: 2.50€
       // Total: 52.50€
-      expect(screen.getByText('50.00 €')).toBeInTheDocument(); // Subtotal
+      // Hay múltiples "50.00 €" en la página (lista de items y resumen)
+      const subtotalElements = screen.getAllByText('50.00 €');
+      expect(subtotalElements.length).toBeGreaterThan(0);
       expect(screen.getByText('2.50 €')).toBeInTheDocument(); // Comisión
       expect(screen.getByText('52.50 €')).toBeInTheDocument(); // Total
     });

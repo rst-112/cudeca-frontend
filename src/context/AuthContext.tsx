@@ -47,7 +47,7 @@ export interface AuthContextType {
   isLoading: boolean;
 
   /** Función para iniciar sesión - devuelve una Promise para usar con async/await */
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
 
   /** Función para registrarse */
   register: (data: RegisterData) => Promise<void>;
@@ -217,7 +217,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    * USO:
    * ```tsx
    * const { login } = useAuth();
-   * await login('user@example.com', 'password123');
+   * await login('user@example.com', 'password123', true); // true para recordar sesión
    * ```
    * NOTA DE SEGURIDAD:
    * - La contraseña se envía en TEXTO PLANO al backend
@@ -225,16 +225,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    *
    * @param {string} email
    * @param {string} password
+   * @param {boolean} rememberMe - Si es true guarda en localStorage, si es false en sessionStorage
    * @throws {Error}
    */
   const login = useCallback(
-    async (email: string, password: string) => {
+    async (email: string, password: string, rememberMe: boolean = true) => {
       if (!email || !password) throw new Error('Email y contraseña son requeridos');
 
       setIsLoading(true);
       try {
-        // Login con el backend usando authService (ya guarda en localStorage)
-        const { token: newToken, user: newUser } = await authService.login({ email, password });
+        // Login con el backend usando authService (ya guarda en localStorage o sessionStorage)
+        const { token: newToken, user: newUser } = await authService.login(
+          { email, password },
+          rememberMe,
+        );
 
         // Actualizar el estado
         setToken(newToken);

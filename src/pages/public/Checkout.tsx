@@ -21,10 +21,12 @@ import {
   Loader2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { items: cartItems, clearCart } = useCart();
 
   const [asientosSeleccionados, setAsientosSeleccionados] = useState<AsientoSeleccionado[]>([]);
   const [solicitarCertificado, setSolicitarCertificado] = useState(false);
@@ -58,14 +60,22 @@ export default function Checkout() {
       cargarDatosFiscales(user.id);
     }
 
-    // Simular asientos seleccionados (MOCK TEMPORAL)
-    // TODO: Reemplazar con datos reales de localStorage o Contexto de Compra
-    const asientosDemo: AsientoSeleccionado[] = [
-      { id: 'A1', etiqueta: 'A-1', precio: 25, zonaId: 1, zonaNombre: 'Platea' },
-      { id: 'A2', etiqueta: 'A-2', precio: 25, zonaId: 1, zonaNombre: 'Platea' },
-    ];
-    setAsientosSeleccionados(asientosDemo);
-  }, [user]);
+    // Convertir items del carrito a asientos seleccionados
+    const asientos: AsientoSeleccionado[] = cartItems.map((item) => ({
+      id: item.id,
+      etiqueta: item.asientoEtiqueta || item.tipoEntradaNombre,
+      precio: item.precio,
+      zonaId: item.tipoEntradaId,
+      zonaNombre: item.zonaNombre || item.eventoNombre,
+    }));
+    setAsientosSeleccionados(asientos);
+
+    // Si el carrito está vacío, redirigir
+    if (cartItems.length === 0) {
+      toast.error('No hay entradas en el carrito');
+      navigate('/');
+    }
+  }, [user, cartItems, navigate]);
 
   const cargarDatosFiscales = async (usuarioId: number) => {
     try {
@@ -175,6 +185,7 @@ export default function Checkout() {
 
       toast.success('¡Compra confirmada! Redirigiendo...');
       setStep('confirmado');
+      clearCart(); // Limpiar el carrito después de la compra exitosa
 
       // Redirigir al perfil después de 3 segundos
       setTimeout(() => {

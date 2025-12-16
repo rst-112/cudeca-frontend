@@ -23,9 +23,18 @@ export const Footer = () => {
             <h4 className="font-bold text-slate-900 dark:text-white">Enlaces Rápidos</h4>
             <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
               <li>
-                <Link to="/about" className="hover:text-[#00A651] transition-colors">
+                <a
+                  href="https://www.cudeca.org/quienes-somos/nuestra-historia/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-[#00A651] transition-colors inline-flex items-center gap-1"
+                >
                   Sobre Nosotros
-                </Link>
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                    <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                  </svg>
+                </a>
               </li>
               <li>
                 <Link to="/eventos" className="hover:text-[#00A651] transition-colors">
@@ -33,9 +42,32 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/tiendas" className="hover:text-[#00A651] transition-colors">
+                <a
+                  href="https://www.cudeca.org/como-puedes-ayudarnos/tiendas-beneficas-cudeca/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-[#00A651] transition-colors inline-flex items-center gap-1"
+                >
                   Tiendas Benéficas
-                </Link>
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                    <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                  </svg>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.cudeca.org/como-puedes-ayudarnos/hazte-voluntario/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-[#00A651] transition-colors inline-flex items-center gap-1"
+                >
+                  Hazte Voluntario
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                    <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                  </svg>
+                </a>
               </li>
             </ul>
           </div>
@@ -67,17 +99,16 @@ export const Footer = () => {
             <h4 className="font-bold text-slate-900 dark:text-white">Síguenos</h4>
             <div className="flex gap-4">
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/Cudeca/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                // Corrección de colores para modo dark/light
                 className="p-2 rounded-full bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-[#00A651] hover:text-white dark:hover:bg-[#00A651] dark:hover:text-white transition-all duration-300"
               >
                 <Facebook size={20} />
               </a>
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/voluntariadocudeca/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
@@ -86,10 +117,10 @@ export const Footer = () => {
                 <Instagram size={20} />
               </a>
               <a
-                href="https://twitter.com"
+                href="https://x.com/cudeca"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Twitter"
+                aria-label="Twitter/X"
                 className="p-2 rounded-full bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-[#00A651] hover:text-white dark:hover:bg-[#00A651] dark:hover:text-white transition-all duration-300"
               >
                 <Twitter size={20} />
