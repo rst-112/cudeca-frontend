@@ -4,7 +4,7 @@ import { Button } from '../../components/ui/Button';
 
 export default function Privacy() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 py-12">
       <div className="container mx-auto px-4 max-w-5xl">
         <Button
           asChild
@@ -18,7 +18,7 @@ export default function Privacy() {
 
         <div className="bg-white dark:bg-slate-900/90 backdrop-blur-sm rounded-3xl border border-slate-200 dark:border-slate-700/50 p-8 md:p-16 shadow-2xl dark:shadow-slate-950/50">
           <div className="flex items-center gap-4 mb-10 pb-8 border-b border-slate-200 dark:border-slate-700/50">
-            <div className="p-4 bg-gradient-to-br from-blue-500/10 to-blue-600/10 dark:from-blue-500/20 dark:to-blue-600/20 rounded-2xl shadow-lg">
+            <div className="p-4 bg-linear-to-br from-blue-500/10 to-blue-600/10 dark:from-blue-500/20 dark:to-blue-600/20 rounded-2xl shadow-lg">
               <Shield className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
             <div>

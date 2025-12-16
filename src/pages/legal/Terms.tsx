@@ -4,7 +4,7 @@ import { Button } from '../../components/ui/Button';
 
 export default function Terms() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 py-12">
       <div className="container mx-auto px-4 max-w-5xl">
         <Button
           asChild
@@ -18,7 +18,7 @@ export default function Terms() {
 
         <div className="bg-white dark:bg-slate-900/90 backdrop-blur-sm rounded-3xl border border-slate-200 dark:border-slate-700/50 p-8 md:p-16 shadow-2xl dark:shadow-slate-950/50">
           <div className="flex items-center gap-4 mb-10 pb-8 border-b border-slate-200 dark:border-slate-700/50">
-            <div className="p-4 bg-gradient-to-br from-green-500/10 to-green-600/10 dark:from-green-500/20 dark:to-green-600/20 rounded-2xl shadow-lg">
+            <div className="p-4 bg-linear-to-br from-green-500/10 to-green-600/10 dark:from-green-500/20 dark:to-green-600/20 rounded-2xl shadow-lg">
               <FileText className="w-8 h-8 text-[#00A651] dark:text-green-400" />
             </div>
             <div>
