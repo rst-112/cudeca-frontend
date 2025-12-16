@@ -12,7 +12,7 @@ const Eventos: React.FC = () => {
       location: 'Málaga',
       raised: '8500€ / 12.000€',
       price: 'Desde 12€',
-      image: '', // Add image path here
+      color: 'bg-emerald-500',
     },
     {
       title: 'Cena Benéfica de Gala',
@@ -20,7 +20,7 @@ const Eventos: React.FC = () => {
       location: 'Marbella',
       raised: '15.000€ / 25.000€',
       price: 'Desde 45€',
-      image: '', // Add image path here
+      color: 'bg-blue-500',
     },
     {
       title: 'Festival Familiar Solidario',
@@ -28,7 +28,7 @@ const Eventos: React.FC = () => {
       location: 'Fuengirola',
       raised: '5200€ / 10.000€',
       price: 'Desde 8€',
-      image: '', // Add image path here
+      color: 'bg-purple-500',
     },
     {
       title: 'Teatro por la Esperanza',
@@ -36,7 +36,7 @@ const Eventos: React.FC = () => {
       location: 'Benalmádena',
       raised: '6800€ / 12.000€',
       price: 'Desde 15€',
-      image: '', // Add image path here
+      color: 'bg-orange-500',
     },
     {
       title: 'Noche de Jazz Solidaria',
@@ -44,7 +44,7 @@ const Eventos: React.FC = () => {
       location: 'Torremolinos',
       raised: '9400€ / 15.000€',
       price: 'Desde 18€',
-      image: '', // Add image path here
+      color: 'bg-pink-500',
     },
     {
       title: 'Concierto Benéfico de Navidad',
@@ -52,7 +52,7 @@ const Eventos: React.FC = () => {
       location: 'Málaga',
       raised: '18.500€ / 20.000€',
       price: 'Desde 20€',
-      image: '', // Add image path here
+      color: 'bg-red-500',
     },
     {
       title: 'Mercadillo Solidario',
@@ -60,7 +60,7 @@ const Eventos: React.FC = () => {
       location: 'Marbella',
       raised: '3200€ / 8000€',
       price: 'Desde 5€',
-      image: '', // Add image path here
+      color: 'bg-teal-500',
     },
     {
       title: 'Cena de San Valentín',
@@ -68,7 +68,7 @@ const Eventos: React.FC = () => {
       location: 'Fuengirola',
       raised: '11.200€ / 18.000€',
       price: 'Desde 35€',
-      image: '', // Add image path here
+      color: 'bg-indigo-500',
     },
   ];
 
@@ -142,7 +142,7 @@ const Eventos: React.FC = () => {
       </section>
       <section className="w-full bg-white dark:bg-slate-900 py-16 px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col gap-4 mb-8">
+          <div className="flex flex-col gap-4 mb-8 text-center items-center">
             <h2 className="text-4xl font-bold text-slate-900 dark:text-white">
               Próximos Eventos
             </h2>
@@ -153,14 +153,16 @@ const Eventos: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {events.map((event, index) => (
               <div key={index} className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all flex flex-col">
-                <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-t-xl" />
-                <div className="p-5 flex flex-col flex-grow">
+                <div className={`w-full h-48 ${event.color} flex items-center justify-center rounded-t-xl`}>
+                  <Calendar size={64} className="text-white/30" />
+                </div>
+                <div className="p-5 flex flex-col flex-grow text-center items-center">
                   <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{event.title}</h3>
-                  <div className="flex items-center text-sm text-slate-600 dark:text-slate-400 mb-2">
+                  <div className="flex items-center justify-center text-sm text-slate-600 dark:text-slate-400 mb-2">
                     <Calendar className="w-4 h-4 mr-2" />
                     <span>{event.date}</span>
                   </div>
-                  <div className="flex items-center text-sm text-slate-600 dark:text-slate-400 mb-4">
+                  <div className="flex items-center justify-center text-sm text-slate-600 dark:text-slate-400 mb-4">
                     <MapPin className="w-4 h-4 mr-2" />
                     <span>{event.location}</span>
                   </div>
@@ -173,11 +175,11 @@ const Eventos: React.FC = () => {
                       <div className="h-2 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full" style={{ width: '70%' }} />
                     </div>
                   </div>
-                  <div className="flex justify-between items-center border-t border-slate-200 dark:border-slate-700 pt-4 mt-auto">
+                  <div className="flex flex-col items-center gap-3 border-t border-slate-200 dark:border-slate-700 pt-4 mt-auto w-full">
                     <span className="text-lg font-bold text-slate-900 dark:text-white">{event.price}</span>
                     <button
                       onClick={() => navigate('/info-evento-invitado')}
-                      className="px-6 py-2 bg-[#00a651] text-white text-sm rounded-full font-semibold hover:bg-[#00753e] transition-all"
+                      className="px-6 py-2 bg-[#00a651] text-white text-sm rounded-full font-semibold hover:bg-[#00753e] transition-all w-full max-w-[200px]"
                     >
                       Entradas
                     </button>
