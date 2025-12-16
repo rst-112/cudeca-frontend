@@ -1,39 +1,29 @@
 import { useState } from 'react';
-import { Outlet, NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { ThemeToggle } from '../../components/ui/ThemeToggle';
 import {
   LogOut,
-  User,
   Calendar,
-  Ticket,
   Home as HomeIcon,
-  Menu,
-  X,
-  ArrowLeft,
   ScanLine,
+  ArrowLeft,
+  ExternalLink,
+  Settings,
+  Menu, // Icono para abrir menú
+  X, // Icono para cerrar menú
 } from 'lucide-react';
 import { QrScannerFAB } from '../../components/QrScannerFAB';
+import { Navbar } from '../../components/ui/Navbar';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Estado para menú móvil
 
-  // Verificamos si es personal
   const isStaff = user?.roles?.includes('PERSONAL_EVENTO');
+  const isAdmin = user?.roles?.includes('ADMINISTRADOR');
 
-  // Determinar título basado en la ruta actual
-  const getTitle = () => {
-    if (location.pathname.includes('/tickets')) return 'Mis Entradas';
-    if (location.pathname.includes('/events')) return 'Eventos';
-    if (location.pathname.includes('/profile')) return 'Mi Perfil';
-    if (location.pathname.includes('/scanner')) return 'Escanear Entradas';
-    return 'Panel de Control';
-  };
-
-  // Helper para estilos de links activos
   const getLinkClass = ({ isActive }: { isActive: boolean }) => {
     const base =
       'flex items-center gap-3 px-4 py-3 w-full rounded-lg font-medium transition-colors cursor-pointer';
@@ -43,159 +33,120 @@ export default function Dashboard() {
     return `${base} ${isActive ? active : inactive}`;
   };
 
+  // Función para cerrar menú al hacer click en un enlace (UX móvil)
+  const handleLinkClick = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 hidden md:flex flex-col shrink-0">
-        <div className="p-6 border-b border-slate-200 dark:border-slate-800">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-[#00A651] flex items-center justify-center text-white font-bold shadow-sm">
-              C
-            </div>
-            <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight font-['Arimo']">
-              cudeca
-            </span>
-          </Link>
-        </div>
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 font-['Arimo']">
+      <div className="sticky top-0 z-50">
+        <Navbar />
+      </div>
 
-        <nav className="flex-1 p-4 space-y-1">
-          <NavLink to="/dashboard" end className={getLinkClass}>
-            <HomeIcon size={20} /> Inicio
-          </NavLink>
+      {/* HEADER MÓVIL (Solo visible en pantallas pequeñas) */}
+      <div className="md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 flex items-center justify-between sticky top-20 z-40">
+        <h2 className="font-bold text-slate-900 dark:text-white">Panel de Gestión</h2>
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
+        >
+          {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
 
-          <NavLink to="/dashboard/tickets" className={getLinkClass}>
-            <Ticket size={20} /> Mis Entradas
-          </NavLink>
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* SIDEBAR RESPONSIVE */}
+        <aside
+          className={`
+          fixed md:relative top-[140px] md:top-0 left-0 h-[calc(100vh-140px)] md:h-[calc(100vh-80px)] 
+          w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 
+          flex flex-col shrink-0 z-50 transition-transform duration-300 ease-in-out
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}
+        >
+          {/* Header Sidebar (Solo Desktop) */}
+          <div className="hidden md:block p-6 border-b border-slate-200 dark:border-slate-800">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Panel de Gestión</h2>
+            <p className="text-xs text-slate-500 mt-1">
+              {isAdmin ? 'Administrador' : 'Staff Eventos'}
+            </p>
+          </div>
 
-          <NavLink to="/dashboard/events" className={getLinkClass}>
-            <Calendar size={20} /> Eventos
-          </NavLink>
+          {/* Navegación */}
+          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+            <NavLink to="/dashboard" end className={getLinkClass} onClick={handleLinkClick}>
+              <HomeIcon size={20} /> Resumen
+            </NavLink>
 
-          <NavLink to="/dashboard/profile" className={getLinkClass}>
-            <User size={20} /> Mi Perfil
-          </NavLink>
+            {isAdmin && (
+              <NavLink to="/dashboard/events" className={getLinkClass} onClick={handleLinkClick}>
+                <Calendar size={20} /> Gestionar Eventos
+              </NavLink>
+            )}
 
-          {/* Opción de Escáner en el menú lateral (Solo Staff) */}
-          {isStaff && (
-            <>
-              <div className="my-2 h-px bg-slate-200 dark:bg-slate-800" />
-              <NavLink to="/dashboard/scanner" className={getLinkClass}>
+            {(isStaff || isAdmin) && (
+              <NavLink to="/dashboard/scanner" className={getLinkClass} onClick={handleLinkClick}>
                 <ScanLine size={20} /> Escáner QR
               </NavLink>
-            </>
-          )}
-        </nav>
+            )}
 
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800">
-          <button
-            onClick={logout}
-            className="flex items-center gap-3 px-4 py-3 w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg font-medium transition-colors cursor-pointer"
-          >
-            <LogOut size={20} /> Cerrar Sesión
-          </button>
-        </div>
-      </aside>
+            {isAdmin && (
+              <NavLink to="/admin/config" className={getLinkClass} onClick={handleLinkClick}>
+                <Settings size={20} /> Configuración
+              </NavLink>
+            )}
+          </nav>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-        {/* Topbar */}
-        <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 shrink-0">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+          {/* Footer Sidebar */}
+          <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2 bg-white dark:bg-slate-900">
+            <Link
+              to="/perfil"
+              onClick={handleLinkClick}
+              className="flex items-center gap-3 px-4 py-3 w-full text-slate-600 dark:text-slate-400 hover:text-[#00A651] hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
             >
-              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
+              <ExternalLink size={20} /> Mi Cuenta Personal
+            </Link>
 
-            {/* Botón Volver inteligente */}
+            <button
+              onClick={() => {
+                logout();
+                handleLinkClick();
+              }}
+              className="flex items-center gap-3 px-4 py-3 w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg font-medium transition-colors cursor-pointer"
+            >
+              <LogOut size={20} /> Cerrar Sesión
+            </button>
+          </div>
+        </aside>
+
+        {/* OVERLAY PARA MÓVIL (Fondo oscuro al abrir menú) */}
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
+        {/* MAIN CONTENT */}
+        <main className="flex-1 overflow-y-auto h-[calc(100vh-140px)] md:h-[calc(100vh-80px)] p-4 md:p-8 bg-slate-50 dark:bg-slate-950 w-full">
+          <div className="md:hidden mb-6">
             {location.pathname !== '/dashboard' && (
               <button
                 onClick={() => navigate('/dashboard')}
-                className="md:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                className="flex items-center text-slate-500 hover:text-[#00A651] transition-colors"
               >
-                <ArrowLeft size={20} />
+                <ArrowLeft className="mr-2" size={20} /> Volver al menú
               </button>
             )}
-
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white font-['Arimo']">
-              {getTitle()}
-            </h1>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-slate-600 dark:text-slate-400 hidden sm:block">
-              Hola,{' '}
-              <span className="font-bold text-slate-900 dark:text-white">
-                {user?.nombre || 'Usuario'}
-              </span>
-            </span>
-            <ThemeToggle />
-            <Link
-              to="/dashboard/profile"
-              className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 font-bold hover:ring-2 hover:ring-[#00A651] transition-all"
-            >
-              {user?.nombre?.charAt(0) || 'U'}
-            </Link>
+          <div className="animate-in fade-in zoom-in-95 duration-300">
+            <Outlet />
           </div>
-        </header>
+        </main>
+      </div>
 
-        {/* Menú Móvil */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 space-y-2 animate-in slide-in-from-top-5 absolute w-full z-50 shadow-xl">
-            <NavLink
-              to="/dashboard"
-              end
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 w-full rounded-lg font-medium ${isActive ? 'text-[#00A651] bg-[#00A651]/10' : 'text-slate-600 dark:text-slate-400'}`
-              }
-            >
-              <HomeIcon size={20} /> Inicio
-            </NavLink>
-            <NavLink
-              to="/dashboard/tickets"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 w-full rounded-lg font-medium ${isActive ? 'text-[#00A651] bg-[#00A651]/10' : 'text-slate-600 dark:text-slate-400'}`
-              }
-            >
-              <Ticket size={20} /> Mis Entradas
-            </NavLink>
-
-            {isStaff && (
-              <NavLink
-                to="/dashboard/scanner"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 w-full rounded-lg font-medium ${isActive ? 'text-[#00A651] bg-[#00A651]/10' : 'text-slate-600 dark:text-slate-400'}`
-                }
-              >
-                <ScanLine size={20} /> Escáner QR
-              </NavLink>
-            )}
-
-            <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
-              <button
-                onClick={() => {
-                  logout();
-                  setIsMobileMenuOpen(false);
-                }}
-                className="flex items-center gap-3 px-4 py-3 w-full text-red-500 font-medium"
-              >
-                <LogOut size={20} /> Cerrar Sesión
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ÁREA DE CONTENIDO DINÁMICO */}
-        <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950 p-6 md:p-8">
-          <Outlet />
-        </div>
-      </main>
-
-      {/* FAB: Se usa sin onClick, aprovechando la lógica interna del componente */}
-      {isStaff && <QrScannerFAB />}
+      {(isStaff || isAdmin) && <QrScannerFAB />}
     </div>
   );
 }

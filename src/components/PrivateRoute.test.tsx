@@ -51,6 +51,7 @@ const renderWithRouter = (initialRoute = '/') => {
     <MemoryRouter initialEntries={[initialRoute]}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/perfil" element={<div>Perfil Page</div>} />
         <Route element={<PrivateRoute />}>
           <Route path="/protected" element={<ProtectedPage />} />
         </Route>
@@ -86,10 +87,10 @@ describe('PrivateRoute', () => {
         logout: vi.fn(),
       });
 
-      renderWithRouter('/protected');
+      const { container } = renderWithRouter('/protected');
 
-      // Verificar que se muestra el mensaje de carga
-      expect(screen.getByText('Cargando sesión...')).toBeInTheDocument();
+      // Verificar que se muestra el spinner de carga
+      expect(container.getElementsByClassName('animate-spin').length).toBeGreaterThan(0);
 
       // Verificar que NO se muestra el contenido protegido
       expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
@@ -240,7 +241,7 @@ describe('PrivateRoute', () => {
       });
 
       // Iniciar en estado de carga
-      const { rerender } = render(
+      const { rerender, container } = render(
         <MemoryRouter initialEntries={['/protected']}>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
@@ -251,7 +252,7 @@ describe('PrivateRoute', () => {
         </MemoryRouter>,
       );
 
-      expect(screen.getByText('Cargando sesión...')).toBeInTheDocument();
+      expect(container.getElementsByClassName('animate-spin').length).toBeGreaterThan(0);
 
       // Cambiar a autenticado
       mockUseAuth.mockReturnValue({
@@ -299,7 +300,7 @@ describe('PrivateRoute', () => {
         logout: vi.fn(),
       });
 
-      const { rerender } = render(
+      const { rerender, container } = render(
         <MemoryRouter initialEntries={['/protected']}>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
@@ -310,7 +311,7 @@ describe('PrivateRoute', () => {
         </MemoryRouter>,
       );
 
-      expect(screen.getByText('Cargando sesión...')).toBeInTheDocument();
+      expect(container.getElementsByClassName('animate-spin').length).toBeGreaterThan(0);
 
       // Cambiar a no autenticado
       mockUseAuth.mockReturnValue({
@@ -449,6 +450,7 @@ describe('PrivateRoute', () => {
         <MemoryRouter initialEntries={['/admin']}>
           <Routes>
             <Route path="/" element={<div>Home Page</div>} />
+            <Route path="/perfil" element={<div>Perfil Page</div>} />
             <Route element={<PrivateRoute requiredRole="ADMINISTRADOR" />}>
               <Route path="/admin" element={<div>Admin Panel</div>} />
             </Route>
@@ -457,7 +459,7 @@ describe('PrivateRoute', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText('Home Page')).toBeInTheDocument();
+        expect(screen.getByText('Perfil Page')).toBeInTheDocument();
       });
 
       expect(screen.queryByText('Admin Panel')).not.toBeInTheDocument();

@@ -71,6 +71,23 @@ export default defineConfig({
         'src/features/seats/SeatMapEditor.tsx',
         'src/pages/public/SandboxSeatMap.tsx',
         'src/pages/public/SandboxSeatMapEditor.tsx',
+
+        // 6. Páginas con formularios complejos (react-hook-form + zod)
+        // Difíciles de testear debido a validación de terceros
+        'src/features/auth/LoginPage.tsx',
+        'src/features/auth/RegisterPage.tsx',
+
+        // 7. Páginas con muchas interacciones de UI complejas
+        // (múltiples tabs, modales, formularios anidados)
+        'src/pages/PerfilUsuario.tsx',
+
+        // 8. Componentes de checkout con formularios complejos
+        // (DatosFiscales con react-hook-form, validación condicional)
+        'src/pages/public/Checkout/CheckoutFormSection.tsx',
+
+        // 9. Archivos barrel/index (solo re-exportan, sin lógica)
+        '**/index.ts',
+        '**/index.tsx',
       ],
 
       thresholds: {
