@@ -15,10 +15,24 @@ import logoDark from '../../assets/ImagenLogoCudecaDark.png';
 
 const registerSchema = z
   .object({
-    name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-    email: z.string().email('Email inválido'),
-    password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
+    name: z.string().min(1, 'El nombre no puede estar vacío.'),
+
+    email: z
+      .string()
+      .min(1, 'El email no puede estar vacío.')
+      .email('El formato del email no es válido.'),
+
+    password: z
+      .string()
+      .min(1, 'La contraseña no puede estar vacía.')
+      .min(8, 'La contraseña debe tener al menos 8 caracteres.')
+      .regex(
+        /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!?*])(?=\S+$).*$/,
+        'La contraseña debe contener una mayúscula, una minúscula, un número y un carácter especial (@#$%^&+=!?*).',
+      ),
+
     confirmPassword: z.string(),
+
     terms: z.boolean().refine((val) => val === true, {
       message: 'Debes aceptar los términos y condiciones',
     }),
@@ -64,6 +78,7 @@ export default function RegisterPage({ onSwitch }: RegisterPageProps) {
       navigate('/dashboard');
     } catch (error) {
       console.error('Registration failed:', error);
+      // El backend devuelve errores, aquí los mostramos
       toast.error('Error al registrarse', {
         description: error instanceof Error ? error.message : 'No se pudo completar el registro',
       });
