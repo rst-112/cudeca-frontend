@@ -128,6 +128,35 @@ describe('ticketService', () => {
       // Debe haber generado el PDF localmente
       expect(mockSave).toHaveBeenCalledWith('MOCK_Entrada_TKT-123.pdf');
     });
+
+    it('maneja error en fetch de imagen QR durante fallback', async () => {
+      // Simular fallo de backend
+      vi.mocked(apiClient.post).mockRejectedValue(new Error('Network Error'));
+
+      // Simular error en fetch de la imagen QR
+      globalThis.fetch = vi.fn().mockRejectedValue(new Error('Fetch failed'));
+
+      const mockTicket = {
+        id: '1',
+        codigoAsiento: 'TKT-123',
+        nombreEvento: 'Evento Test',
+        fechaEventoFormato: '01 Ene 2025',
+        lugarEvento: 'Lugar Test',
+        nombreUsuario: 'Usuario Test',
+        codigoQR: 'QR123',
+      } as Ticket;
+
+      await downloadTicketPdf(mockTicket);
+
+      // Debe haber logueado el warning sobre la imagen
+      expect(console.warn).toHaveBeenCalledWith(
+        expect.stringContaining('No se pudo cargar la imagen'),
+        expect.any(Error),
+      );
+
+      // Debe haber generado el PDF localmente (sin imagen)
+      expect(mockSave).toHaveBeenCalledWith('MOCK_Entrada_TKT-123.pdf');
+    });
   });
 
   describe('sendTicketEmail', () => {

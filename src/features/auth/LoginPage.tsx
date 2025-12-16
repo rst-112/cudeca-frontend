@@ -171,12 +171,12 @@ export default function LoginPage({ onSwitch }: LoginPageProps) {
               Recuérdame
             </Label>
           </div>
-          <a
-            href="#"
+          <Link
+            to="/forgot-password"
             className="text-sm font-semibold text-[#00A651] hover:text-[#008a43] dark:text-[#00d66a] dark:hover:text-[#00A651] transition-colors underline-offset-4 hover:underline"
           >
             ¿Olvidaste tu contraseña?
-          </a>
+          </Link>
         </div>
 
         {/* Submit Button - CON FONDO VERDE VISIBLE */}
