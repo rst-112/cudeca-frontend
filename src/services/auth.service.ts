@@ -1,11 +1,12 @@
 /**
  * Auth Service - Servicio de Autenticación
  *
- * Este archivo centraliza TODAS las operaciones relacionadas con autenticación:
- * - Login
- * - Registro
- * - Validación de tokens
- * - Gestión de localStorage
+ * Basado en: /api/auth (Sección 1 de API-ENDPOINTS.md)
+ *
+ * Endpoints:
+ * - POST /api/auth/register - Registrar nuevo usuario
+ * - POST /api/auth/login - Iniciar sesión
+ * - GET /api/auth/validate - Validar token JWT
  */
 
 import { apiClient } from './api';

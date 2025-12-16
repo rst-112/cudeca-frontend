@@ -1,64 +1,37 @@
-/**
- * PrivateRoute - Componente Guard para Rutas Protegidas
- *
- * Este componente verifica si el usuario
- * está autenticado antes de permitir el acceso a rutas protegidas.
- *
- * USO EN REACT ROUTER:
- * ```tsx
- * <Route element={<PrivateRoute />}>
- *   <Route path="/dashboard" element={<Dashboard />} />
- *   <Route path="/eventos" element={<Eventos />} />
- * </Route>
- * ```
- */
-
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import type { Role } from '../types/auth.types';
 
 interface PrivateRouteProps {
-  requiredRole?: Role;
+  requiredRole?: Role | Role[]; // Ahora acepta uno o varios roles
 }
 
 export const PrivateRoute = ({ requiredRole }: PrivateRouteProps) => {
-  // Obtener estado de autenticación del contexto
   const { isAuthenticated, isLoading, user } = useAuth();
-
-  // Obtener ubicación actual para guardarla si redirigimos
   const location = useLocation();
 
-  /**
-   * PASO 1: Verificación de Token en Proceso
-   */
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <span className="text-lg text-gray-600">Cargando sesión...</span>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00A651]"></div>
       </div>
     );
   }
 
-  /**
-   * PASO 2: Usuario No Autenticado
-   *
-   * Si isAuthenticated = false, redirigir al login.
-   */
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  /**
-   * PASO 3: Verificación de Rol
-   *
-   * Si se requiere un rol específico y el usuario no lo tiene, redirigir al home.
-   */
-  if (requiredRole && !user?.roles?.includes(requiredRole)) {
-    return <Navigate to="/" replace />;
+  // Lógica mejorada para soportar Arrays de roles
+  if (requiredRole) {
+    const rolesRequeridos = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+    const tienePermiso = user?.roles?.some((r) => rolesRequeridos.includes(r));
+
+    if (!tienePermiso) {
+      // Si intenta entrar al Dashboard sin permiso, lo mandamos a su perfil
+      return <Navigate to="/perfil" replace />;
+    }
   }
 
-  /**
-   * PASO 4: Usuario Autenticado y Autorizado - Permitir Acceso
-   */
   return <Outlet />;
 };

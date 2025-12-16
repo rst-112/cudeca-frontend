@@ -1,45 +1,46 @@
-import { Link } from 'react-router-dom';
-import { Ticket, Calendar } from 'lucide-react';
+import { Calendar, Users, TrendingUp } from 'lucide-react';
 
 export default function DashboardHome() {
   return (
     <div className="grid grid-cols-1 gap-6 animate-in fade-in duration-300">
-      {/* Stats Cards */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Resumen de Actividad</h1>
+        <span className="text-sm text-slate-500">Última actualización: Hoy</span>
+      </div>
+
+      {/* Stats Cards (Datos Globales del Evento, NO personales) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-2">
         <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-slate-500 dark:text-slate-400 font-medium">Eventos Próximos</h3>
-            <Calendar className="text-[#00A651]" size={24} />
+            <h3 className="text-slate-500 dark:text-slate-400 font-medium">Asistentes Hoy</h3>
+            <Users className="text-[#00A651]" size={24} />
           </div>
-          <p className="text-3xl font-bold text-slate-900 dark:text-white">3</p>
+          <p className="text-3xl font-bold text-slate-900 dark:text-white">124</p>
+          <span className="text-xs text-green-600 font-medium">+12% vs ayer</span>
         </div>
-
-        {/* Card Enlazada a Mis Entradas */}
-        <Link to="/dashboard/tickets" className="block group">
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 cursor-pointer group-hover:border-[#00A651] transition-colors">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-slate-500 dark:text-slate-400 font-medium group-hover:text-[#00A651]">
-                Mis Entradas
-              </h3>
-              <Ticket className="text-blue-500 group-hover:text-[#00A651]" size={24} />
-            </div>
-            <p className="text-3xl font-bold text-slate-900 dark:text-white">12</p>
-          </div>
-        </Link>
 
         <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-slate-500 dark:text-slate-400 font-medium">Donaciones</h3>
-            <div className="text-purple-500 font-bold">€</div>
+            <h3 className="text-slate-500 dark:text-slate-400 font-medium">Entradas Vendidas</h3>
+            <TrendingUp className="text-blue-500" size={24} />
           </div>
-          <p className="text-3xl font-bold text-slate-900 dark:text-white">150€</p>
+          <p className="text-3xl font-bold text-slate-900 dark:text-white">1,450</p>
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-slate-500 dark:text-slate-400 font-medium">Próximo Evento</h3>
+            <Calendar className="text-purple-500" size={24} />
+          </div>
+          <p className="text-lg font-bold text-slate-900 dark:text-white">Gala Benéfica</p>
+          <p className="text-xs text-slate-500">En 2 días</p>
         </div>
       </div>
 
-      {/* Actividad Reciente */}
+      {/* Actividad Reciente del Sistema */}
       <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
         <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
-          Actividad Reciente
+          Registros Recientes
         </h2>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
@@ -47,14 +48,14 @@ export default function DashboardHome() {
               key={i}
               className="flex items-center gap-4 p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50"
             >
-              <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                <Ticket size={20} />
+              <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
+                <Users size={20} />
               </div>
               <div>
                 <p className="font-medium text-slate-900 dark:text-white">
-                  Compra de entradas - Concierto Benéfico
+                  Entrada validada - Puerta Norte
                 </p>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Hace {i} días</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Hace {i * 5} minutos</p>
               </div>
             </div>
           ))}
