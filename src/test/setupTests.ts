@@ -71,3 +71,57 @@ vi.mock('@yudiel/react-qr-scanner', () => ({
   Scanner: () => null,
   useDevices: () => [],
 }));
+
+// Mock de Storage (localStorage/sessionStorage) para todos los tests
+const createStorageMock = (): Storage => {
+  let store: Record<string, string> = {};
+
+  return {
+    getItem: (key: string) => store[key] ?? null,
+    setItem: (key: string, value: string) => {
+      store[key] = value.toString();
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+    get length() {
+      return Object.keys(store).length;
+    },
+    key: (index: number) => {
+      const keys = Object.keys(store);
+      return keys[index] ?? null;
+    },
+  } as Storage;
+};
+
+// Crear mocks de storage
+const localStorageMock = createStorageMock();
+const sessionStorageMock = createStorageMock();
+
+// Definir localStorage y sessionStorage globalmente
+Object.defineProperty(global, 'localStorage', {
+  value: localStorageMock,
+  writable: true,
+  configurable: true,
+});
+
+Object.defineProperty(global, 'sessionStorage', {
+  value: sessionStorageMock,
+  writable: true,
+  configurable: true,
+});
+
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+  writable: true,
+  configurable: true,
+});
+
+Object.defineProperty(window, 'sessionStorage', {
+  value: sessionStorageMock,
+  writable: true,
+  configurable: true,
+});

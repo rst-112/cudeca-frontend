@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter, useLocation, type Location } from 'react-router-dom';
 import Dashboard from './Dashboard';
 import { useAuth, type AuthContextType } from '../../context/AuthContext';
+import { CartProvider } from '../../context/CartContext';
 
 // Mock de AuthContext
 vi.mock('../../context/AuthContext', () => ({
@@ -54,7 +55,9 @@ describe('Dashboard Layout', () => {
 
     render(
       <BrowserRouter>
-        <Dashboard />
+        <CartProvider>
+          <Dashboard />
+        </CartProvider>
       </BrowserRouter>,
     );
 
@@ -74,7 +77,9 @@ describe('Dashboard Layout', () => {
 
     render(
       <BrowserRouter>
-        <Dashboard />
+        <CartProvider>
+          <Dashboard />
+        </CartProvider>
       </BrowserRouter>,
     );
 
@@ -93,7 +98,9 @@ describe('Dashboard Layout', () => {
 
     const { container } = render(
       <BrowserRouter>
-        <Dashboard />
+        <CartProvider>
+          <Dashboard />
+        </CartProvider>
       </BrowserRouter>,
     );
 
@@ -122,7 +129,9 @@ describe('Dashboard Layout', () => {
 
     render(
       <BrowserRouter>
-        <Dashboard />
+        <CartProvider>
+          <Dashboard />
+        </CartProvider>
       </BrowserRouter>,
     );
 
