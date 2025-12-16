@@ -1,14 +1,10 @@
 /**
- * Tipos relacionados con el checkout y compra de entradas
- */
-
-/**
  * DatosFiscales - Información fiscal del usuario
- * Debe coincidir exactamente con el tipo en checkout.service.ts
  */
 export interface DatosFiscales {
   id?: number;
   usuarioId?: number;
+  alias?: string;
   nombre: string;
   nif: string;
   direccion: string;
@@ -18,9 +14,6 @@ export interface DatosFiscales {
   esPrincipal?: boolean;
 }
 
-/**
- * AsientoSeleccionado - Asiento seleccionado para compra
- */
 export interface AsientoSeleccionado {
   id: string;
   etiqueta: string;
@@ -30,9 +23,6 @@ export interface AsientoSeleccionado {
   tipoEntradaId?: number;
 }
 
-/**
- * ReservaRequest - Datos para crear una reserva
- */
 export interface ReservaRequest {
   eventoId: number;
   asientoIds: string[];
@@ -41,9 +31,6 @@ export interface ReservaRequest {
   nuevoDatosFiscales?: DatosFiscales;
 }
 
-/**
- * Reserva - Respuesta del backend con la reserva creada
- */
 export interface Reserva {
   id: number;
   usuarioId: number;
@@ -55,9 +42,6 @@ export interface Reserva {
   asientos: AsientoReserva[];
 }
 
-/**
- * AsientoReserva - Información de un asiento en la reserva
- */
 export interface AsientoReserva {
   id: number;
   asientoId: string;
@@ -66,10 +50,6 @@ export interface AsientoReserva {
   zonaId: number;
 }
 
-/**
- * Entrada - Entrada confirmada/comprada
- * Compatible con EntradaUsuario del servicio de perfil
- */
 export interface Entrada {
   id: number;
   codigo?: string;
@@ -90,9 +70,6 @@ export interface Entrada {
   pdfUrl?: string;
 }
 
-/**
- * CheckoutSummary - Resumen del checkout
- */
 export interface CheckoutSummary {
   asientos: AsientoSeleccionado[];
   subtotal: number;
@@ -100,9 +77,6 @@ export interface CheckoutSummary {
   total: number;
 }
 
-/**
- * CompraResponse - Respuesta después de confirmar la compra
- */
 export interface CompraResponse {
   reservaId: number;
   entradas: Entrada[];

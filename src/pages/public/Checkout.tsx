@@ -12,21 +12,29 @@ import {
   obtenerDatosFiscalesUsuario,
 } from '../../services/checkout.service';
 import type { AsientoSeleccionado, DatosFiscales } from '../../types/checkout.types';
-import { ShoppingCart, FileText, CreditCard, CheckCircle, AlertCircle } from 'lucide-react';
+import {
+  ShoppingCart,
+  FileText,
+  CreditCard,
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+} from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Checkout() {
   const navigate = useNavigate();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
 
-  // Simulación: IDs de asientos desde URL o localStorage
   const [asientosSeleccionados, setAsientosSeleccionados] = useState<AsientoSeleccionado[]>([]);
   const [solicitarCertificado, setSolicitarCertificado] = useState(false);
   const [datosFiscales, setDatosFiscales] = useState<DatosFiscales[]>([]);
   const [datosFiscalesSeleccionado, setDatosFiscalesSeleccionado] = useState<number | null>(null);
   const [mostrarFormularioNuevo, setMostrarFormularioNuevo] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<'resumen' | 'confirmado'>('resumen');
 
-  // Formulario de nuevos datos fiscales
   const [nuevosDatos, setNuevosDatos] = useState<DatosFiscales>({
     nif: '',
     nombre: '',
@@ -36,23 +44,31 @@ export default function Checkout() {
     pais: 'España',
   });
 
+  // 1. Efecto de Protección de Ruta
   useEffect(() => {
-    // Cargar datos fiscales del usuario
-    cargarDatosFiscales();
+    if (!authLoading && !isAuthenticated) {
+      toast.error('Debes iniciar sesión para realizar la compra');
+      navigate('/login?redirect=/checkout'); // Redirigir al login
+    }
+  }, [authLoading, isAuthenticated, navigate]);
 
-    // Simular asientos seleccionados (por ahora hardcodeado)
-    // En producción, estos vendrían de la página de selección de asientos
+  // 2. Efecto de Carga de Datos (Solo si hay usuario)
+  useEffect(() => {
+    if (user?.id) {
+      cargarDatosFiscales(user.id);
+    }
+
+    // Simular asientos seleccionados (MOCK TEMPORAL)
+    // TODO: Reemplazar con datos reales de localStorage o Contexto de Compra
     const asientosDemo: AsientoSeleccionado[] = [
       { id: 'A1', etiqueta: 'A-1', precio: 25, zonaId: 1, zonaNombre: 'Platea' },
       { id: 'A2', etiqueta: 'A-2', precio: 25, zonaId: 1, zonaNombre: 'Platea' },
     ];
     setAsientosSeleccionados(asientosDemo);
-  }, []);
+  }, [user]);
 
-  const cargarDatosFiscales = async () => {
+  const cargarDatosFiscales = async (usuarioId: number) => {
     try {
-      // TODO: Obtener usuarioId del contexto de autenticación
-      const usuarioId = 1; // Temporal
       const datos = await obtenerDatosFiscalesUsuario(usuarioId);
       setDatosFiscales(datos);
 
@@ -63,6 +79,7 @@ export default function Checkout() {
       }
     } catch (error) {
       console.error('Error al cargar datos fiscales:', error);
+      toast.error('No se pudieron cargar tus datos fiscales');
     }
   };
 
@@ -79,7 +96,7 @@ export default function Checkout() {
   const handleSolicitarCertificadoChange = (checked: boolean) => {
     setSolicitarCertificado(checked);
 
-    // Si no tiene datos fiscales, mostrar formulario
+    // Si no tiene datos fiscales guardados, mostrar formulario automáticamente
     if (checked && datosFiscales.length === 0) {
       setMostrarFormularioNuevo(true);
     }
@@ -121,17 +138,21 @@ export default function Checkout() {
 
   const handleConfirmarCompra = async () => {
     if (!validarDatosFiscales()) return;
+    if (!user?.id) {
+      toast.error('Sesión no válida');
+      return;
+    }
 
     setLoading(true);
     try {
-      // TODO: Obtener usuarioId del contexto de autenticación
-      const usuarioId = 1; // Temporal
-
       // 1. Procesar checkout (crear compra)
       const response = await procesarCheckout({
-        usuarioId,
+        usuarioId: user.id,
+        // CORRECCIÓN AQUÍ: Mapear al formato correcto ItemCheckout
         items: asientosSeleccionados.map((a) => ({
-          asientoId: parseInt(a.id) || 0,
+          tipo: 'ENTRADA', // <--- Añadido
+          referenciaId: parseInt(a.id) || 0, // <--- Ahora es referenciaId, no asientoId
+          cantidad: 1, // <--- Añadido
           precio: a.precio,
         })),
         donacionExtra: 0,
@@ -143,10 +164,10 @@ export default function Checkout() {
 
       toast.success('Compra procesada correctamente');
 
-      // 2. En un escenario real, redirigir a la URL de pago
-      // window.location.href = response.urlPago;
+      // 2. Simulación de Pago (En real aquí redirigirías a Stripe/Redsys)
+      // await iniciarPago(response.urlPago);
 
-      // Para simulación, confirmar el pago directamente
+      // Confirmación directa para demo
       await confirmarPago(response.compraId, {
         transaccionId: 'DEMO-' + Date.now(),
         estado: 'COMPLETADO',
@@ -170,18 +191,39 @@ export default function Checkout() {
 
   const totales = calcularTotal();
 
+  // Mostrar spinner mientras verificamos autenticación
+  if (authLoading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[#00A651]" />
+      </div>
+    );
+  }
+
+  // Si no hay usuario (y el useEffect aún no redirigió), no renderizar nada sensible
+  if (!user) return null;
+
   if (step === 'confirmado') {
     return (
-      <div className="container mx-auto px-4 py-12 max-w-2xl">
-        <Card className="p-8 text-center">
-          <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-4" />
+      <div className="container mx-auto px-4 py-12 max-w-2xl animate-in fade-in zoom-in duration-500">
+        <Card className="p-8 text-center border-green-500/20 shadow-lg shadow-green-500/10">
+          <div className="w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-500" />
+          </div>
           <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">
             ¡Compra Confirmada!
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            Recibirás un correo electrónico con tus entradas.
+          <p className="text-gray-600 dark:text-gray-300 mb-8 text-lg">
+            Gracias por tu colaboración, <span className="font-semibold">{user.nombre}</span>.<br />
+            Hemos enviado las entradas a tu correo electrónico.
           </p>
-          <Button onClick={() => navigate('/perfil?tab=entradas')}>Ver mis entradas</Button>
+          <Button
+            onClick={() => navigate('/perfil?tab=entradas')}
+            size="lg"
+            className="w-full sm:w-auto"
+          >
+            Ver mis entradas
+          </Button>
         </Card>
       </div>
     );
@@ -201,7 +243,7 @@ export default function Checkout() {
         <div className="lg:col-span-2 space-y-6">
           {/* Resumen de Asientos */}
           <Card className="p-6">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-4 border-b border-gray-100 dark:border-slate-800 pb-3">
               <ShoppingCart className="w-5 h-5 text-[#00A651]" />
               <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
                 Asientos Seleccionados
@@ -212,16 +254,17 @@ export default function Checkout() {
               {asientosSeleccionados.map((asiento) => (
                 <div
                   key={asiento.id}
-                  className="flex justify-between items-center p-3 bg-gray-50 dark:bg-slate-800 rounded-lg"
+                  className="flex justify-between items-center p-4 bg-gray-50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700 rounded-lg"
                 >
-                  <div>
-                    <p className="font-medium text-gray-800 dark:text-white">
-                      {asiento.zonaNombre} - {asiento.etiqueta}
-                    </p>
+                  <div className="flex flex-col">
+                    <span className="font-bold text-gray-800 dark:text-white">
+                      {asiento.zonaNombre}
+                    </span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      Fila/Asiento: {asiento.etiqueta}
+                    </span>
                   </div>
-                  <p className="font-semibold text-gray-800 dark:text-white">
-                    {asiento.precio.toFixed(2)} €
-                  </p>
+                  <p className="font-bold text-[#00A651]">{asiento.precio.toFixed(2)} €</p>
                 </div>
               ))}
             </div>
@@ -229,7 +272,7 @@ export default function Checkout() {
 
           {/* Datos Fiscales */}
           <Card className="p-6">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-4 border-b border-gray-100 dark:border-slate-800 pb-3">
               <FileText className="w-5 h-5 text-[#00A651]" />
               <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
                 Datos Fiscales
@@ -237,15 +280,20 @@ export default function Checkout() {
             </div>
 
             {/* Toggle Solicitar Certificado */}
-            <div className="flex items-center justify-between p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg mb-4">
+            <div className="flex items-center justify-between p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/50 rounded-lg mb-6">
               <div className="flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
-                <Label
-                  htmlFor="certificado"
-                  className="cursor-pointer text-gray-800 dark:text-white"
-                >
-                  Solicitar Certificado de Donación
-                </Label>
+                <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-500" />
+                <div className="flex flex-col">
+                  <Label
+                    htmlFor="certificado"
+                    className="cursor-pointer text-gray-800 dark:text-white font-medium"
+                  >
+                    Solicitar Certificado de Donación
+                  </Label>
+                  <span className="text-xs text-amber-700 dark:text-amber-500">
+                    Necesario para deducciones fiscales
+                  </span>
+                </div>
               </div>
               <Switch
                 id="certificado"
@@ -256,47 +304,55 @@ export default function Checkout() {
 
             {/* Formulario de Datos Fiscales */}
             {solicitarCertificado && (
-              <div className="space-y-4">
+              <div className="space-y-4 animate-in slide-in-from-top-2 duration-300">
                 {datosFiscales.length > 0 && !mostrarFormularioNuevo && (
-                  <div>
-                    <Label>Selecciona Datos Fiscales</Label>
+                  <div className="bg-gray-50 dark:bg-slate-800 p-4 rounded-lg">
+                    <Label className="mb-2 block">Selecciona tus Datos Fiscales guardados:</Label>
                     <select
-                      className="w-full mt-2 p-2 border rounded-md dark:bg-slate-800 dark:border-slate-700"
+                      className="w-full p-2.5 border rounded-md bg-white dark:bg-slate-900 dark:border-slate-700 focus:ring-2 focus:ring-[#00A651] outline-none transition-all"
                       value={datosFiscalesSeleccionado ?? ''}
                       onChange={(e) => setDatosFiscalesSeleccionado(Number(e.target.value))}
                     >
                       <option value="">-- Selecciona --</option>
                       {datosFiscales.map((datos) => (
                         <option key={datos.id} value={datos.id}>
-                          {datos.nombre} - {datos.nif}
+                          {datos.alias ? datos.alias : datos.nombre} ({datos.nif})
                         </option>
                       ))}
                     </select>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                      onClick={() => setMostrarFormularioNuevo(true)}
-                    >
-                      + Añadir nuevos datos fiscales
-                    </Button>
+
+                    <div className="mt-3 flex justify-end">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-[#00A651] hover:text-[#008a43] hover:bg-[#00A651]/10"
+                        onClick={() => setMostrarFormularioNuevo(true)}
+                      >
+                        + Añadir una dirección diferente
+                      </Button>
+                    </div>
                   </div>
                 )}
 
                 {(mostrarFormularioNuevo || datosFiscales.length === 0) && (
-                  <div className="space-y-4">
-                    {datosFiscales.length > 0 && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setMostrarFormularioNuevo(false)}
-                      >
-                        ← Volver a seleccionar
-                      </Button>
-                    )}
+                  <div className="space-y-4 border-l-2 border-[#00A651] pl-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+                        Nuevos Datos
+                      </h3>
+                      {datosFiscales.length > 0 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setMostrarFormularioNuevo(false)}
+                        >
+                          Cancelar
+                        </Button>
+                      )}
+                    </div>
 
                     <div>
-                      <Label htmlFor="nif">NIF *</Label>
+                      <Label htmlFor="nif">NIF / CIF *</Label>
                       <Input
                         id="nif"
                         placeholder="12345678A"
@@ -308,10 +364,10 @@ export default function Checkout() {
                     </div>
 
                     <div>
-                      <Label htmlFor="nombre">Nombre Completo *</Label>
+                      <Label htmlFor="nombre">Nombre Completo / Razón Social *</Label>
                       <Input
                         id="nombre"
-                        placeholder="Juan Pérez García"
+                        placeholder="Nombre Apellidos"
                         value={nuevosDatos.nombre}
                         onChange={(e) => setNuevosDatos({ ...nuevosDatos, nombre: e.target.value })}
                       />
@@ -321,7 +377,7 @@ export default function Checkout() {
                       <Label htmlFor="direccion">Dirección *</Label>
                       <Input
                         id="direccion"
-                        placeholder="Calle Principal, 123"
+                        placeholder="Calle, Número, Piso..."
                         value={nuevosDatos.direccion}
                         onChange={(e) =>
                           setNuevosDatos({ ...nuevosDatos, direccion: e.target.value })
@@ -345,7 +401,7 @@ export default function Checkout() {
                         <Label htmlFor="codigoPostal">Código Postal *</Label>
                         <Input
                           id="codigoPostal"
-                          placeholder="29001"
+                          placeholder="29000"
                           value={nuevosDatos.codigoPostal}
                           onChange={(e) =>
                             setNuevosDatos({ ...nuevosDatos, codigoPostal: e.target.value })
@@ -371,35 +427,46 @@ export default function Checkout() {
 
         {/* Columna Derecha: Resumen de Compra */}
         <div className="lg:col-span-1">
-          <Card className="p-6 sticky top-24">
-            <div className="flex items-center gap-2 mb-6">
+          <Card className="p-6 sticky top-24 border-[#00A651]/20 shadow-lg">
+            <div className="flex items-center gap-2 mb-6 border-b border-gray-100 dark:border-slate-800 pb-3">
               <CreditCard className="w-5 h-5 text-[#00A651]" />
               <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Resumen</h2>
             </div>
 
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                <span>Subtotal</span>
+                <span>Subtotal ({asientosSeleccionados.length} entradas)</span>
                 <span>{totales.subtotal.toFixed(2)} €</span>
               </div>
               <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                <span>Comisión (5%)</span>
+                <span>Gastos de gestión (5%)</span>
                 <span>{totales.comision.toFixed(2)} €</span>
               </div>
               <div className="border-t border-gray-200 dark:border-slate-700 pt-3 mt-3">
-                <div className="flex justify-between text-xl font-bold text-gray-800 dark:text-white">
+                <div className="flex justify-between text-2xl font-bold text-gray-800 dark:text-white">
                   <span>Total</span>
-                  <span>{totales.total.toFixed(2)} €</span>
+                  <span className="text-[#00A651]">{totales.total.toFixed(2)} €</span>
                 </div>
               </div>
             </div>
 
-            <Button className="w-full" size="lg" onClick={handleConfirmarCompra} disabled={loading}>
-              {loading ? 'Procesando...' : 'Confirmar Compra'}
+            <Button
+              className="w-full bg-[#00A651] hover:bg-[#008a43] h-12 text-lg shadow-lg hover:shadow-[#00A651]/20 transition-all"
+              size="lg"
+              onClick={handleConfirmarCompra}
+              disabled={loading}
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="animate-spin" /> Procesando...
+                </div>
+              ) : (
+                'Confirmar y Pagar'
+              )}
             </Button>
 
             <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-4">
-              Al confirmar, aceptas nuestros términos y condiciones
+              Pagos procesados de forma segura. Al confirmar, aceptas nuestros términos de venta.
             </p>
           </Card>
         </div>

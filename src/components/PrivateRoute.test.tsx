@@ -51,6 +51,7 @@ const renderWithRouter = (initialRoute = '/') => {
     <MemoryRouter initialEntries={[initialRoute]}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/perfil" element={<div>Perfil Page</div>} />
         <Route element={<PrivateRoute />}>
           <Route path="/protected" element={<ProtectedPage />} />
         </Route>
@@ -82,13 +83,14 @@ describe('PrivateRoute', () => {
         isAuthenticated: false,
         isLoading: true, // ← Cargando
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
-      renderWithRouter('/protected');
+      const { container } = renderWithRouter('/protected');
 
-      // Verificar que se muestra el mensaje de carga
-      expect(screen.getByText('Cargando sesión...')).toBeInTheDocument();
+      // Verificar que se muestra el spinner de carga
+      expect(container.getElementsByClassName('animate-spin').length).toBeGreaterThan(0);
 
       // Verificar que NO se muestra el contenido protegido
       expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
@@ -111,6 +113,7 @@ describe('PrivateRoute', () => {
         isAuthenticated: false,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -132,6 +135,7 @@ describe('PrivateRoute', () => {
         isAuthenticated: false,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -158,12 +162,13 @@ describe('PrivateRoute', () => {
           id: 1,
           email: 'test@test.com',
           nombre: 'Test User',
-          rol: 'COMPRADOR',
+          roles: ['COMPRADOR'],
         },
         token: 'valid_token_123',
         isAuthenticated: true,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -187,12 +192,13 @@ describe('PrivateRoute', () => {
           id: 1,
           email: 'test@test.com',
           nombre: 'Test User',
-          rol: 'ADMINISTRADOR',
+          roles: ['ADMINISTRADOR'],
         },
         token: 'admin_token',
         isAuthenticated: true,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -230,11 +236,12 @@ describe('PrivateRoute', () => {
         isAuthenticated: false,
         isLoading: true,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
       // Iniciar en estado de carga
-      const { rerender } = render(
+      const { rerender, container } = render(
         <MemoryRouter initialEntries={['/protected']}>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
@@ -245,7 +252,7 @@ describe('PrivateRoute', () => {
         </MemoryRouter>,
       );
 
-      expect(screen.getByText('Cargando sesión...')).toBeInTheDocument();
+      expect(container.getElementsByClassName('animate-spin').length).toBeGreaterThan(0);
 
       // Cambiar a autenticado
       mockUseAuth.mockReturnValue({
@@ -253,12 +260,13 @@ describe('PrivateRoute', () => {
           id: 1,
           email: 'test@test.com',
           nombre: 'Test User',
-          rol: 'COMPRADOR',
+          roles: ['COMPRADOR'],
         },
         token: 'token123',
         isAuthenticated: true,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -288,10 +296,11 @@ describe('PrivateRoute', () => {
         isAuthenticated: false,
         isLoading: true,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
-      const { rerender } = render(
+      const { rerender, container } = render(
         <MemoryRouter initialEntries={['/protected']}>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
@@ -302,7 +311,7 @@ describe('PrivateRoute', () => {
         </MemoryRouter>,
       );
 
-      expect(screen.getByText('Cargando sesión...')).toBeInTheDocument();
+      expect(container.getElementsByClassName('animate-spin').length).toBeGreaterThan(0);
 
       // Cambiar a no autenticado
       mockUseAuth.mockReturnValue({
@@ -311,6 +320,7 @@ describe('PrivateRoute', () => {
         isAuthenticated: false,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -345,6 +355,7 @@ describe('PrivateRoute', () => {
         isAuthenticated: false, // ← Contradicción intencional
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -363,12 +374,13 @@ describe('PrivateRoute', () => {
           id: 1,
           email: 'test@test.com',
           nombre: 'Test User',
-          rol: 'COMPRADOR',
+          roles: ['COMPRADOR'],
         },
         token: null,
         isAuthenticated: false,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -392,12 +404,13 @@ describe('PrivateRoute', () => {
           id: 1,
           email: 'admin@test.com',
           nombre: 'Admin User',
-          rol: 'ADMINISTRADOR',
+          roles: ['ADMINISTRADOR'],
         },
         token: 'admin_token',
         isAuthenticated: true,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -423,12 +436,13 @@ describe('PrivateRoute', () => {
           id: 2,
           email: 'user@test.com',
           nombre: 'Regular User',
-          rol: 'COMPRADOR',
+          roles: ['COMPRADOR'],
         },
         token: 'user_token',
         isAuthenticated: true,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 
@@ -436,6 +450,7 @@ describe('PrivateRoute', () => {
         <MemoryRouter initialEntries={['/admin']}>
           <Routes>
             <Route path="/" element={<div>Home Page</div>} />
+            <Route path="/perfil" element={<div>Perfil Page</div>} />
             <Route element={<PrivateRoute requiredRole="ADMINISTRADOR" />}>
               <Route path="/admin" element={<div>Admin Panel</div>} />
             </Route>
@@ -444,7 +459,7 @@ describe('PrivateRoute', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText('Home Page')).toBeInTheDocument();
+        expect(screen.getByText('Perfil Page')).toBeInTheDocument();
       });
 
       expect(screen.queryByText('Admin Panel')).not.toBeInTheDocument();
@@ -456,12 +471,13 @@ describe('PrivateRoute', () => {
           id: 1,
           email: 'user@test.com',
           nombre: 'Any User',
-          rol: 'COMPRADOR',
+          roles: ['COMPRADOR'],
         },
         token: 'token',
         isAuthenticated: true,
         isLoading: false,
         login: vi.fn(),
+        register: vi.fn(),
         logout: vi.fn(),
       });
 

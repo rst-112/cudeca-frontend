@@ -81,10 +81,10 @@ export default function SandboxSeatMapEditor() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 font-['Arimo'] flex flex-col">
+    <div className="h-screen bg-slate-100 dark:bg-slate-950 font-['Arimo'] flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <header className="shrink-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div className="container mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
@@ -92,7 +92,7 @@ export default function SandboxSeatMapEditor() {
               asChild
               className="gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-200"
             >
-              <Link to="/">
+              <Link to="/" className="inline-flex items-center gap-2">
                 <ArrowLeft size={16} />
                 Volver
               </Link>
@@ -132,9 +132,9 @@ export default function SandboxSeatMapEditor() {
 
       {/* Vista previa del JSON guardado */}
       {vistaPrevia && mapaGuardado && (
-        <div className="bg-amber-50 dark:bg-amber-950/20 border-b border-amber-200 dark:border-amber-900">
-          <div className="container mx-auto px-4 py-4">
-            <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-200 dark:border-slate-800">
+        <div className="shrink-0 bg-amber-50 dark:bg-amber-950/20 border-b border-amber-200 dark:border-amber-900">
+          <div className="container mx-auto px-4 py-2">
+            <div className="bg-white dark:bg-slate-900 rounded-lg p-3 border border-slate-200 dark:border-slate-800">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-bold text-slate-900 dark:text-white">
                   📄 Mapa Guardado - {mapaGuardado.zonas?.[0]?.asientos.length || 0} asientos
@@ -148,7 +148,7 @@ export default function SandboxSeatMapEditor() {
                   Cerrar
                 </Button>
               </div>
-              <pre className="text-xs bg-slate-50 dark:bg-slate-950 p-3 rounded overflow-x-auto max-h-60 overflow-y-auto border dark:border-slate-800 text-slate-900 dark:text-slate-300">
+              <pre className="text-xs bg-slate-50 dark:bg-slate-950 p-2 rounded overflow-x-auto max-h-32 overflow-y-auto border dark:border-slate-800 text-slate-900 dark:text-slate-300">
                 {JSON.stringify(mapaGuardado, null, 2)}
               </pre>
             </div>
@@ -157,7 +157,7 @@ export default function SandboxSeatMapEditor() {
       )}
 
       {/* Área del editor */}
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden min-h-0">
         <SeatMapEditor
           key={keyEditor}
           mapaInicial={mapaGuardado || undefined}
@@ -168,8 +168,8 @@ export default function SandboxSeatMapEditor() {
       </main>
 
       {/* Footer informativo */}
-      <footer className="bg-slate-800 dark:bg-slate-900/50 border-t border-slate-700/50">
-        <div className="container mx-auto px-4 py-3">
+      <footer className="shrink-0 bg-slate-800 dark:bg-slate-900/50 border-t border-slate-700/50">
+        <div className="container mx-auto px-4 py-2">
           <div className="flex items-center gap-2 text-sm text-slate-400">
             <span>
               💡 <strong>Tip:</strong>

@@ -14,24 +14,25 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-background text-foreground transition-colors duration-300 flex items-center justify-center">
+    <div className="relative min-h-screen w-full bg-background text-foreground transition-colors duration-300 flex items-center justify-center overflow-hidden">
       {/* Botón Tema - Fijo arriba a la derecha */}
       <div className="fixed top-6 right-6 z-50">
         <ThemeToggle />
       </div>
 
       {/* Contenedor Principal */}
-      <div className="relative w-full h-full flex bg-background">
+      <div className="relative w-full h-screen flex bg-background overflow-hidden">
         {/* === CAPA DE FORMULARIOS (Ocupan el 43.75% de ancho) === */}
 
         {/* 1. Formulario REGISTRO (Aparece a la IZQUIERDA cuando la imagen se va a la derecha) */}
         <div
           className={`
-            absolute top-0 left-0 h-full 
+            absolute top-0 left-0 h-full
             w-full lg:w-[43.75%] 
             flex items-center justify-center p-8 
             bg-background 
             transition-all duration-700
+            overflow-y-auto overflow-x-hidden
             ${
               !isLogin
                 ? 'opacity-100 translate-x-0 z-10'
@@ -47,11 +48,12 @@ export default function AuthPage() {
         {/* 2. Formulario LOGIN (Aparece a la DERECHA cuando la imagen está a la izquierda) */}
         <div
           className={`
-            absolute top-0 right-0 h-full 
+            absolute top-0 right-0 h-full
             w-full lg:w-[43.75%] 
             flex items-center justify-center p-8 
             bg-background 
             transition-all duration-700
+            overflow-y-auto overflow-x-hidden
             ${
               isLogin
                 ? 'opacity-100 translate-x-0 z-10'
@@ -68,7 +70,7 @@ export default function AuthPage() {
         <div
           className={`
             hidden lg:block
-            absolute top-0 left-0 h-full 
+            absolute top-0 left-0 h-full
             w-[56.25%]
             z-20
             shadow-2xl
@@ -104,8 +106,8 @@ export default function AuthPage() {
         </div>
 
         {/* --- VISTA MÓVIL (Simple Stack) --- */}
-        <div className="lg:hidden absolute inset-0 bg-background flex flex-col p-4 overflow-y-auto z-30">
-          <div className="flex-1 flex items-center justify-center">
+        <div className="lg:hidden absolute inset-0 bg-background flex flex-col p-4 overflow-y-auto overflow-x-hidden z-30">
+          <div className="flex-1 flex items-center justify-center py-8 w-full max-w-md mx-auto">
             {isLogin ? (
               <LoginPage onSwitch={() => handleSwitch('/registro')} />
             ) : (

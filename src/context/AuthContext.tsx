@@ -33,7 +33,7 @@ import { AxiosError } from 'axios';
  *
  * Cualquier componente que use useAuth() tendrá acceso a estas propiedades
  */
-interface AuthContextType {
+export interface AuthContextType {
   /** Usuario actual logueado (null si no hay sesión) */
   user: User | null;
 
@@ -167,7 +167,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
 
         // 3. Validar que el usuario tenga campos obligatorios
-        if (!storedUser.id || !storedUser.email || !storedUser.rol) {
+        if (!storedUser.id || !storedUser.email || !storedUser.roles?.length) {
           console.error('Error restaurando sesión:', new Error('Usuario con datos incompletos'));
           logout();
           setIsLoading(false);

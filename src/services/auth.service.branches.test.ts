@@ -38,7 +38,15 @@ describe('auth.service - Branches Coverage', () => {
 
       expect(localStorage.getItem(STORAGE_KEYS.TOKEN)).toBe('test-token-123');
       expect(localStorage.getItem(STORAGE_KEYS.USER)).toBeTruthy();
-      expect(result).toEqual(mockResponse.data);
+      expect(result).toEqual({
+        token: 'test-token-123',
+        user: {
+          id: 1,
+          email: 'test@test.com',
+          nombre: 'Test User',
+          roles: ['USER'],
+        },
+      });
     });
 
     it('no guarda datos cuando falta el token en la respuesta', async () => {
@@ -107,7 +115,15 @@ describe('auth.service - Branches Coverage', () => {
 
       expect(localStorage.getItem(STORAGE_KEYS.TOKEN)).toBe('test-token-456');
       expect(localStorage.getItem(STORAGE_KEYS.USER)).toBeTruthy();
-      expect(result).toEqual(mockResponse.data);
+      expect(result).toEqual({
+        token: 'test-token-456',
+        user: {
+          id: 2,
+          email: 'new@test.com',
+          nombre: 'New User',
+          roles: ['USER'],
+        },
+      });
     });
 
     it('no guarda datos cuando falta el token en la respuesta', async () => {

@@ -1,11 +1,3 @@
-/**
- * Servicio de Checkout y Datos Fiscales
- *
- * Basado en:
- * - /api/checkout (Sección 2 de API-ENDPOINTS.md)
- * - /api/datos-fiscales (Sección 3 de API-ENDPOINTS.md)
- */
-
 import { apiGet, apiPost, apiPut, apiDelete } from './api';
 import type { DatosFiscales } from '../types/checkout.types';
 
@@ -13,11 +5,14 @@ import type { DatosFiscales } from '../types/checkout.types';
 // TIPOS - CHECKOUT
 // ============================================================================
 
+/**
+ * Estructura exacta que espera el backend para cada ítem
+ */
 export interface ItemCheckout {
-  tipo: 'ENTRADA' | 'DONACION'; // Java: String tipo
-  referenciaId: number;         // Java: Long referenciaId
-  cantidad: number;             // Java: Integer cantidad
-  precio: number;               // Java: Double precio
+  tipo: 'ENTRADA' | 'DONACION';
+  referenciaId: number; // Aquí irá el ID numérico del asiento
+  cantidad: number; // Será 1 para entradas
+  precio: number;
 }
 
 export interface CheckoutRequest {
@@ -26,13 +21,16 @@ export interface CheckoutRequest {
   donacionExtra?: number;
   solicitarCertificado: boolean;
   datosFiscalesId?: number;
+  emailContacto?: string;
+  metodoPago?: string;
 }
 
 export interface CheckoutResponse {
   compraId: number;
-  urlPago: string;
+  urlPago?: string;
   importeTotal: number;
   mensaje: string;
+  estado?: string;
 }
 
 export interface DetallesCompra {
@@ -42,30 +40,6 @@ export interface DetallesCompra {
   estadoCompra: 'PENDIENTE' | 'COMPLETADO' | 'CANCELADO' | 'FALLIDO';
   fechaCompra: string;
   items: ItemCheckout[];
-}
-
-export interface FiscalDataDTO {
-  nombre: string;
-  nif: string;
-  direccion: string;
-  cp: string; // Si tu Java lo pide, añádelo, si no, quítalo
-}
-
-export interface CheckoutRequest {
-  usuarioId: number;            // Java: Long usuarioId
-  emailContacto: string;        // Java: @NotBlank emailContacto
-  items: ItemCheckout[];        // Java: List<ItemDTO> items
-  donacionExtra: number;        // Java: Double donacionExtra
-  metodoPago: string;           // Java: "TARJETA" | "PAYPAL" | "BIZUM" | "MONEDERO"
-  datosFiscales?: FiscalDataDTO; // Opcional
-}
-
-export interface CheckoutResponse {
-  compraId: number;
-  estado: string;
-  total: number;
-  mensaje: string;
-  urlPasarela?: string;
 }
 
 export interface ConfirmarPagoRequest {
@@ -89,15 +63,7 @@ export interface CancelarCompraResponse {
   compraId: number;
 }
 
-// ============================================================================
-// TIPOS - DATOS FISCALES
-// ============================================================================
-// DatosFiscales se importa desde checkout.types.ts para evitar duplicación
-
-export interface ValidarNifRequest {
-  nif: string;
-}
-
+// Tipos para Validar NIF
 export interface ValidarNifResponse {
   valido: boolean;
   mensaje: string;
@@ -154,18 +120,10 @@ export async function cancelarCompra(
 // ENDPOINTS DE DATOS FISCALES
 // ============================================================================
 
-/**
- * Obtener Datos Fiscales del Usuario
- * GET /api/datos-fiscales/usuario/{usuarioId}
- */
 export async function obtenerDatosFiscalesUsuario(usuarioId: number): Promise<DatosFiscales[]> {
   return apiGet<DatosFiscales[]>(`/datos-fiscales/usuario/${usuarioId}`);
 }
 
-/**
- * Obtener Datos Fiscales por ID
- * GET /api/datos-fiscales/{id}?usuarioId={usuarioId}
- */
 export async function obtenerDatosFiscalesPorId(
   id: number,
   usuarioId: number,
@@ -173,10 +131,6 @@ export async function obtenerDatosFiscalesPorId(
   return apiGet<DatosFiscales>(`/datos-fiscales/${id}?usuarioId=${usuarioId}`);
 }
 
-/**
- * Crear Datos Fiscales
- * POST /api/datos-fiscales/usuario/{usuarioId}
- */
 export async function crearDatosFiscales(
   usuarioId: number,
   datos: Omit<DatosFiscales, 'id' | 'usuarioId'>,
@@ -184,10 +138,6 @@ export async function crearDatosFiscales(
   return apiPost<DatosFiscales>(`/datos-fiscales/usuario/${usuarioId}`, datos);
 }
 
-/**
- * Actualizar Datos Fiscales
- * PUT /api/datos-fiscales/{id}?usuarioId={usuarioId}
- */
 export async function actualizarDatosFiscales(
   id: number,
   usuarioId: number,
@@ -196,10 +146,6 @@ export async function actualizarDatosFiscales(
   return apiPut<DatosFiscales>(`/datos-fiscales/${id}?usuarioId=${usuarioId}`, datos);
 }
 
-/**
- * Eliminar Datos Fiscales
- * DELETE /api/datos-fiscales/{id}?usuarioId={usuarioId}
- */
 export async function eliminarDatosFiscales(
   id: number,
   usuarioId: number,
@@ -207,10 +153,6 @@ export async function eliminarDatosFiscales(
   return apiDelete<EliminarDatosFiscalesResponse>(`/datos-fiscales/${id}?usuarioId=${usuarioId}`);
 }
 
-/**
- * Validar NIF
- * POST /api/datos-fiscales/validar-nif
- */
 export async function validarNif(nif: string): Promise<ValidarNifResponse> {
   return apiPost<ValidarNifResponse>('/datos-fiscales/validar-nif', { nif });
 }
@@ -219,17 +161,11 @@ export async function validarNif(nif: string): Promise<ValidarNifResponse> {
 // UTILIDADES
 // ============================================================================
 
-/**
- * Calcular total del checkout
- */
 export function calcularTotalCheckout(items: ItemCheckout[], donacionExtra: number = 0): number {
   const subtotal = items.reduce((total, item) => total + item.precio, 0);
   return subtotal + donacionExtra;
 }
 
-/**
- * Formatear precio
- */
 export function formatearPrecio(precio: number): string {
   return new Intl.NumberFormat('es-ES', {
     style: 'currency',
@@ -237,9 +173,6 @@ export function formatearPrecio(precio: number): string {
   }).format(precio);
 }
 
-/**
- * Obtener estado de compra con color
- */
 export function obtenerEstadoCompra(estado: DetallesCompra['estadoCompra']): {
   label: string;
   color: string;
@@ -258,11 +191,7 @@ export function obtenerEstadoCompra(estado: DetallesCompra['estadoCompra']): {
   }
 }
 
-/**
- * Validar formato de NIF español (básico)
- */
 export function validarFormatoNif(nif: string): boolean {
-  // Formato: 8 dígitos + 1 letra (ej: 12345678A)
   const regex = /^[0-9]{8}[A-Z]$/i;
   return regex.test(nif);
 }

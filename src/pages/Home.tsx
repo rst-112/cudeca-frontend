@@ -143,7 +143,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* === SANDBOX DEV (TEMPORAL) === */}
+      {/* === SANDBOX DEV (SOLO DESARROLLO) === */}
       {import.meta.env.DEV && (
         <section className="py-8 bg-amber-50 dark:bg-amber-950/20 border-y border-amber-200 dark:border-amber-900">
           <div className="container mx-auto px-4">
@@ -153,234 +153,69 @@ export default function Home() {
                 <div>
                   <h3 className="font-bold text-amber-900 dark:text-amber-400">Modo Desarrollo</h3>
                   <p className="text-sm text-amber-700 dark:text-amber-500">
-                    Sistema de Mapa de Asientos Interactivo (Viewer + Editor)
+                    Herramientas y accesos directos (Invisible en Producción)
                   </p>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="gap-2 border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30"
-                >
-                  <Link to="/dev/mapa">Viewer</Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="default"
-                  size="sm"
-                  className="gap-2 bg-amber-600 hover:bg-amber-700 text-white"
-                >
-                  <Link to="/dev/mapa/editor">
-                    Editor
-                    <ArrowRight size={16} />
-                  </Link>
-                </Button>
-              </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
-              <div>
-                <h4 className="font-bold text-amber-900 dark:text-amber-400">Checkout Usuario</h4>
-                <p className="text-sm text-amber-700 dark:text-amber-500">
-                  Nueva interfaz de checkout con diseño mejorado (Sin login requerido)
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  asChild
-                  variant="default"
-                  size="sm"
-                  className="gap-2 bg-green-600 hover:bg-green-700 text-white"
-                >
-                  <Link to="/dev/checkout-usuario">
-                    Ver Checkout
-                    <ArrowRight size={16} />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
-              <div>
-                <h4 className="font-bold text-amber-900 dark:text-amber-400">Checkout Invitado</h4>
-                <p className="text-sm text-amber-700 dark:text-amber-500">
-                  Versión de checkout para usuarios no registrados (Sin login requerido)
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  asChild
-                  variant="default"
-                  size="sm"
-                  className="gap-2 bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  <Link to="/dev/checkout-invitado">
-                    Ver Checkout Invitado
-                    <ArrowRight size={16} />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
-              <div>
-                <h4 className="font-bold text-amber-900 dark:text-amber-400">
-                  Confirmación Compra Invitado
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Mapa */}
+              <div className="p-4 bg-white dark:bg-slate-900 rounded-lg border border-amber-200 dark:border-amber-800">
+                <h4 className="font-bold text-amber-800 dark:text-amber-500 mb-2">
+                  Mapa de Asientos
                 </h4>
-                <p className="text-sm text-amber-700 dark:text-amber-500">
-                  Confirmación después de completar la compra (Sin login requerido)
-                </p>
+                <div className="flex gap-2">
+                  <Button asChild variant="outline" size="sm" className="w-full">
+                    <Link to="/dev/mapa">Viewer</Link>
+                  </Button>
+                  <Button asChild size="sm" className="w-full bg-amber-600 hover:bg-amber-700">
+                    <Link to="/dev/mapa/editor">Editor</Link>
+                  </Button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Button
-                  asChild
-                  variant="default"
-                  size="sm"
-                  className="gap-2 bg-purple-600 hover:bg-purple-700 text-white"
-                >
-                  <Link to="/dev/compra-invitado">
-                    Ver Confirmación
-                    <ArrowRight size={16} />
-                  </Link>
-                </Button>
-              </div>
-            </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
-              <div>
-                <h4 className="font-bold text-amber-900 dark:text-amber-400">
-                  Confirmación Compra Usuario
+              {/* Checkouts */}
+              <div className="p-4 bg-white dark:bg-slate-900 rounded-lg border border-amber-200 dark:border-amber-800">
+                <h4 className="font-bold text-amber-800 dark:text-amber-500 mb-2">Checkouts</h4>
+                <div className="flex gap-2">
+                  <Button asChild size="sm" className="w-full bg-green-600 hover:bg-green-700">
+                    <Link to="/dev/checkout-usuario">Usuario</Link>
+                  </Button>
+                  <Button asChild size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+                    <Link to="/dev/checkout-invitado">Invitado</Link>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Confirmaciones */}
+              <div className="p-4 bg-white dark:bg-slate-900 rounded-lg border border-amber-200 dark:border-amber-800">
+                <h4 className="font-bold text-amber-800 dark:text-amber-500 mb-2">
+                  Confirmaciones
                 </h4>
-                <p className="text-sm text-amber-700 dark:text-amber-500">
-                  Confirmación de compra para usuarios logueados con acceso a perfil
-                </p>
+                <div className="flex gap-2">
+                  <Button asChild size="sm" className="w-full bg-purple-600 hover:bg-purple-700">
+                    <Link to="/dev/compra-invitado">Invitado</Link>
+                  </Button>
+                  <Button asChild size="sm" className="w-full bg-teal-600 hover:bg-teal-700">
+                    <Link to="/dev/compra-usuario">Usuario</Link>
+                  </Button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Button
-                  asChild
-                  variant="default"
-                  size="sm"
-                  className="gap-2 bg-teal-600 hover:bg-teal-700 text-white"
-                >
-                  <Link to="/dev/compra-usuario">
-                    Ver Confirmación Usuario
-                    <ArrowRight size={16} />
-                  </Link>
-                </Button>
-              </div>
-            </div>
 
-            {/* Atajo a Recarga de Saldo */}
-            <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
-              <div>
-                <h4 className="font-bold text-amber-900 dark:text-amber-400">Recarga de Saldo</h4>
-                <p className="text-sm text-amber-700 dark:text-amber-500">
-                  Accede al monedero y añade saldo para tus compras futuras.
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  asChild
-                  variant="default"
-                  size="sm"
-                  className="gap-2 bg-green-600 hover:bg-green-700 text-white"
-                >
-                  <Link to="/dev/recarga-saldo">Ir a Recarga de Saldo</Link>
-                </Button>
-              </div>
-            </div>
-
-            {/* Atajo a Perfil Usuario */}
-            <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
-              <div>
-                <h4 className="font-bold text-amber-900 dark:text-amber-400">Perfil Usuario</h4>
-                <p className="text-sm text-amber-700 dark:text-amber-500">
-                  Panel de perfil con historial de compras y gestión de cuenta.
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  asChild
-                  variant="default"
-                  size="sm"
-                  className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
-                >
-                  <Link to="/dev/perfil-usuario">
-                    Ver Perfil Usuario
-                    <ArrowRight size={16} />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-
-            {/* Atajo a Datos Fiscales */}
-            <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
-              <div>
-                <h4 className="font-bold text-amber-900 dark:text-amber-400">Datos Fiscales</h4>
-                <p className="text-sm text-amber-700 dark:text-amber-500">
-                  Gestiona tus direcciones fiscales y datos de facturación.
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  asChild
-                  variant="default"
-                  size="sm"
-                  className="gap-2 bg-orange-600 hover:bg-orange-700 text-white"
-                >
-                  <Link to="/dev/datos-fiscales">
-                    Ver Datos Fiscales
-                    <ArrowRight size={16} />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-
-            {/* Atajo a Suscripción */}
-            <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
-              <div>
-                <h4 className="font-bold text-amber-900 dark:text-amber-400">Suscripción</h4>
-                <p className="text-sm text-amber-700 dark:text-amber-500">
-                  Elige tu plan de suscripción y colabora de forma constante.
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  asChild
-                  variant="default"
-                  size="sm"
-                  className="gap-2 bg-rose-600 hover:bg-rose-700 text-white"
-                >
-                  <Link to="/dev/suscripcion">
-                    Ver Planes
-                    <ArrowRight size={16} />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-
-            {/* Atajo a Perfil Compras */}
-            <div className="flex items-center justify-between pt-4 border-t border-amber-200 dark:border-amber-800">
-              <div>
-                <h4 className="font-bold text-amber-900 dark:text-amber-400">Perfil Compras</h4>
-                <p className="text-sm text-amber-700 dark:text-amber-500">
-                  Historial completo de compras y entradas adquiridas.
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  asChild
-                  variant="default"
-                  size="sm"
-                  className="gap-2 bg-purple-600 hover:bg-purple-700 text-white"
-                >
-                  <Link to="/dev/perfil-compras">
-                    Ver Compras
-                    <ArrowRight size={16} />
-                  </Link>
-                </Button>
+              {/* Usuario / Perfil */}
+              <div className="p-4 bg-white dark:bg-slate-900 rounded-lg border border-amber-200 dark:border-amber-800">
+                <h4 className="font-bold text-amber-800 dark:text-amber-500 mb-2">
+                  Mi Perfil (Auth)
+                </h4>
+                <div className="flex gap-2">
+                  <Button asChild size="sm" className="w-full bg-indigo-600 hover:bg-indigo-700">
+                    <Link to="/dev/perfil-usuario">Ver Perfil</Link>
+                  </Button>
+                  <Button asChild size="sm" className="w-full bg-orange-600 hover:bg-orange-700">
+                    <Link to="/dev/datos-fiscales">Datos Fiscales</Link>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

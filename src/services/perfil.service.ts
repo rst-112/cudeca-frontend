@@ -1,24 +1,13 @@
 /**
  * Servicio de Perfil de Usuario
- *
  * Basado en: /api/perfil
- * Documentación: API-ENDPOINTS.md sección 4
  */
 
-import { apiGet, apiPut } from './api';
+import { apiGet, apiPut, apiClient } from './api';
 
 // ============================================================================
 // TIPOS
 // ============================================================================
-
-export interface CompraResumen {
-  id: string;
-  title: string;
-  date: string;
-  tickets: string;
-  total: string;
-  status: string;
-}
 
 export interface PerfilUsuario {
   id: number;
@@ -61,7 +50,7 @@ export interface CompraResumen {
   id: string;
   title: string;
   date: string;
-  tickets: string;
+  tickets: number;
   total: string;
   status: string;
 }
@@ -75,26 +64,14 @@ export interface ActualizarPerfilRequest {
 // ENDPOINTS DE PERFIL
 // ============================================================================
 
-/**
- * Obtener perfil de usuario por ID
- * GET /api/perfil/{usuarioId}
- */
 export async function obtenerPerfilPorId(usuarioId: number): Promise<PerfilUsuario> {
   return apiGet<PerfilUsuario>(`/perfil/${usuarioId}`);
 }
 
-/**
- * Obtener perfil de usuario por email
- * GET /api/perfil/email/{email}
- */
 export async function obtenerPerfilPorEmail(email: string): Promise<PerfilUsuario> {
   return apiGet<PerfilUsuario>(`/perfil/email/${email}`);
 }
 
-/**
- * Actualizar perfil de usuario
- * PUT /api/perfil/{usuarioId}
- */
 export async function actualizarPerfil(
   usuarioId: number,
   datos: ActualizarPerfilRequest,
@@ -102,10 +79,6 @@ export async function actualizarPerfil(
   return apiPut<PerfilUsuario>(`/perfil/${usuarioId}`, datos);
 }
 
-/**
- * Verificar si usuario existe
- * GET /api/perfil/{usuarioId}/existe
- */
 export async function verificarUsuarioExiste(usuarioId: number): Promise<{ existe: boolean }> {
   return apiGet<{ existe: boolean }>(`/perfil/${usuarioId}/existe`);
 }
@@ -114,41 +87,27 @@ export async function verificarUsuarioExiste(usuarioId: number): Promise<{ exist
 // ENDPOINTS DE ENTRADAS
 // ============================================================================
 
-/**
- * Obtener todas las entradas del usuario
- * GET /api/perfil/{usuarioId}/entradas
- */
 export async function obtenerEntradasUsuario(usuarioId: number): Promise<EntradaUsuario[]> {
   return apiGet<EntradaUsuario[]>(`/perfil/${usuarioId}/entradas`);
 }
 
 /**
  * Descargar PDF de entrada
- * GET /api/perfil/{usuarioId}/entradas/{entradaId}/pdf
- *
- * @returns URL para descargar el PDF
+ * Usa apiClient para manejar la autenticación automáticamente.
  */
 export async function descargarPdfEntrada(usuarioId: number, entradaId: number): Promise<Blob> {
-  const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/perfil/${usuarioId}/entradas/${entradaId}/pdf`,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    },
-  );
-
-  if (!response.ok) {
-    throw new Error('Error al descargar PDF');
-  }
-
-  return response.blob();
+  const response = await apiClient.get(`/perfil/${usuarioId}/entradas/${entradaId}/pdf`, {
+    responseType: 'blob',
+  });
+  return response.data;
 }
 
 /**
- * Generar URL de descarga para una entrada
+ * Generar URL de descarga para una entrada (Uso limitado, prefiere descargarPdfEntrada)
  */
 export function generarUrlDescargaPdf(usuarioId: number, entradaId: number): string {
+  // Nota: Esto solo funciona si el endpoint público o si se pasa token por query param
+  // Si requiere Auth header, es mejor usar descargarPdfEntrada y crear un Blob URL local
   return `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/perfil/${usuarioId}/entradas/${entradaId}/pdf`;
 }
 
@@ -160,18 +119,10 @@ export async function obtenerHistorialCompras(usuarioId: number): Promise<Compra
 // ENDPOINTS DE MONEDERO
 // ============================================================================
 
-/**
- * Obtener monedero del usuario
- * GET /api/perfil/{usuarioId}/monedero
- */
 export async function obtenerMonedero(usuarioId: number): Promise<Monedero> {
   return apiGet<Monedero>(`/perfil/${usuarioId}/monedero`);
 }
 
-/**
- * Obtener movimientos del monedero
- * GET /api/perfil/{usuarioId}/monedero/movimientos
- */
 export async function obtenerMovimientosMonedero(usuarioId: number): Promise<MovimientoMonedero[]> {
   return apiGet<MovimientoMonedero[]>(`/perfil/${usuarioId}/monedero/movimientos`);
 }
@@ -180,9 +131,6 @@ export async function obtenerMovimientosMonedero(usuarioId: number): Promise<Mov
 // UTILIDADES
 // ============================================================================
 
-/**
- * Formatear saldo del monedero
- */
 export function formatearSaldo(monedero: Monedero): string {
   return new Intl.NumberFormat('es-ES', {
     style: 'currency',
@@ -190,9 +138,6 @@ export function formatearSaldo(monedero: Monedero): string {
   }).format(monedero.saldo);
 }
 
-/**
- * Obtener estado de entrada con color
- */
 export function obtenerEstadoEntrada(estado: EntradaUsuario['estadoEntrada']): {
   label: string;
   color: string;

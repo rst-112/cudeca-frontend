@@ -7,48 +7,33 @@ import MainLayout from './components/layout/MainLayout';
 import AuthPage from './features/auth/AuthPage';
 import { PrivateRoute } from './components/PrivateRoute';
 import AdminDashboard from './features/admin/AdminDashboard';
+
+// Dashboard (Backoffice SOLO para Staff/Admin)
 import Dashboard from './features/dashboard/Dashboard';
+import DashboardHome from './features/dashboard/DashboardHome';
+import ScannerView from './features/dashboard/ScannerView';
 
 // Páginas públicas
 import Home from './pages/Home';
 import DetalleEvento from './pages/public/DetallesEvento';
+
+// === PÁGINAS UNIFICADAS ===
 import Checkout from './pages/public/Checkout';
-import { CheckoutUsuario } from './pages/public/CheckoutUsuario';
-import { CheckoutInvitado } from './pages/public/CheckoutInvitado';
-import { CompraInvitado } from './pages/public/CompraInvitado';
-import { CompraUsuario } from './pages/public/CompraUsuario';
-import { PantallaDePerfil } from './pages/public/PerfilUsuario';
-import SandboxSeatMap from './pages/public/SandboxSeatMap';
-import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
-import { PantallaDeRecargar } from './pages/public/RecargaSaldo';
-import { DatosFiscales } from './pages/public/DatosFiscales';
-import { Suscripcion } from './pages/public/Suscripcion';
-import { PerfilCompras } from './pages/public/PerfilCompras';
+import ConfirmationPage from './pages/public/Confirmation';
 import PerfilUsuario from './pages/PerfilUsuario';
 
-// Componentes temporales
+// Herramientas de Desarrollo
+import SandboxSeatMap from './pages/public/SandboxSeatMap';
+import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
+
+// Componente temporal para staff
 const EventStaffDashboard = () => <div>Dashboard (Personal Evento)</div>;
 
-/**
- * RedirectIfAuthenticated - Redirige a home si ya está logueado
- */
 function RedirectIfAuthenticated({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <span className="text-lg text-gray-600">Cargando...</span>
-      </div>
-    );
-  }
-
-  // Si está autenticado, redirigir a home
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-
-  // Si no está autenticado, mostrar el login/register
+  if (isLoading)
+    return <div className="flex items-center justify-center min-h-screen">Cargando...</div>;
+  if (isAuthenticated) return <Navigate to="/" replace />;
   return <>{children}</>;
 }
 
@@ -60,70 +45,85 @@ function App() {
         <AuthProvider>
           <Toaster position="top-right" richColors />
           <Routes>
-            {/* === RUTAS DE DESARROLLO - SANDBOX (SIN LAYOUT) === */}
+            {/* === RUTAS DE DESARROLLO === */}
             <Route path="/dev/mapa" element={<SandboxSeatMap />} />
             <Route path="/dev/mapa/editor" element={<SandboxSeatMapEditor />} />
-            <Route path="/dev/checkout-usuario" element={<CheckoutUsuario />} />
-            <Route path="/dev/checkout-invitado" element={<CheckoutInvitado />} />
-            <Route path="/dev/compra-invitado" element={<CompraInvitado />} />
-            <Route path="/dev/compra-usuario" element={<CompraUsuario />} />
-            <Route path="/dev/perfil-usuario" element={<PantallaDePerfil />} />
-            <Route path="/dev/recarga-saldo" element={<PantallaDeRecargar />} />
-            <Route path="/dev/datos-fiscales" element={<DatosFiscales />} />
-            <Route path="/dev/suscripcion" element={<Suscripcion />} />
-            <Route path="/dev/perfil-compras" element={<PerfilCompras />} />
 
-            {/* === DASHBOARDS CON LAYOUT PROPIO (SIN MAINLAYOUT) === */}
-            {/* Rutas protegidas por rol - Administrador */}
+            {/* Redirecciones de compatibilidad (para no romper links antiguos) */}
+            <Route path="/dev/checkout-usuario" element={<Checkout />} />
+            <Route path="/dev/checkout-invitado" element={<Checkout />} />
+            <Route path="/dev/compra-invitado" element={<ConfirmationPage />} />
+            <Route path="/dev/compra-usuario" element={<ConfirmationPage />} />
+            <Route path="/dev/perfil-usuario" element={<PerfilUsuario />} />
+            <Route
+              path="/dev/datos-fiscales"
+              element={<Navigate to="/perfil?tab=fiscales" replace />}
+            />
+            <Route
+              path="/dev/recarga-saldo"
+              element={<Navigate to="/perfil?tab=monedero" replace />}
+            />
+            <Route
+              path="/dev/suscripcion"
+              element={<Navigate to="/perfil?tab=suscripcion" replace />}
+            />
+            <Route
+              path="/dev/perfil-compras"
+              element={<Navigate to="/perfil?tab=compras" replace />}
+            />
+
+            {/* === AUTH === */}
+            <Route
+              path="/login"
+              element={
+                <RedirectIfAuthenticated>
+                  <AuthPage />
+                </RedirectIfAuthenticated>
+              }
+            />
+            <Route
+              path="/registro"
+              element={
+                <RedirectIfAuthenticated>
+                  <AuthPage />
+                </RedirectIfAuthenticated>
+              }
+            />
+
+            {/* === ADMIN GLOBAL === */}
             <Route element={<PrivateRoute requiredRole="ADMINISTRADOR" />}>
               <Route path="/admin" element={<AdminDashboard />} />
             </Route>
 
-            {/* Rutas protegidas por rol - Comprador */}
-            <Route element={<PrivateRoute requiredRole="COMPRADOR" />}>
-              <Route path="/dashboard" element={<Dashboard />} />
+            {/* === STAFF & ADMIN (Backoffice/Trabajo) === */}
+            {/* Solo tienen acceso Staff y Admins. Aquí gestionan el evento. */}
+            <Route element={<PrivateRoute requiredRole={['ADMINISTRADOR', 'PERSONAL_EVENTO']} />}>
+              <Route path="/dashboard" element={<Dashboard />}>
+                <Route index element={<DashboardHome />} />
+                <Route path="scanner" element={<ScannerView />} />
+                <Route path="events" element={<div>Gestión de Eventos</div>} />
+              </Route>
             </Route>
 
-            {/* Rutas protegidas por rol - Personal de Evento */}
+            {/* === STAFF (Ruta legacy, opcional si ya usan /dashboard) === */}
             <Route element={<PrivateRoute requiredRole="PERSONAL_EVENTO" />}>
               <Route path="/staff" element={<EventStaffDashboard />} />
             </Route>
 
-            {/* === RUTAS DE AUTENTICACIÓN (SIN NAVBAR) === */}
-            <Route
-              path="login"
-              element={
-                <RedirectIfAuthenticated>
-                  <AuthPage />
-                </RedirectIfAuthenticated>
-              }
-            />
-            <Route
-              path="registro"
-              element={
-                <RedirectIfAuthenticated>
-                  <AuthPage />
-                </RedirectIfAuthenticated>
-              }
-            />
-
-            {/* === TODAS LAS DEMÁS RUTAS CON MAINLAYOUT === */}
+            {/* === WEB PÚBLICA Y ZONA PERSONAL (Layout Principal) === */}
             <Route path="/" element={<MainLayout />}>
-              {/* Rutas públicas */}
               <Route index element={<Home />} />
               <Route path="evento/:id" element={<DetalleEvento />} />
+              <Route path="checkout" element={<Checkout />} />
+              <Route path="confirmacion" element={<ConfirmationPage />} />
 
-              {/* Rutas protegidas - Checkout y Perfil */}
+              {/* ZONA PERSONAL (Accesible para TODOS los roles) */}
               <Route element={<PrivateRoute />}>
-                <Route path="checkout" element={<Checkout />} />
-                <Route path="checkout-usuario" element={<CheckoutUsuario />} />
                 <Route path="perfil" element={<PerfilUsuario />} />
-                <Route path="perfil-compras" element={<PerfilCompras />} />
               </Route>
-
-              {/* Redirección por defecto */}
-              <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
+
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AuthProvider>
       </ThemeProvider>

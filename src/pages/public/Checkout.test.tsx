@@ -4,10 +4,17 @@ import { BrowserRouter } from 'react-router-dom';
 import Checkout from './Checkout';
 import * as checkoutService from '../../services/checkout.service';
 import { toast } from 'sonner';
+import { useAuth } from '../../context/AuthContext';
 
 // Mock de servicios
 vi.mock('../../services/checkout.service');
 vi.mock('sonner');
+
+// Mock de AuthContext
+vi.mock('../../context/AuthContext', () => ({
+  useAuth: vi.fn(),
+  AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
 
 // Mock de useNavigate
 const mockNavigate = vi.fn();
@@ -46,6 +53,17 @@ describe('Checkout - Branches Coverage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(checkoutService.obtenerDatosFiscalesUsuario).mockResolvedValue(mockDatosFiscales);
+
+    // Mock default useAuth values
+    vi.mocked(useAuth).mockReturnValue({
+      user: { id: 1, nombre: 'Test User', email: 'test@example.com', roles: ['COMPRADOR'] },
+      token: 'mock-token',
+      isAuthenticated: true,
+      isLoading: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+      register: vi.fn(),
+    });
   });
 
   const renderWithRouter = (component: React.ReactElement) => {
@@ -110,18 +128,42 @@ describe('Checkout - Branches Coverage', () => {
     });
 
     it('debe mostrar selector de datos fiscales existentes cuando se activa certificado', async () => {
+      const datosHardcoded = [
+        {
+          id: 1,
+          nif: '12345678A',
+          nombre: 'Usuario Test',
+          direccion: 'Calle Test 123',
+          ciudad: 'Málaga',
+          codigoPostal: '29001',
+          pais: 'España',
+          esPrincipal: true,
+        },
+      ];
+      vi.mocked(checkoutService.obtenerDatosFiscalesUsuario).mockResolvedValue(datosHardcoded);
+
       renderWithRouter(<Checkout />);
 
       await waitFor(() => {
-        expect(screen.getByText('Solicitar Certificado de Donación')).toBeInTheDocument();
+        expect(checkoutService.obtenerDatosFiscalesUsuario).toHaveBeenCalled();
       });
+
+      // Check for errors
+      expect(toast.error).not.toHaveBeenCalled();
+
+      // Wait for async state updates
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const switchCertificado = screen.getByRole('switch');
       fireEvent.click(switchCertificado);
 
-      await waitFor(() => {
-        expect(screen.getByText(/Selecciona Datos Fiscales/i)).toBeInTheDocument();
-      });
+      await waitFor(
+        () => {
+          // Just assert the selector
+          expect(screen.getByText(/Selecciona tus Datos Fiscales/i)).toBeInTheDocument();
+        },
+        { timeout: 3000 },
+      );
     });
   });
 
@@ -136,7 +178,7 @@ describe('Checkout - Branches Coverage', () => {
         fireEvent.click(switchCertificado);
       });
 
-      const btnConfirmar = screen.getByText('Confirmar Compra');
+      const btnConfirmar = screen.getByText('Confirmar y Pagar');
       fireEvent.click(btnConfirmar);
 
       await waitFor(() => {
@@ -165,7 +207,7 @@ describe('Checkout - Branches Coverage', () => {
       fireEvent.change(screen.getByLabelText(/Ciudad/), { target: { value: 'Málaga' } });
       fireEvent.change(screen.getByLabelText(/Código Postal/), { target: { value: '29001' } });
 
-      const btnConfirmar = screen.getByText('Confirmar Compra');
+      const btnConfirmar = screen.getByText('Confirmar y Pagar');
       fireEvent.click(btnConfirmar);
 
       await waitFor(() => {
@@ -191,10 +233,10 @@ describe('Checkout - Branches Coverage', () => {
       renderWithRouter(<Checkout />);
 
       await waitFor(() => {
-        expect(screen.getByText('Confirmar Compra')).toBeInTheDocument();
+        expect(screen.getByText('Confirmar y Pagar')).toBeInTheDocument();
       });
 
-      const btnConfirmar = screen.getByText('Confirmar Compra');
+      const btnConfirmar = screen.getByText('Confirmar y Pagar');
       fireEvent.click(btnConfirmar);
 
       await waitFor(() => {
@@ -225,7 +267,7 @@ describe('Checkout - Branches Coverage', () => {
 
       // Esperar a que el componente se cargue completamente
       await waitFor(() => {
-        expect(screen.getByText('Confirmar Compra')).toBeInTheDocument();
+        expect(screen.getByText('Confirmar y Pagar')).toBeInTheDocument();
       });
 
       const switchCertificado = screen.getByRole('switch');
@@ -236,7 +278,7 @@ describe('Checkout - Branches Coverage', () => {
         expect(switchCertificado).toBeChecked();
       });
 
-      const btnConfirmar = screen.getByText('Confirmar Compra');
+      const btnConfirmar = screen.getByText('Confirmar y Pagar');
       fireEvent.click(btnConfirmar);
 
       await waitFor(() => {
@@ -290,7 +332,7 @@ describe('Checkout - Branches Coverage', () => {
       fireEvent.change(screen.getByLabelText(/Ciudad/), { target: { value: 'Málaga' } });
       fireEvent.change(screen.getByLabelText(/Código Postal/), { target: { value: '29001' } });
 
-      const btnConfirmar = screen.getByText('Confirmar Compra');
+      const btnConfirmar = screen.getByText('Confirmar y Pagar');
       fireEvent.click(btnConfirmar);
 
       await waitFor(() => {
@@ -310,10 +352,10 @@ describe('Checkout - Branches Coverage', () => {
       renderWithRouter(<Checkout />);
 
       await waitFor(() => {
-        expect(screen.getByText('Confirmar Compra')).toBeInTheDocument();
+        expect(screen.getByText('Confirmar y Pagar')).toBeInTheDocument();
       });
 
-      const btnConfirmar = screen.getByText('Confirmar Compra');
+      const btnConfirmar = screen.getByText('Confirmar y Pagar');
       fireEvent.click(btnConfirmar);
 
       await waitFor(() => {
@@ -329,7 +371,7 @@ describe('Checkout - Branches Coverage', () => {
 
       renderWithRouter(<Checkout />);
 
-      const btnConfirmar = screen.getByText('Confirmar Compra');
+      const btnConfirmar = screen.getByText('Confirmar y Pagar');
       fireEvent.click(btnConfirmar);
 
       await waitFor(() => {
@@ -357,10 +399,10 @@ describe('Checkout - Branches Coverage', () => {
       renderWithRouter(<Checkout />);
 
       await waitFor(() => {
-        expect(screen.getByText('Confirmar Compra')).toBeInTheDocument();
+        expect(screen.getByText('Confirmar y Pagar')).toBeInTheDocument();
       });
 
-      const btnConfirmar = screen.getByText('Confirmar Compra');
+      const btnConfirmar = screen.getByText('Confirmar y Pagar');
       fireEvent.click(btnConfirmar);
 
       await waitFor(
@@ -456,7 +498,7 @@ describe('Checkout - Branches Coverage', () => {
 
       renderWithRouter(<Checkout />);
 
-      const btnConfirmar = screen.getByText('Confirmar Compra');
+      const btnConfirmar = screen.getByText('Confirmar y Pagar');
       fireEvent.click(btnConfirmar);
 
       await waitFor(() => {

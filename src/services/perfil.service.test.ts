@@ -8,6 +8,9 @@ vi.mock('./api', () => ({
   apiPost: vi.fn(),
   apiPut: vi.fn(),
   apiDelete: vi.fn(),
+  apiClient: {
+    get: vi.fn(),
+  },
 }));
 
 // Mock de fetch global
@@ -134,25 +137,22 @@ describe('perfil.service', () => {
     it('descarga el PDF de una entrada', async () => {
       const mockBlob = new Blob(['test'], { type: 'application/pdf' });
 
-      vi.mocked(globalThis.fetch).mockResolvedValue({
-        ok: true,
-        blob: () => Promise.resolve(mockBlob),
-      } as Response);
+      vi.mocked(api.apiClient.get).mockResolvedValue({
+        data: mockBlob,
+      });
 
       const result = await perfilService.descargarPdfEntrada(1, 1);
 
-      expect(globalThis.fetch).toHaveBeenCalled();
+      expect(api.apiClient.get).toHaveBeenCalledWith('/perfil/1/entradas/1/pdf', {
+        responseType: 'blob',
+      });
       expect(result).toEqual(mockBlob);
     });
 
     it('lanza error cuando falla la descarga del PDF', async () => {
-      vi.mocked(globalThis.fetch).mockResolvedValue({
-        ok: false,
-      } as Response);
+      vi.mocked(api.apiClient.get).mockRejectedValue(new Error('Error de red'));
 
-      await expect(perfilService.descargarPdfEntrada(1, 1)).rejects.toThrow(
-        'Error al descargar PDF',
-      );
+      await expect(perfilService.descargarPdfEntrada(1, 1)).rejects.toThrow('Error de red');
     });
   });
 
