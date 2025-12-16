@@ -49,8 +49,8 @@ export interface AuthContextType {
   /** Función para iniciar sesión - devuelve una Promise para usar con async/await */
   login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
 
-  /** Función para registrarse */
-  register: (data: RegisterData) => Promise<void>;
+  /** Función para registrarse con opción de recordar sesión */
+  register: (data: RegisterData, rememberMe?: boolean) => Promise<void>;
 
   /** Función para cerrar sesión */
   logout: () => void;
@@ -149,6 +149,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   /**
    * useEffect - Se ejecuta cuando el componente se monta (aparece en pantalla)
+   *
+   * SIMPLIFICACIÓN: Confiamos en la lógica robusta del authService.
+   * El servicio ya maneja:
+   * - Detección de estados corruptos (tokens en ambos almacenamientos)
+   * - Limpieza automática de datos inválidos
+   * - Parsing seguro con try-catch
    */
   useEffect(() => {
     /**
@@ -156,47 +162,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
      */
     const initAuth = async () => {
       try {
-        // 1. Intentar leer datos guardados de localStorage usando authService
+        // 1. Usar authService para obtener token y usuario (con lógica determinista)
         const storedToken = authService.getToken();
         const storedUser = authService.getCurrentUser();
 
-        // 2. Si no hay token O no hay usuario, no hay sesión
+        // 2. Si no hay token o usuario, no hay sesión válida
         if (!storedToken || !storedUser) {
-          setIsLoading(false);
           return;
         }
 
-        // 3. Validar que el usuario tenga campos obligatorios
+        // 3. Validación básica de integridad del usuario
         if (!storedUser.id || !storedUser.email || !storedUser.roles?.length) {
-          console.error('Error restaurando sesión:', new Error('Usuario con datos incompletos'));
+          console.warn('Usuario con datos incompletos, limpiando sesión');
           logout();
-          setIsLoading(false);
           return;
         }
 
         // 4. Validar el token con el backend
-        try {
-          const isValid = await validateToken(storedToken);
+        const isValid = await validateToken(storedToken);
 
-          // 5. Si el token es válido, restaurar la sesión
-          if (isValid) {
-            setToken(storedToken);
-            setUser(storedUser);
-          } else {
-            // Si no es válido, cerrar sesión
-            logout();
-          }
-        } catch (error) {
-          // Si hay un error crítico (de red u otro), cerrar sesión
-          console.error('Error restaurando sesión:', error);
+        if (isValid) {
+          // Token válido: restaurar sesión
+          setToken(storedToken);
+          setUser(storedUser);
+        } else {
+          // Token inválido: limpiar sesión
+          console.warn('Token inválido, limpiando sesión');
           logout();
         }
       } catch (error) {
-        // Si algo sale mal al parsear datos, cerrar sesión
-        console.error('Error restaurando sesión:', error);
+        // Error inesperado: limpiar sesión por seguridad
+        console.error('Error en initAuth:', error);
         logout();
       } finally {
-        // Siempre terminamos de cargar
+        // Siempre marcar como cargado
         setIsLoading(false);
       }
     };
@@ -258,12 +257,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   /**
    * register - Registra un nuevo usuario
+   *
+   * @param data - Datos del usuario a registrar
+   * @param rememberMe - Si es true usa localStorage (por defecto), si es false usa sessionStorage
    */
-  const register = useCallback(async (data: RegisterData) => {
+  const register = useCallback(async (data: RegisterData, rememberMe: boolean = true) => {
     setIsLoading(true);
     try {
-      // Registro con authService (ya guarda en localStorage)
-      const { token: newToken, user: newUser } = await authService.register(data);
+      // Registro con authService (implementa exclusión mutua estricta)
+      const { token: newToken, user: newUser } = await authService.register(data, rememberMe);
 
       // Actualizar el estado
       setToken(newToken);

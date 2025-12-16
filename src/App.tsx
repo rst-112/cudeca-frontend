@@ -8,6 +8,8 @@ import MainLayout from './components/layout/MainLayout';
 import AuthPage from './features/auth/AuthPage';
 import { PrivateRoute } from './components/PrivateRoute';
 import AdminDashboard from './features/admin/AdminDashboard';
+import ForgotPasswordPage from './features/auth/ForgotPasswordPage';
+import ResetPasswordPage from './features/auth/ResetPasswordPage';
 
 // Dashboard (Backoffice SOLO para Staff/Admin)
 import Dashboard from './features/dashboard/Dashboard';
@@ -93,6 +95,22 @@ function App() {
                 element={
                   <RedirectIfAuthenticated>
                     <AuthPage />
+                  </RedirectIfAuthenticated>
+                }
+              />
+              <Route
+                path="/forgot-password"
+                element={
+                  <RedirectIfAuthenticated>
+                    <ForgotPasswordPage />
+                  </RedirectIfAuthenticated>
+                }
+              />
+              <Route
+                path="/reset-password"
+                element={
+                  <RedirectIfAuthenticated>
+                    <ResetPasswordPage />
                   </RedirectIfAuthenticated>
                 }
               />
