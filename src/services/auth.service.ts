@@ -27,6 +27,11 @@ export const authService = {
   /**
    * login - Inicia sesión con email y contraseña
    *
+   * ESTRATEGIA DE EXCLUSIÓN MUTUA ESTRICTA:
+   * - Si rememberMe=true: guarda en localStorage y LIMPIA sessionStorage
+   * - Si rememberMe=false: guarda en sessionStorage y LIMPIA localStorage
+   * - NUNCA deben coexistir tokens en ambos almacenamientos
+   *
    * @param credentials - Email y contraseña del usuario
    * @param rememberMe - Si es true usa localStorage (por defecto), si es false usa sessionStorage
    * @returns Promise con el token y datos del usuario
@@ -53,10 +58,20 @@ export const authService = {
         roles: rolesArray,
       };
 
-      // Usar localStorage si rememberMe es true, sessionStorage si es false
-      const storage = rememberMe ? localStorage : sessionStorage;
-      storage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
-      storage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+      // EXCLUSIÓN MUTUA ESTRICTA
+      if (rememberMe) {
+        // Guardar en localStorage y LIMPIAR sessionStorage
+        localStorage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+        sessionStorage.removeItem(STORAGE_KEYS.TOKEN);
+        sessionStorage.removeItem(STORAGE_KEYS.USER);
+      } else {
+        // Guardar en sessionStorage y LIMPIAR localStorage
+        sessionStorage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
+        sessionStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+        localStorage.removeItem(STORAGE_KEYS.TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.USER);
+      }
 
       // Devolver la respuesta con el usuario normalizado
       return { token: response.data.token, user };
@@ -68,11 +83,16 @@ export const authService = {
   /**
    * register - Registra un nuevo usuario
    *
+   * ESTRATEGIA DE EXCLUSIÓN MUTUA ESTRICTA:
+   * - Por defecto usa localStorage (rememberMe=true)
+   * - Limpia el almacenamiento opuesto para evitar conflictos
+   *
    * @param data - Datos del nuevo usuario (nombre, email, password)
+   * @param rememberMe - Si es true usa localStorage (por defecto), si es false usa sessionStorage
    * @returns Promise con el token y datos del usuario
    * @throws Error si el email ya está registrado
    */
-  register: async (data: RegisterData): Promise<AuthResponse> => {
+  register: async (data: RegisterData, rememberMe: boolean = true): Promise<AuthResponse> => {
     const response = await apiClient.post<AuthResponse>('/auth/register', data);
     if (response.data.token && response.data.user) {
       // El backend envía 'rol' como string separado por comas (ej: "COMPRADOR,PERSONAL_EVENTO")
@@ -89,8 +109,20 @@ export const authService = {
         roles: rolesArray,
       };
 
-      localStorage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+      // EXCLUSIÓN MUTUA ESTRICTA
+      if (rememberMe) {
+        // Guardar en localStorage y LIMPIAR sessionStorage
+        localStorage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+        sessionStorage.removeItem(STORAGE_KEYS.TOKEN);
+        sessionStorage.removeItem(STORAGE_KEYS.USER);
+      } else {
+        // Guardar en sessionStorage y LIMPIAR localStorage
+        sessionStorage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
+        sessionStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+        localStorage.removeItem(STORAGE_KEYS.TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.USER);
+      }
 
       return { token: response.data.token, user };
     }
@@ -129,28 +161,61 @@ export const authService = {
   },
 
   /**
-   * getCurrentUser - Obtiene el usuario actual del localStorage o sessionStorage
+   * getCurrentUser - Obtiene el usuario actual de forma determinista
+   *
+   * BÚSQUEDA DETERMINISTA:
+   * 1. Busca primero en localStorage
+   * 2. Si no existe, busca en sessionStorage
+   * 3. Si encuentra en ambos (estado corrupto), limpia y devuelve null
    *
    * @returns User | null - Usuario actual o null si no hay sesión
    */
   getCurrentUser: (): User | null => {
     try {
-      const userStr =
-        localStorage.getItem(STORAGE_KEYS.USER) || sessionStorage.getItem(STORAGE_KEYS.USER);
+      const localUserStr = localStorage.getItem(STORAGE_KEYS.USER);
+      const sessionUserStr = sessionStorage.getItem(STORAGE_KEYS.USER);
+
+      // Si hay usuarios en ambos lugares (estado corrupto), limpiar todo
+      if (localUserStr && sessionUserStr) {
+        console.error('Estado corrupto detectado: usuarios en ambos almacenamientos');
+        authService.logout();
+        return null;
+      }
+
+      // Obtener el string del usuario que exista
+      const userStr = localUserStr || sessionUserStr;
       if (!userStr) return null;
+
       return JSON.parse(userStr);
     } catch (error) {
       console.error('Error parseando usuario:', error);
+      authService.logout();
       return null;
     }
   },
 
   /**
-   * getToken - Obtiene el token actual del localStorage o sessionStorage
+   * getToken - Obtiene el token actual de forma determinista
+   *
+   * BÚSQUEDA DETERMINISTA:
+   * 1. Busca primero en localStorage
+   * 2. Si no existe, busca en sessionStorage
+   * 3. Si encuentra en ambos (estado corrupto), limpia y devuelve null
    *
    * @returns string | null - Token JWT o null si no hay sesión
    */
   getToken: (): string | null => {
-    return localStorage.getItem(STORAGE_KEYS.TOKEN) || sessionStorage.getItem(STORAGE_KEYS.TOKEN);
+    const localToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const sessionToken = sessionStorage.getItem(STORAGE_KEYS.TOKEN);
+
+    // Si hay tokens en ambos lugares (estado corrupto), limpiar todo
+    if (localToken && sessionToken) {
+      console.error('Estado corrupto detectado: tokens en ambos almacenamientos');
+      authService.logout();
+      return null;
+    }
+
+    // Devolver el token que exista (puede ser null si no hay ninguno)
+    return localToken || sessionToken;
   },
 };

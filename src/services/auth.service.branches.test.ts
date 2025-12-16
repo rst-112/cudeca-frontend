@@ -12,6 +12,7 @@ vi.mock('./api', () => ({
 describe('auth.service - Branches Coverage', () => {
   beforeEach(() => {
     localStorage.clear();
+    sessionStorage.clear();
     vi.clearAllMocks();
   });
 
@@ -248,6 +249,156 @@ describe('auth.service - Branches Coverage', () => {
 
       expect(localStorage.getItem(STORAGE_KEYS.TOKEN)).toBeNull();
       expect(localStorage.getItem(STORAGE_KEYS.USER)).toBeNull();
+    });
+  });
+
+  describe('login con rememberMe=false', () => {
+    beforeEach(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    });
+
+    it('guarda en sessionStorage cuando rememberMe=false', async () => {
+      const mockResponse = {
+        data: {
+          token: 'session-token-123',
+          user: {
+            id: 1,
+            email: 'test@test.com',
+            nombre: 'Test User',
+            rol: 'USER',
+          },
+        },
+      };
+
+      vi.mocked(apiClient.post).mockResolvedValue(mockResponse);
+
+      await authService.login(
+        {
+          email: 'test@test.com',
+          password: 'password123',
+        },
+        false,
+      );
+
+      // Debe estar en sessionStorage
+      expect(sessionStorage.getItem(STORAGE_KEYS.TOKEN)).toBe('session-token-123');
+      expect(sessionStorage.getItem(STORAGE_KEYS.USER)).toBeTruthy();
+
+      // NO debe estar en localStorage
+      expect(localStorage.getItem(STORAGE_KEYS.TOKEN)).toBeNull();
+      expect(localStorage.getItem(STORAGE_KEYS.USER)).toBeNull();
+    });
+
+    it('limpia localStorage al hacer login con rememberMe=false', async () => {
+      // Primero poner algo en localStorage
+      localStorage.setItem(STORAGE_KEYS.TOKEN, 'old-token');
+      localStorage.setItem(STORAGE_KEYS.USER, '{"id":99}');
+
+      const mockResponse = {
+        data: {
+          token: 'new-session-token',
+          user: {
+            id: 1,
+            email: 'test@test.com',
+            nombre: 'Test User',
+            rol: 'USER',
+          },
+        },
+      };
+
+      vi.mocked(apiClient.post).mockResolvedValue(mockResponse);
+
+      await authService.login(
+        {
+          email: 'test@test.com',
+          password: 'password123',
+        },
+        false,
+      );
+
+      // localStorage debe estar limpio
+      expect(localStorage.getItem(STORAGE_KEYS.TOKEN)).toBeNull();
+      expect(localStorage.getItem(STORAGE_KEYS.USER)).toBeNull();
+
+      // sessionStorage debe tener los nuevos datos
+      expect(sessionStorage.getItem(STORAGE_KEYS.TOKEN)).toBe('new-session-token');
+    });
+  });
+
+  describe('register con rememberMe=false', () => {
+    beforeEach(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    });
+
+    it('guarda en sessionStorage cuando rememberMe=false', async () => {
+      const mockResponse = {
+        data: {
+          token: 'session-register-token',
+          user: {
+            id: 2,
+            email: 'new@test.com',
+            nombre: 'New User',
+            rol: 'USER',
+          },
+        },
+      };
+
+      vi.mocked(apiClient.post).mockResolvedValue(mockResponse);
+
+      await authService.register(
+        {
+          nombre: 'New User',
+          email: 'new@test.com',
+          password: 'password123',
+        },
+        false,
+      );
+
+      // Debe estar en sessionStorage
+      expect(sessionStorage.getItem(STORAGE_KEYS.TOKEN)).toBe('session-register-token');
+      expect(sessionStorage.getItem(STORAGE_KEYS.USER)).toBeTruthy();
+
+      // NO debe estar en localStorage
+      expect(localStorage.getItem(STORAGE_KEYS.TOKEN)).toBeNull();
+      expect(localStorage.getItem(STORAGE_KEYS.USER)).toBeNull();
+    });
+
+    it('limpia localStorage al registrarse con rememberMe=false', async () => {
+      // Primero poner algo en localStorage
+      localStorage.setItem(STORAGE_KEYS.TOKEN, 'old-token');
+      localStorage.setItem(STORAGE_KEYS.USER, '{"id":99}');
+
+      const mockResponse = {
+        data: {
+          token: 'new-register-token',
+          user: {
+            id: 2,
+            email: 'new@test.com',
+            nombre: 'New User',
+            rol: 'USER',
+          },
+        },
+      };
+
+      vi.mocked(apiClient.post).mockResolvedValue(mockResponse);
+
+      await authService.register(
+        {
+          nombre: 'New User',
+          email: 'new@test.com',
+          password: 'password123',
+        },
+        false,
+      );
+
+      // localStorage debe estar limpio
+      expect(localStorage.getItem(STORAGE_KEYS.TOKEN)).toBeNull();
+      expect(localStorage.getItem(STORAGE_KEYS.USER)).toBeNull();
+
+      // sessionStorage debe tener los nuevos datos
+      expect(sessionStorage.getItem(STORAGE_KEYS.TOKEN)).toBe('new-register-token');
     });
   });
 });

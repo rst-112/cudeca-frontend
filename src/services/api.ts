@@ -24,10 +24,36 @@ export const apiClient = axios.create({
 
 /**
  * Interceptor de Request - Inyecta el token de autenticación
+ *
+ * NOTA: Usamos una función dinámica para obtener el token en cada petición,
+ * garantizando que siempre usamos el token más reciente y evitando
+ * el problema de "tokens zombis" en localStorage/sessionStorage.
  */
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    // Importar dinámicamente authService para evitar dependencias circulares
+    // El token se obtiene en tiempo de ejecución, no al cargar el módulo
+    const token = (() => {
+      try {
+        // Buscar token de forma determinista
+        const localToken = localStorage.getItem('token');
+        const sessionToken = sessionStorage.getItem('token');
+
+        // Si hay tokens en ambos lugares (estado corrupto), no usar ninguno
+        if (localToken && sessionToken) {
+          console.error(
+            'Estado corrupto detectado en interceptor: tokens en ambos almacenamientos',
+          );
+          return null;
+        }
+
+        return localToken || sessionToken;
+      } catch (error) {
+        console.error('Error obteniendo token en interceptor:', error);
+        return null;
+      }
+    })();
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

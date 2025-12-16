@@ -342,7 +342,7 @@ describe('AuthContext', () => {
       expect(result.current.user).toBeNull();
       expect(result.current.token).toBeNull();
       expect(result.current.isAuthenticated).toBe(false);
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Error restaurando sesión:', expect.any(Error));
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Error en initAuth:', expect.any(Error));
 
       consoleErrorSpy.mockRestore();
       validateTokenSpy.mockRestore();
@@ -679,10 +679,19 @@ describe('AuthContext', () => {
       // 3. Desmontar (simular cierre de página)
       unmount();
 
-      // 4. Re-renderizar (simular F5)
+      // 4. Asegurar que validateToken devuelva true para la restauración
+      vi.mocked(apiClient.get).mockResolvedValue({
+        data: { valid: true },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as never,
+      });
+
+      // 5. Re-renderizar (simular F5)
       const { result: result2 } = renderHook(() => useAuth(), { wrapper });
 
-      // 5. Verificar que restauró la sesión
+      // 6. Verificar que restauró la sesión
       await waitFor(() => {
         expect(result2.current.isLoading).toBe(false);
       });
@@ -719,6 +728,15 @@ describe('AuthContext', () => {
       localStorage.setItem('token', mockToken);
       localStorage.setItem('auth_user', JSON.stringify(mockUser));
 
+      // Mock explícito de validateToken para que devuelva true
+      vi.mocked(apiClient.get).mockResolvedValue({
+        data: { valid: true },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as never,
+      });
+
       // Renderizar
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -727,7 +745,7 @@ describe('AuthContext', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      // Verificar que restauró la sesión correctamente (validateToken retornó true por defecto)
+      // Verificar que restauró la sesión correctamente (validateToken retornó true)
       expect(result.current.user).toEqual(mockUser);
       expect(result.current.token).toBe(mockToken);
     });
