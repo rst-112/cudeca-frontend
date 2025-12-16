@@ -45,12 +45,13 @@ import {
   Calendar,
   Heart,
   Check,
+  LogOut,
 } from 'lucide-react';
 
 export default function PerfilUsuario() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
+  const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth();
 
   const tabActual = searchParams.get('tab') || 'entradas';
 
@@ -273,6 +274,12 @@ export default function PerfilUsuario() {
     setEditandoPerfil(false);
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    toast.success('Sesión cerrada correctamente');
+  };
+
   if (authLoading)
     return (
       <div className="flex justify-center h-screen items-center">
@@ -319,13 +326,12 @@ export default function PerfilUsuario() {
             )}
           </div>
         </div>
-        <div>
+        <div className="flex gap-3">
           {editandoPerfil ? (
             <div className="flex gap-2">
               <Button
                 variant="ghost"
                 onClick={() => setEditandoPerfil(false)}
-                // ✅ CORRECCIÓN 4: Texto visible en dark mode para Cancelar
                 className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white"
               >
                 Cancelar
@@ -338,13 +344,22 @@ export default function PerfilUsuario() {
               </Button>
             </div>
           ) : (
-            <Button
-              variant="outline"
-              onClick={() => setEditandoPerfil(true)}
-              className="border-slate-300 dark:border-slate-700"
-            >
-              <Edit2 size={16} className="mr-2" /> Editar Perfil
-            </Button>
+            <>
+              <Button
+                variant="outline"
+                onClick={() => setEditandoPerfil(true)}
+                className="border-slate-300 dark:border-slate-700 hover:border-[#00753e] dark:hover:border-[#00753e]"
+              >
+                <Edit2 size={16} className="mr-2" /> Editar Perfil
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleLogout}
+                className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:border-red-800"
+              >
+                <LogOut size={16} className="mr-2" /> Cerrar Sesión
+              </Button>
+            </>
           )}
         </div>
       </div>
@@ -428,7 +443,7 @@ export default function PerfilUsuario() {
           value="compras"
           className="animate-in fade-in slide-in-from-bottom-4 duration-500"
         >
-          <Card className="overflow-hidden border-slate-200 dark:border-slate-800">
+          <Card className="overflow-hidden border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
               <h3 className="font-bold text-slate-700 dark:text-slate-200">
                 Últimas Transacciones
@@ -448,31 +463,47 @@ export default function PerfilUsuario() {
                 {compras.map((compra) => (
                   <div
                     key={compra.id}
-                    className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
+                    className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors bg-white dark:bg-slate-900"
                   >
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
                         <h4 className="font-bold text-slate-900 dark:text-white">{compra.title}</h4>
                         <span
-                          className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${compra.status === 'COMPLETADA' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-yellow-100 text-yellow-700'}`}
+                          className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                            compra.status === 'COMPLETADA'
+                              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                              : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                          }`}
                         >
                           {compra.status}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-500 font-mono">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
                         REF: {compra.id} • {compra.date}
                       </p>
                     </div>
                     <div className="flex items-center gap-8 text-sm">
                       <div className="text-center hidden sm:block">
-                        <span className="block text-[10px] font-bold text-slate-400">ENTRADAS</span>
-                        <span className="font-medium">{compra.tickets}</span>
+                        <span className="block text-[10px] font-bold text-slate-400 dark:text-slate-500">
+                          ENTRADAS
+                        </span>
+                        <span className="font-medium text-slate-900 dark:text-white">
+                          {compra.tickets}
+                        </span>
                       </div>
                       <div className="text-center min-w-20">
-                        <span className="block text-[10px] font-bold text-slate-400">TOTAL</span>
-                        <span className="font-bold text-[#00753e] text-lg">{compra.total}</span>
+                        <span className="block text-[10px] font-bold text-slate-400 dark:text-slate-500">
+                          TOTAL
+                        </span>
+                        <span className="font-bold text-[#00753e] dark:text-[#00d66a] text-lg">
+                          {compra.total}
+                        </span>
                       </div>
-                      <Button variant="ghost" size="sm">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                      >
                         Ver Detalles
                       </Button>
                     </div>

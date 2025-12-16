@@ -106,8 +106,8 @@ describe('Páginas Públicas (Cobertura)', () => {
 
     fireEvent.change(nameInput, { target: { value: 'Test User' } });
     fireEvent.change(emailInput, { target: { value: 'new@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.change(confirmPasswordInput, { target: { value: 'password123' } });
+    fireEvent.change(passwordInput, { target: { value: 'Password123@' } });
+    fireEvent.change(confirmPasswordInput, { target: { value: 'Password123@' } });
 
     const termsCheckbox = screen.getByRole('checkbox', { name: /Acepto los/i });
     fireEvent.click(termsCheckbox);
