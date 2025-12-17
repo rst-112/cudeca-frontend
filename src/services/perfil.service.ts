@@ -50,7 +50,7 @@ export interface CompraResumen {
   id: string;
   title: string;
   date: string;
-  tickets: number;
+  tickets: string;
   total: string;
   status: string;
 }
@@ -113,6 +113,16 @@ export function generarUrlDescargaPdf(usuarioId: number, entradaId: number): str
 
 export async function obtenerHistorialCompras(usuarioId: number): Promise<CompraResumen[]> {
   return apiGet<CompraResumen[]>(`/perfil/${usuarioId}/compras`);
+}
+
+/**
+ * Descargar PDF de Resumen de Compra (Factura + Entradas)
+ */
+export async function descargarPdfCompra(usuarioId: number, compraId: string): Promise<Blob> {
+  const response = await apiClient.get(`/perfil/${usuarioId}/compras/${compraId}/pdf`, {
+    responseType: 'blob',
+  });
+  return response.data;
 }
 
 // ============================================================================

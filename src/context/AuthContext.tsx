@@ -54,6 +54,9 @@ export interface AuthContextType {
 
   /** Función para cerrar sesión */
   logout: () => void;
+
+  /** Función para actualizar datos del usuario */
+  updateUser: (data: Partial<User>) => void;
 }
 
 /**
@@ -107,6 +110,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    * isLoading - Estado que indica si estamos cargando la sesión
    */
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  /**
+   * --------------------------------------------------------------------------
+   * FUNCIÓN UPDATEUSER
+   * --------------------------------------------------------------------------
+   */
+
+  /**
+   * updateUser - Función para actualizar datos del usuario en el estado y almacenamiento
+   *
+   * @param {Partial<User>} data - Datos parciales para actualizar el usuario
+   */
+  const updateUser = useCallback((data: Partial<User>) => {
+    setUser((prevUser) => {
+      if (!prevUser) return null;
+
+      const updatedUser = { ...prevUser, ...data };
+
+      // Actualizamos también el almacenamiento local para que persista al recargar (F5)
+      // Intentamos actualizar en ambos sitios por seguridad si authService no expone método
+      if (localStorage.getItem('user')) {
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+      if (sessionStorage.getItem('user')) {
+        sessionStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+
+      return updatedUser;
+    });
+  }, []);
 
   /**
     --------------------------------------------------------------------------
@@ -290,8 +323,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       login,
       register,
       logout,
+      updateUser,
     }),
-    [user, token, isLoading, login, register, logout],
+    [user, token, isLoading, login, register, logout, updateUser],
   );
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
