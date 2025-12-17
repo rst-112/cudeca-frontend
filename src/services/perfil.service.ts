@@ -32,17 +32,14 @@ export interface Monedero {
   id: number;
   usuarioId: number;
   saldo: number;
-  moneda: string;
-  fechaCreacion: string;
-  fechaActualizacion: string;
 }
 
 export interface MovimientoMonedero {
   id: number;
-  monederoId: number;
-  tipoMovimiento: 'INGRESO' | 'GASTO';
-  monto: number;
-  descripcion: string;
+  monederoId?: number;
+  tipo: 'ABONO' | 'CARGO' | 'RETIRO';
+  importe: number;
+  referencia?: string;
   fecha: string;
 }
 
@@ -144,7 +141,7 @@ export async function obtenerMovimientosMonedero(usuarioId: number): Promise<Mov
 export function formatearSaldo(monedero: Monedero): string {
   return new Intl.NumberFormat('es-ES', {
     style: 'currency',
-    currency: monedero.moneda,
+    currency: 'EUR',
   }).format(monedero.saldo);
 }
 
