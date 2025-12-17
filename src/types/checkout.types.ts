@@ -3,15 +3,13 @@
  */
 export interface DatosFiscales {
   id?: number;
-  usuarioId?: number;
-  alias?: string;
-  nombre: string;
   nif: string;
+  nombreCompleto: string;
   direccion: string;
   ciudad: string;
   codigoPostal: string;
   pais: string;
-  esPrincipal?: boolean;
+  alias?: string;
 }
 
 export interface AsientoSeleccionado {
