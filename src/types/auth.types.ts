@@ -21,6 +21,7 @@ export interface User {
   email: string;
   nombre: string;
   roles: Role[];
+  rol?: string; // Campo adicional para compatibilidad con backend (puede ser 'PERSONAL_EVENTO', 'COMPRADOR', etc.)
 }
 
 /**

@@ -14,7 +14,13 @@ vi.mock('../services/qr.service', () => ({
 // Mock del AuthContext
 vi.mock('../context/AuthContext', () => ({
   useAuth: () => ({
-    user: { id: 1, email: 'test@test.com', nombre: 'Test User', roles: ['ROLE_USER'] },
+    user: {
+      id: 1,
+      email: 'test@test.com',
+      nombre: 'Test User',
+      roles: ['PERSONAL_EVENTO', 'ROLE_USER'],
+      rol: 'PERSONAL_EVENTO',
+    },
     token: 'mock-token',
     isAuthenticated: true,
   }),
