@@ -1,15 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Scanner, type IDetectedBarcode } from '@yudiel/react-qr-scanner';
 import { toast } from 'sonner';
-import {
-  CheckCircle2,
-  XCircle,
-  RotateCcw,
-  Camera,
-  Loader2,
-  AlertCircle,
-  UserX,
-} from 'lucide-react';
+import { CheckCircle2, XCircle, RotateCcw, Camera, Loader2, UserX } from 'lucide-react';
 import { qrService, type QrValidacionResponse } from '../services/qr.service';
 import { useAuth } from '../context/AuthContext';
 
@@ -124,15 +116,22 @@ const QrReaderComponent: React.FC = () => {
           } catch (error) {
             console.error('Error al validar:', error);
 
+            const errorMsg =
+              (error as { response?: { data?: { mensaje?: string } } }).response?.data?.mensaje ||
+              'No se pudo conectar con el servidor';
+
             setScanResult({
               status: 'error',
               message: 'Error de Conexión',
               data: rawValue,
+              response: {
+                estado: 'ERROR',
+                mensaje: errorMsg,
+                codigoQR: rawValue,
+                timestamp: Date.now(),
+              },
             });
 
-            const errorMsg =
-              (error as { response?: { data?: { mensaje?: string } } }).response?.data?.mensaje ||
-              'No se pudo conectar con el servidor';
             toast.error('Error al validar entrada', {
               description: errorMsg,
               duration: 5000,
@@ -306,16 +305,17 @@ const QrReaderComponent: React.FC = () => {
 
         {/* Estado Error */}
         {scanResult?.status === 'error' && (
-          <div className="absolute inset-0 bg-rose-600 flex flex-col items-center justify-center text-white p-6 animate-in fade-in zoom-in duration-300 z-20">
+          <div className="absolute inset-0 bg-rose-600 dark:bg-rose-700 flex flex-col items-center justify-center text-white p-6 animate-in fade-in zoom-in duration-300 z-20">
             <div className="bg-white/20 p-4 rounded-full mb-4">
               <XCircle className="w-16 h-16" strokeWidth={2} />
             </div>
             <h3 className="text-2xl font-bold">Denegado</h3>
-            <p className="text-rose-100 mt-2 text-center">{scanResult.message}</p>
-            {scanResult.response && (
-              <div className="mt-4 text-sm bg-white/10 rounded-lg p-3 text-center">
-                <AlertCircle className="w-5 h-5 inline mr-2" />
-                <p>{scanResult.response.mensaje}</p>
+            <p className="text-rose-50 dark:text-rose-100 mt-2 text-center font-semibold">
+              {scanResult.response?.mensaje || scanResult.message}
+            </p>
+            {scanResult.response && scanResult.response.entradaId && (
+              <div className="mt-4 text-sm bg-white/10 rounded-lg p-3 text-center text-white">
+                <p className="text-xs opacity-90">Entrada ID: {scanResult.response.entradaId}</p>
               </div>
             )}
           </div>
@@ -343,25 +343,33 @@ const QrReaderComponent: React.FC = () => {
                 >
                   {scanResult.message}
                 </p>
-                <p className="text-xs text-slate-500 mt-1 uppercase tracking-wider font-semibold">
-                  Datos Escaneados:
-                </p>
-                <code className="text-sm block mt-1 bg-white/50 dark:bg-black/20 p-2 rounded border border-black/5 dark:border-white/5 font-mono break-all">
-                  {scanResult.data}
-                </code>
                 {scanResult.response && (
-                  <div className="mt-3 text-xs space-y-1">
+                  <div className="mt-3 text-xs space-y-1 text-slate-700 dark:text-slate-300">
                     <p>
-                      <strong>Entrada ID:</strong> {scanResult.response.entradaId}
+                      <strong className="text-slate-900 dark:text-slate-100">Entrada ID:</strong>{' '}
+                      {scanResult.response.entradaId}
                     </p>
                     <p>
-                      <strong>Estado Actual:</strong> {scanResult.response.estadoActual}
+                      <strong className="text-slate-900 dark:text-slate-100">Código QR:</strong>{' '}
+                      <span className="font-mono text-xs">{scanResult.response.codigoQR}</span>
                     </p>
-                    {scanResult.response.estadoAnterior && (
+                    {scanResult.response.estadoAnterior && scanResult.response.estadoActual && (
                       <p>
-                        <strong>Estado Anterior:</strong> {scanResult.response.estadoAnterior}
+                        <strong className="text-slate-900 dark:text-slate-100">
+                          Cambio de Estado:
+                        </strong>{' '}
+                        <span className="text-amber-600 dark:text-amber-400">
+                          {scanResult.response.estadoAnterior}
+                        </span>
+                        {' → '}
+                        <span className="text-green-600 dark:text-green-400 font-semibold">
+                          {scanResult.response.estadoActual}
+                        </span>
                       </p>
                     )}
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 pt-1">
+                      {new Date(scanResult.response.timestamp).toLocaleString('es-ES')}
+                    </p>
                   </div>
                 )}
               </div>
