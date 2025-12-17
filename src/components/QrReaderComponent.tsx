@@ -1,7 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Scanner, type IDetectedBarcode } from '@yudiel/react-qr-scanner';
 import { toast } from 'sonner';
-import { CheckCircle2, XCircle, RotateCcw, Camera, Loader2 } from 'lucide-react';
+import { CheckCircle2, XCircle, RotateCcw, Camera, Loader2, AlertCircle } from 'lucide-react';
+import { qrService, type QrValidacionResponse } from '../services/qr.service';
 
 type ScanStatus = 'scanning' | 'processing' | 'success' | 'error';
 
@@ -9,6 +10,7 @@ interface ScanResult {
   status: ScanStatus;
   message: string;
   data?: string;
+  response?: QrValidacionResponse;
 }
 
 const QrReaderComponent: React.FC = () => {
@@ -16,13 +18,23 @@ const QrReaderComponent: React.FC = () => {
   const [isPaused, setIsPaused] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [dispositivoId, setDispositivoId] = useState<string>('');
 
-  // --- MOCK SERVICE (Reemplaza con tu llamada real a la API) ---
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const validateTicketWithBackend = async (_qrCode: string): Promise<boolean> => {
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    return Math.random() > 0.3;
-  };
+  // Generar ID único del dispositivo al montar el componente
+  useEffect(() => {
+    const generarDispositivoId = () => {
+      const stored = localStorage.getItem('dispositivo_escaner_id');
+      if (stored) {
+        return stored;
+      }
+
+      const nuevoId = `SCANNER-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem('dispositivo_escaner_id', nuevoId);
+      return nuevoId;
+    };
+
+    setDispositivoId(generarDispositivoId());
+  }, []);
 
   const handleScan = useCallback(
     async (detectedCodes: IDetectedBarcode[]) => {
@@ -34,38 +46,70 @@ const QrReaderComponent: React.FC = () => {
           setIsProcessing(true);
 
           try {
-            const isValid = await validateTicketWithBackend(rawValue);
+            const response = await qrService.validarTicket(rawValue, dispositivoId);
 
-            if (isValid) {
+            if (response.estado === 'OK') {
               setScanResult({
                 status: 'success',
                 message: 'Acceso Autorizado',
                 data: rawValue,
+                response,
               });
-              toast.success('Entrada válida', { duration: 2000 });
+              toast.success('Entrada válida', {
+                description: `Estado: ${response.estadoAnterior} → ${response.estadoActual}`,
+                duration: 3000,
+              });
             } else {
+              // Manejar diferentes tipos de error
+              let errorMessage = 'Acceso Denegado';
+
+              switch (response.estado) {
+                case 'ERROR_YA_USADA':
+                  errorMessage = 'Entrada Ya Usada';
+                  break;
+                case 'ERROR_ANULADA':
+                  errorMessage = 'Entrada Anulada';
+                  break;
+                case 'ERROR_NO_ENCONTRADO':
+                  errorMessage = 'Entrada No Encontrada';
+                  break;
+              }
+
               setScanResult({
                 status: 'error',
-                message: 'Acceso Denegado',
+                message: errorMessage,
                 data: rawValue,
+                response,
               });
-              toast.error('Entrada inválida', { duration: 2000 });
+
+              toast.error(errorMessage, {
+                description: response.mensaje,
+                duration: 4000,
+              });
             }
           } catch (error) {
-            console.error(error);
+            console.error('Error al validar:', error);
+
             setScanResult({
               status: 'error',
               message: 'Error de Conexión',
               data: rawValue,
             });
-            toast.error('Error al conectar con el servidor');
+
+            const errorMsg =
+              (error as { response?: { data?: { mensaje?: string } } }).response?.data?.mensaje ||
+              'No se pudo conectar con el servidor';
+            toast.error('Error al validar entrada', {
+              description: errorMsg,
+              duration: 5000,
+            });
           } finally {
             setIsProcessing(false);
           }
         }
       }
     },
-    [scanResult, isProcessing],
+    [scanResult, isProcessing, dispositivoId],
   );
 
   const handleError = useCallback((error: unknown) => {
@@ -113,9 +157,7 @@ const QrReaderComponent: React.FC = () => {
           }}
         />
 
-        {/* --- OVERLAYS VISUALES (Sin cambios en lógica, solo presentación) --- */}
-
-        {/* 0. Estado Inicial - Listo para comenzar */}
+        {/* Estado Inicial */}
         {!isReady && !scanResult && !isProcessing && (
           <div className="absolute inset-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm flex flex-col items-center justify-center text-slate-900 dark:text-white z-30 p-6 rounded-xl">
             <div className="bg-slate-100 dark:bg-slate-800/50 p-4 md:p-6 rounded-full mb-4 md:mb-6 ring-4 ring-slate-200 dark:ring-slate-600/50 transition-all">
@@ -140,7 +182,7 @@ const QrReaderComponent: React.FC = () => {
           </div>
         )}
 
-        {/* 1. Estado Inactivo / Escaneando */}
+        {/* Estado Escaneando */}
         {isReady && !scanResult && !isProcessing && (
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute inset-0 bg-[radial-gradient(transparent_40%,rgba(0,0,0,0.3)_100%)] dark:bg-[radial-gradient(transparent_40%,rgba(0,0,0,0.6)_100%)]" />
@@ -162,7 +204,7 @@ const QrReaderComponent: React.FC = () => {
           </div>
         )}
 
-        {/* 2. Estado Procesando */}
+        {/* Estado Procesando */}
         {isProcessing && (
           <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center text-white z-10">
             <Loader2 className="w-12 h-12 animate-spin text-amber-500 mb-4" />
@@ -170,7 +212,7 @@ const QrReaderComponent: React.FC = () => {
           </div>
         )}
 
-        {/* 3. Estado Éxito */}
+        {/* Estado Éxito */}
         {scanResult?.status === 'success' && (
           <div className="absolute inset-0 bg-emerald-600 flex flex-col items-center justify-center text-white p-6 animate-in fade-in zoom-in duration-300 z-20">
             <div className="bg-white/20 p-4 rounded-full mb-4">
@@ -178,22 +220,34 @@ const QrReaderComponent: React.FC = () => {
             </div>
             <h3 className="text-2xl font-bold">¡Autorizado!</h3>
             <p className="text-emerald-100 mt-2 text-center">Entrada válida</p>
+            {scanResult.response && (
+              <div className="mt-4 text-sm bg-white/10 rounded-lg p-3">
+                <p>ID: {scanResult.response.entradaId}</p>
+                <p>Estado: {scanResult.response.estadoActual}</p>
+              </div>
+            )}
           </div>
         )}
 
-        {/* 4. Estado Error */}
+        {/* Estado Error */}
         {scanResult?.status === 'error' && (
           <div className="absolute inset-0 bg-rose-600 flex flex-col items-center justify-center text-white p-6 animate-in fade-in zoom-in duration-300 z-20">
             <div className="bg-white/20 p-4 rounded-full mb-4">
               <XCircle className="w-16 h-16" strokeWidth={2} />
             </div>
             <h3 className="text-2xl font-bold">Denegado</h3>
-            <p className="text-rose-100 mt-2 text-center">Código inválido o usado</p>
+            <p className="text-rose-100 mt-2 text-center">{scanResult.message}</p>
+            {scanResult.response && (
+              <div className="mt-4 text-sm bg-white/10 rounded-lg p-3 text-center">
+                <AlertCircle className="w-5 h-5 inline mr-2" />
+                <p>{scanResult.response.mensaje}</p>
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* --- PANEL DE CONTROL DE RESULTADOS --- */}
+      {/* Panel de Control de Resultados */}
       {scanResult && (
         <div className="w-full px-4 animate-in slide-in-from-bottom-2 duration-300">
           <div
@@ -220,6 +274,21 @@ const QrReaderComponent: React.FC = () => {
                 <code className="text-sm block mt-1 bg-white/50 dark:bg-black/20 p-2 rounded border border-black/5 dark:border-white/5 font-mono break-all">
                   {scanResult.data}
                 </code>
+                {scanResult.response && (
+                  <div className="mt-3 text-xs space-y-1">
+                    <p>
+                      <strong>Entrada ID:</strong> {scanResult.response.entradaId}
+                    </p>
+                    <p>
+                      <strong>Estado Actual:</strong> {scanResult.response.estadoActual}
+                    </p>
+                    {scanResult.response.estadoAnterior && (
+                      <p>
+                        <strong>Estado Anterior:</strong> {scanResult.response.estadoAnterior}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
