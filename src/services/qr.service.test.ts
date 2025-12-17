@@ -31,11 +31,12 @@ describe('qr.service', () => {
 
       vi.mocked(api.post).mockResolvedValueOnce(mockResponse);
 
-      const result = await qrService.validarTicket('QR123456', 'SCANNER-001');
+      const result = await qrService.validarTicket('QR123456', 'SCANNER-001', 1);
 
       expect(api.post).toHaveBeenCalledWith('/validador-qr/validar', {
         codigoQR: 'QR123456',
         dispositivoId: 'SCANNER-001',
+        usuarioValidadorId: 1,
       });
       expect(result).toEqual(mockResponse.data);
       expect(result.estado).toBe('OK');
@@ -56,7 +57,7 @@ describe('qr.service', () => {
 
       vi.mocked(api.post).mockResolvedValueOnce(mockResponse);
 
-      const result = await qrService.validarTicket('QR789012', 'SCANNER-002');
+      const result = await qrService.validarTicket('QR789012', 'SCANNER-002', 1);
 
       expect(result.estado).toBe('ERROR_YA_USADA');
       expect(result.mensaje).toContain('ya fue utilizada');
@@ -76,7 +77,7 @@ describe('qr.service', () => {
 
       vi.mocked(api.post).mockResolvedValueOnce(mockResponse);
 
-      const result = await qrService.validarTicket('QR345678', 'SCANNER-003');
+      const result = await qrService.validarTicket('QR345678', 'SCANNER-003', 1);
 
       expect(result.estado).toBe('ERROR_ANULADA');
       expect(result.mensaje).toContain('anulada');
@@ -94,7 +95,7 @@ describe('qr.service', () => {
 
       vi.mocked(api.post).mockResolvedValueOnce(mockResponse);
 
-      const result = await qrService.validarTicket('QR999999', 'SCANNER-004');
+      const result = await qrService.validarTicket('QR999999', 'SCANNER-004', 1);
 
       expect(result.estado).toBe('ERROR_NO_ENCONTRADO');
       expect(result.mensaje).toContain('No se encontró');
@@ -104,7 +105,7 @@ describe('qr.service', () => {
       const networkError = new Error('Network Error');
       vi.mocked(api.post).mockRejectedValueOnce(networkError);
 
-      await expect(qrService.validarTicket('QR123', 'SCANNER-005')).rejects.toThrow(
+      await expect(qrService.validarTicket('QR123', 'SCANNER-005', 1)).rejects.toThrow(
         'Network Error',
       );
     });
@@ -113,7 +114,7 @@ describe('qr.service', () => {
       const timeoutError = { code: 'ECONNABORTED', message: 'timeout of 5000ms exceeded' };
       vi.mocked(api.post).mockRejectedValueOnce(timeoutError);
 
-      await expect(qrService.validarTicket('QR456', 'SCANNER-006')).rejects.toMatchObject({
+      await expect(qrService.validarTicket('QR456', 'SCANNER-006', 1)).rejects.toMatchObject({
         code: 'ECONNABORTED',
       });
     });
@@ -130,11 +131,12 @@ describe('qr.service', () => {
 
       vi.mocked(api.post).mockResolvedValueOnce(mockResponse);
 
-      await qrService.validarTicket('QR-ABC/123+XYZ', 'SCANNER-007');
+      await qrService.validarTicket('QR-ABC/123+XYZ', 'SCANNER-007', 1);
 
       expect(api.post).toHaveBeenCalledWith('/validador-qr/validar', {
         codigoQR: 'QR-ABC/123+XYZ',
         dispositivoId: 'SCANNER-007',
+        usuarioValidadorId: 1,
       });
     });
 
@@ -151,7 +153,7 @@ describe('qr.service', () => {
 
       vi.mocked(api.post).mockResolvedValueOnce(mockResponse);
 
-      const result = await qrService.validarTicket('QR111', 'SCANNER-008');
+      const result = await qrService.validarTicket('QR111', 'SCANNER-008', 1);
 
       expect(result.timestamp).toBe(mockTimestamp);
       expect(typeof result.timestamp).toBe('number');
@@ -331,11 +333,12 @@ describe('qr.service', () => {
 
       vi.mocked(api.post).mockResolvedValueOnce(mockResponse);
 
-      await qrService.validarTicket('QR222', '');
+      await qrService.validarTicket('QR222', '', 1);
 
       expect(api.post).toHaveBeenCalledWith('/validador-qr/validar', {
         codigoQR: 'QR222',
         dispositivoId: '',
+        usuarioValidadorId: 1,
       });
     });
 
@@ -349,7 +352,7 @@ describe('qr.service', () => {
 
       vi.mocked(api.post).mockRejectedValueOnce(badRequestError);
 
-      await expect(qrService.validarTicket('INVALID', 'SCANNER-010')).rejects.toMatchObject({
+      await expect(qrService.validarTicket('INVALID', 'SCANNER-010', 1)).rejects.toMatchObject({
         response: { status: 400 },
       });
     });
@@ -384,7 +387,7 @@ describe('qr.service', () => {
 
       vi.mocked(api.post).mockResolvedValueOnce(completeResponse);
 
-      const result = await qrService.validarTicket('QR-FULL', 'SCANNER-011');
+      const result = await qrService.validarTicket('QR-FULL', 'SCANNER-011', 1);
 
       expect(result).toHaveProperty('estado');
       expect(result).toHaveProperty('mensaje');
