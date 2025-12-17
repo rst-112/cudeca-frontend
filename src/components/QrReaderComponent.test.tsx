@@ -11,6 +11,15 @@ vi.mock('../services/qr.service', () => ({
   },
 }));
 
+// Mock del AuthContext
+vi.mock('../context/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: 1, email: 'test@test.com', nombre: 'Test User', roles: ['ROLE_USER'] },
+    token: 'mock-token',
+    isAuthenticated: true,
+  }),
+}));
+
 // Mock del componente Scanner
 vi.mock('@yudiel/react-qr-scanner', () => ({
   Scanner: ({ onScan }: { onScan: (result: { rawValue: string }[]) => void }) => (

@@ -3,6 +3,7 @@ import { Scanner, type IDetectedBarcode } from '@yudiel/react-qr-scanner';
 import { toast } from 'sonner';
 import { CheckCircle2, XCircle, RotateCcw, Camera, Loader2, AlertCircle } from 'lucide-react';
 import { qrService, type QrValidacionResponse } from '../services/qr.service';
+import { useAuth } from '../context/AuthContext';
 
 type ScanStatus = 'scanning' | 'processing' | 'success' | 'error';
 
@@ -14,6 +15,7 @@ interface ScanResult {
 }
 
 const QrReaderComponent: React.FC = () => {
+  const { user } = useAuth();
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [isPaused, setIsPaused] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -45,8 +47,18 @@ const QrReaderComponent: React.FC = () => {
           setIsPaused(true);
           setIsProcessing(true);
 
+          // Validar que tengamos el usuario autenticado
+          if (!user?.id) {
+            toast.error('Error de autenticación', {
+              description: 'No se encontró el usuario autenticado',
+              duration: 4000,
+            });
+            setIsProcessing(false);
+            return;
+          }
+
           try {
-            const response = await qrService.validarTicket(rawValue, dispositivoId);
+            const response = await qrService.validarTicket(rawValue, dispositivoId, user.id);
 
             if (response.estado === 'OK') {
               setScanResult({
@@ -109,7 +121,7 @@ const QrReaderComponent: React.FC = () => {
         }
       }
     },
-    [scanResult, isProcessing, dispositivoId],
+    [scanResult, isProcessing, dispositivoId, user],
   );
 
   const handleError = useCallback((error: unknown) => {
