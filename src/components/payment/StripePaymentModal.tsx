@@ -22,6 +22,7 @@ const CardForm = ({ amount, onSuccess }: { amount: number; onSuccess: () => void
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,23 +39,39 @@ const CardForm = ({ amount, onSuccess }: { amount: number; onSuccess: () => void
       toast.error(error.message || 'Error en el pago');
       setLoading(false);
     } else {
+      // Mostrar mensaje de procesamiento
+      setProcessing(true);
       toast.success(`Pago de ${amount}€ completado`);
+
+      // Esperar 2 segundos para que el backend procese y actualice el saldo
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       onSuccess();
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-      <div className="p-4 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700">
-        <PaymentElement />
-      </div>
-      <Button
-        type="submit"
-        disabled={!stripe || loading}
-        className="w-full bg-[#00A651] text-white"
-      >
-        {loading ? <Loader2 className="animate-spin mr-2" /> : `Pagar ${amount}€ con Tarjeta`}
-      </Button>
+      {processing ? (
+        <div className="p-8 text-center">
+          <Loader2 className="animate-spin mx-auto text-[#00A651] mb-4" size={40} />
+          <p className="text-slate-600 dark:text-slate-300 font-medium">Actualizando tu saldo...</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500 mt-2">Un momento por favor</p>
+        </div>
+      ) : (
+        <>
+          <div className="p-4 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700">
+            <PaymentElement />
+          </div>
+          <Button
+            type="submit"
+            disabled={!stripe || loading}
+            className="w-full bg-[#00A651] text-white"
+          >
+            {loading ? <Loader2 className="animate-spin mr-2" /> : `Pagar ${amount}€ con Tarjeta`}
+          </Button>
+        </>
+      )}
     </form>
   );
 };
@@ -196,7 +213,16 @@ export const StripePaymentModal = ({
 
           {method === 'card' ? (
             clientSecret ? (
-              <Elements stripe={stripePromise} options={{ clientSecret }}>
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  clientSecret,
+                  appearance: {
+                    theme: 'stripe',
+                  },
+                  loader: 'never',
+                }}
+              >
                 <CardForm amount={amount} onSuccess={onSuccess} onClose={onClose} />
               </Elements>
             ) : (
