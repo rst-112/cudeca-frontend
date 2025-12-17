@@ -80,7 +80,7 @@ describe('checkout.service', () => {
 
       const result = await checkoutService.obtenerDatosFiscalesUsuario(1);
 
-      expect(api.apiGet).toHaveBeenCalledWith('/datos-fiscales/usuario/1');
+      expect(api.apiGet).toHaveBeenCalledWith('/perfil/1/datos-fiscales');
       expect(result).toEqual(mockData);
     });
   });
@@ -102,7 +102,7 @@ describe('checkout.service', () => {
 
       const result = await checkoutService.crearDatosFiscales(1, datosFiscales);
 
-      expect(api.apiPost).toHaveBeenCalledWith('/datos-fiscales/usuario/1', datosFiscales);
+      expect(api.apiPost).toHaveBeenCalledWith('/perfil/1/datos-fiscales', datosFiscales);
       expect(result).toEqual(mockData);
     });
   });
@@ -119,7 +119,7 @@ describe('checkout.service', () => {
 
       const result = await checkoutService.actualizarDatosFiscales(1, 1, datosFiscales);
 
-      expect(api.apiPut).toHaveBeenCalledWith('/datos-fiscales/1?usuarioId=1', datosFiscales);
+      expect(api.apiPut).toHaveBeenCalledWith('/perfil/1/datos-fiscales/1', datosFiscales);
       expect(result).toEqual(mockData);
     });
   });
@@ -130,7 +130,7 @@ describe('checkout.service', () => {
 
       await checkoutService.eliminarDatosFiscales(1, 1);
 
-      expect(api.apiDelete).toHaveBeenCalledWith('/datos-fiscales/1?usuarioId=1');
+      expect(api.apiDelete).toHaveBeenCalledWith('/perfil/1/datos-fiscales/1');
     });
   });
 
@@ -192,7 +192,7 @@ describe('checkout.service', () => {
 
       const result = await checkoutService.obtenerDatosFiscalesPorId(1, 1);
 
-      expect(api.apiGet).toHaveBeenCalledWith('/datos-fiscales/1?usuarioId=1');
+      expect(api.apiGet).toHaveBeenCalledWith('/perfil/1/datos-fiscales/1');
       expect(result).toEqual(mockDatos);
     });
   });
@@ -208,7 +208,7 @@ describe('checkout.service', () => {
 
       const result = await checkoutService.validarNif('12345678A');
 
-      expect(api.apiPost).toHaveBeenCalledWith('/datos-fiscales/validar-nif', { nif: '12345678A' });
+      expect(api.apiPost).toHaveBeenCalledWith('/perfil/validar-nif', { nif: '12345678A' });
       expect(result).toEqual(mockResponse);
     });
   });

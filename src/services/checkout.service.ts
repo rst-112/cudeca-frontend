@@ -121,40 +121,38 @@ export async function cancelarCompra(
 // ============================================================================
 
 export async function obtenerDatosFiscalesUsuario(usuarioId: number): Promise<DatosFiscales[]> {
-  return apiGet<DatosFiscales[]>(`/datos-fiscales/usuario/${usuarioId}`);
+  return apiGet<DatosFiscales[]>(`/perfil/${usuarioId}/datos-fiscales`);
 }
 
 export async function obtenerDatosFiscalesPorId(
   id: number,
   usuarioId: number,
 ): Promise<DatosFiscales> {
-  return apiGet<DatosFiscales>(`/datos-fiscales/${id}?usuarioId=${usuarioId}`);
+  return apiGet<DatosFiscales>(`/perfil/${usuarioId}/datos-fiscales/${id}`);
 }
 
 export async function crearDatosFiscales(
   usuarioId: number,
-  datos: Omit<DatosFiscales, 'id' | 'usuarioId'>,
+  datos: DatosFiscales,
 ): Promise<DatosFiscales> {
-  return apiPost<DatosFiscales>(`/datos-fiscales/usuario/${usuarioId}`, datos);
+  return apiPost<DatosFiscales>(`/perfil/${usuarioId}/datos-fiscales`, datos);
 }
 
 export async function actualizarDatosFiscales(
   id: number,
   usuarioId: number,
-  datos: Partial<Omit<DatosFiscales, 'id' | 'usuarioId'>>,
+  datos: DatosFiscales,
 ): Promise<DatosFiscales> {
-  return apiPut<DatosFiscales>(`/datos-fiscales/${id}?usuarioId=${usuarioId}`, datos);
+  return apiPut<DatosFiscales>(`/perfil/${usuarioId}/datos-fiscales/${id}`, datos);
 }
 
-export async function eliminarDatosFiscales(
-  id: number,
-  usuarioId: number,
-): Promise<EliminarDatosFiscalesResponse> {
-  return apiDelete<EliminarDatosFiscalesResponse>(`/datos-fiscales/${id}?usuarioId=${usuarioId}`);
+export async function eliminarDatosFiscales(id: number, usuarioId: number): Promise<void> {
+  return apiDelete(`/perfil/${usuarioId}/datos-fiscales/${id}`);
 }
 
-export async function validarNif(nif: string): Promise<ValidarNifResponse> {
-  return apiPost<ValidarNifResponse>('/datos-fiscales/validar-nif', { nif });
+// Endpoint auxiliar (si lo implementaste en el controller)
+export async function validarNif(nif: string): Promise<{ valido: boolean; mensaje?: string }> {
+  return apiPost('/perfil/validar-nif', { nif }); // Ajusta la ruta si usaste otra
 }
 
 // ============================================================================
