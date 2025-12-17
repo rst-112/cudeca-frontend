@@ -3,6 +3,7 @@ import api from '../lib/axios';
 export interface QrValidacionRequest {
   codigoQR: string;
   dispositivoId: string;
+  usuarioValidadorId: number;
 }
 
 export interface QrValidacionResponse {
@@ -19,10 +20,15 @@ export const qrService = {
   /**
    * Valida un código QR de entrada y cambia su estado de VALIDA a USADA
    */
-  validarTicket: async (codigoQR: string, dispositivoId: string): Promise<QrValidacionResponse> => {
+  validarTicket: async (
+    codigoQR: string,
+    dispositivoId: string,
+    usuarioValidadorId: number,
+  ): Promise<QrValidacionResponse> => {
     const response = await api.post<QrValidacionResponse>('/validador-qr/validar', {
       codigoQR,
       dispositivoId,
+      usuarioValidadorId,
     });
     return response.data;
   },
