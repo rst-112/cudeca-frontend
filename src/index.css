@@ -86,3 +86,12 @@
   src: url(https://fonts.gstatic.com/s/arimo/v28/P5sHzZCDf9_T_10c_IhukA.woff2) format('woff2');
   font-display: swap;
 }
+
+/* Ocultar widget de desarrolladores de Stripe en producción */
+.__PrivateStripeElement-developerTools {
+  display: none !important;
+}
+
+.__PrivateStripeElement iframe[name*='stripe-js-overlay'] {
+  display: none !important;
+}
