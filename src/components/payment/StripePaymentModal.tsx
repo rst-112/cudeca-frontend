@@ -6,8 +6,15 @@ import { toast } from 'sonner';
 import { Loader2, CreditCard, Smartphone } from 'lucide-react';
 import { apiClient } from '../../services/api';
 
-// Cargar Stripe
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+// Cargar Stripe con opciones para desactivar el widget de desarrolladores
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY, {
+  locale: 'es',
+  developerTools: {
+    assistant: {
+      enabled: false,
+    },
+  },
+});
 
 interface StripePaymentModalProps {
   isOpen: boolean;
