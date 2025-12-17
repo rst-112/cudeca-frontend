@@ -1,161 +1,131 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
-import { CartProvider } from './context/CartContext';
 import { Toaster } from 'sonner';
-import { ScrollToTop } from './components/ScrollToTop';
 import MainLayout from './components/layout/MainLayout';
 import AuthPage from './features/auth/AuthPage';
 import { PrivateRoute } from './components/PrivateRoute';
-import AdminLayout from './features/admin/AdminLayout';
 import AdminDashboard from './features/admin/AdminDashboard';
+import AdminLayout from './features/admin/AdminLayout';
 import CrearEvento from './features/admin/CrearEvento';
-import ForgotPasswordPage from './features/auth/ForgotPasswordPage';
-import ResetPasswordPage from './features/auth/ResetPasswordPage';
 import Dashboard from './features/dashboard/Dashboard';
-import DashboardHome from './features/dashboard/DashboardHome';
-import ScannerView from './features/dashboard/ScannerView';
 
 // Páginas públicas
-import Home from './pages/Home';
 import DetalleEvento from './pages/public/DetallesEvento';
-import Eventos from './pages/public/Eventos';
-
-// === PÁGINAS UNIFICADAS ===
 import Checkout from './pages/public/Checkout';
-import ConfirmationPage from './pages/public/Confirmation';
-import PerfilUsuario from './pages/PerfilUsuario';
-
-// === PÁGINAS LEGALES ===
-import Terms from './pages/legal/Terms';
-import Privacy from './pages/legal/Privacy';
-import Cookies from './pages/legal/Cookies';
-
-// Herramientas de Desarrollo
 import SandboxSeatMap from './pages/public/SandboxSeatMap';
 import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
+import { HomeInvitado } from './pages/public/homeInvitado/HomeInvitado';
+import { InfoEventoInvitado } from './pages/public/infoEventoInvitado/InfoEventoInvitado';
+import { HomeEventoLogeado } from './pages/public/homeEventoLogeado/HomeEventoLogeado';
+import { InfoEventoLogeado } from './pages/public/infoEventoLogeado/InfoEventoLogeado';
+import { EventoLogeado } from './pages/public/eventoLogeado/EventoLogeado';
+import Eventos from './pages/public/Eventos';
 
-// Componente temporal para staff
+// Páginas privadas
+import { CreacionDeEventos } from './pages/private/creaciondeeventos/CreacionDeEventos';
+import { EditarEntrada } from './pages/private/editarEntrada/EditarEntrada';
+import { TiposDeEntrada } from './pages/private/tiposentrada/TiposDeEntrada';
+
+// Componentes temporales
 const EventStaffDashboard = () => <div>Dashboard (Personal Evento)</div>;
 
+/**
+ * RedirectIfAuthenticated - Redirige a home si ya está logueado
+ */
 function RedirectIfAuthenticated({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
-  if (isLoading)
-    return <div className="flex items-center justify-center min-h-screen">Cargando...</div>;
-  if (isAuthenticated) return <Navigate to="/" replace />;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="text-lg text-gray-600">Cargando...</span>
+      </div>
+    );
+  }
+
+  // Si está autenticado, redirigir a home
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  // Si no está autenticado, mostrar el login/register
   return <>{children}</>;
 }
 
 function App() {
   return (
     <BrowserRouter>
-      <ScrollToTop />
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <AuthProvider>
-          <CartProvider>
-            <Toaster position="top-right" richColors />
-            <Routes>
-              {/* === RUTAS DE DESARROLLO === */}
-              <Route path="/dev/mapa" element={<SandboxSeatMap />} />
-              <Route path="/dev/mapa/editor" element={<SandboxSeatMapEditor />} />
+          <Toaster position="top-right" richColors />
+          <Routes>
+            {/* Rutas públicas con MainLayout */}
+            <Route path="/" element={<MainLayout />}>
+              <Route index element={<HomeInvitado />} />
+              <Route path="evento/:id" element={<DetalleEvento />} />
+              <Route path="eventos" element={<Eventos />} />
+            </Route>
 
-              {/* Redirecciones de compatibilidad */}
-              <Route path="/dev/checkout-usuario" element={<Checkout />} />
-              <Route path="/dev/checkout-invitado" element={<Checkout />} />
-              <Route path="/dev/compra-invitado" element={<ConfirmationPage />} />
-              <Route path="/dev/compra-usuario" element={<ConfirmationPage />} />
-              <Route path="/dev/perfil-usuario" element={<PerfilUsuario />} />
-              <Route
-                path="/dev/datos-fiscales"
-                element={<Navigate to="/perfil?tab=fiscales" replace />}
-              />
-              <Route
-                path="/dev/recarga-saldo"
-                element={<Navigate to="/perfil?tab=monedero" replace />}
-              />
-              <Route
-                path="/dev/suscripcion"
-                element={<Navigate to="/perfil?tab=suscripcion" replace />}
-              />
-              <Route
-                path="/dev/perfil-compras"
-                element={<Navigate to="/perfil?tab=compras" replace />}
-              />
+            {/* === RUTAS PÚBLICAS SIN MAINLAYOUT === */}
+            <Route path="/home-invitado" element={<HomeInvitado />} />
+            <Route path="/evento-invitado" element={<InfoEventoInvitado />} />
+            <Route path="/home-logeado" element={<HomeEventoLogeado />} />
+            <Route path="/info-evento-logeado" element={<InfoEventoLogeado />} />
+            <Route path="/eventos-logeado" element={<EventoLogeado />} />
+            <Route path="/creacion-eventos" element={<CreacionDeEventos />} />
+            <Route path="/editar-entrada" element={<EditarEntrada />} />
+            <Route path="/tipos-entrada" element={<TiposDeEntrada />} />
 
-              {/* === AUTH === */}
-              <Route
-                path="/login"
-                element={
-                  <RedirectIfAuthenticated>
-                    <AuthPage />
-                  </RedirectIfAuthenticated>
-                }
-              />
-              <Route
-                path="/registro"
-                element={
-                  <RedirectIfAuthenticated>
-                    <AuthPage />
-                  </RedirectIfAuthenticated>
-                }
-              />
-              <Route
-                path="/forgot-password"
-                element={
-                  <RedirectIfAuthenticated>
-                    <ForgotPasswordPage />
-                  </RedirectIfAuthenticated>
-                }
-              />
-              <Route
-                path="/reset-password"
-                element={
-                  <RedirectIfAuthenticated>
-                    <ResetPasswordPage />
-                  </RedirectIfAuthenticated>
-                }
-              />
 
-              {/* === ADMIN GLOBAL (Rutas protegidas) === */}
-              <Route element={<PrivateRoute requiredRole="ADMINISTRADOR" />}>
-                <Route path="/admin" element={<AdminLayout />}>
-                  <Route index element={<AdminDashboard />} />
-                  <Route path="eventos/crear" element={<CrearEvento />} />
-                  {/* Aquí irán más rutas de admin */}
-                </Route>
-              </Route>
+            {/* === RUTA DE DESARROLLO - SANDBOX === */}
+            <Route path="/dev/mapa" element={<SandboxSeatMap />} />
+            <Route path="/dev/mapa/editor" element={<SandboxSeatMapEditor />} />
 
-              {/* === STAFF & ADMIN (Backoffice Operativo) === */}
-              <Route element={<PrivateRoute requiredRole={['ADMINISTRADOR', 'PERSONAL_EVENTO']} />}>
-                <Route path="/dashboard" element={<Dashboard />}>
-                  <Route index element={<DashboardHome />} />
-                  <Route path="scanner" element={<ScannerView />} />
-                  <Route path="events" element={<div>Gestión de Eventos (Staff)</div>} />
-                </Route>
-              </Route>
+            {/* Admin Dashboard - Público (sin protección de rol) */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="eventos" element={<AdminDashboard />} />
+              <Route path="eventos/crear" element={<CrearEvento />} />
+            </Route>
 
-              {/* === WEB PÚBLICA Y ZONA PERSONAL (Layout Principal) === */}
-              <Route path="/" element={<MainLayout />}>
-                <Route index element={<Home />} />
-                <Route path="eventos" element={<Eventos />} />
-                <Route path="evento/:id" element={<DetalleEvento />} />
-                <Route path="checkout" element={<Checkout />} />
-                <Route path="confirmacion" element={<ConfirmationPage />} />
+            {/* Rutas de autenticación (redirige si ya está logueado) */}
+            <Route
+              path="/login"
+              element={
+                <RedirectIfAuthenticated>
+                  <AuthPage />
+                </RedirectIfAuthenticated>
+              }
+            />
+            <Route
+              path="/registro"
+              element={
+                <RedirectIfAuthenticated>
+                  <AuthPage />
+                </RedirectIfAuthenticated>
+              }
+            />
 
-                {/* PÁGINAS LEGALES */}
-                <Route path="terminos" element={<Terms />} />
-                <Route path="privacidad" element={<Privacy />} />
-                <Route path="cookies" element={<Cookies />} />
+            {/* Rutas protegidas - Checkout */}
+            <Route element={<PrivateRoute />}>
+              <Route path="/checkout" element={<Checkout />} />
+            </Route>
 
-                {/* ZONA PERSONAL (Accesible para TODOS los roles) */}
-                <Route element={<PrivateRoute />}>
-                  <Route path="perfil" element={<PerfilUsuario />} />
-                </Route>
-              </Route>
 
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </CartProvider>
+            {/* Rutas protegidas por rol - Comprador */}
+            <Route element={<PrivateRoute requiredRole="COMPRADOR" />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
+
+            {/* Rutas protegidas por rol - Personal de Evento */}
+            <Route element={<PrivateRoute requiredRole="PERSONAL_EVENTO" />}>
+              <Route path="/staff" element={<EventStaffDashboard />} />
+            </Route>
+
+            {/* Redirección por defecto */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
