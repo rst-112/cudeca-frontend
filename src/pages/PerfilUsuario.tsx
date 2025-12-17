@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card } from '../components/ui/Card';
@@ -6,6 +6,7 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Label } from '../components/ui/Label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/Tabs';
+import { StripePaymentModal } from '../components/payment/StripePaymentModal';
 
 // --- SERVICIOS ---
 import {
@@ -14,7 +15,12 @@ import {
   obtenerHistorialCompras,
   actualizarPerfil,
   descargarPdfCompra,
+  obtenerMonedero,
+  obtenerMovimientosMonedero,
+  formatearSaldo,
   type CompraResumen,
+  type Monedero,
+  type MovimientoMonedero,
 } from '../services/perfil.service';
 
 import {
@@ -41,12 +47,13 @@ import {
   User,
   Save,
   Loader2,
-  CreditCard,
   MapPin,
   Calendar,
   LogOut,
   Check,
   Heart,
+  ArrowDownLeft,
+  ArrowUpRight,
 } from 'lucide-react';
 
 // =============================================================================
@@ -244,9 +251,9 @@ function DetallesCompraModal({ compra, onClose }: { compra: CompraResumen; onClo
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
           >
-            <span className="text-xl leading-none cursor-pointer">×</span>
+            <span className="text-xl leading-none">×</span>
           </button>
         </div>
 
@@ -326,10 +333,15 @@ export default function PerfilUsuario() {
   const [dataLoading, setDataLoading] = useState(false);
   const [compraSeleccionada, setCompraSeleccionada] = useState<CompraResumen | null>(null);
 
-  // Monedero
-  const [saldo, setSaldo] = useState(36.0);
+  // Monedero Real
+  const [monedero, setMonedero] = useState<Monedero | null>(null);
+  const [movimientos, setMovimientos] = useState<MovimientoMonedero[]>([]);
   const [recargaCantidad, setRecargaCantidad] = useState('');
   const [showRecargaForm, setShowRecargaForm] = useState(false);
+
+  // Estados para Stripe
+  const [showStripeModal, setShowStripeModal] = useState(false);
+  const [amountToPay, setAmountToPay] = useState(0);
 
   // Perfil
   const [editandoPerfil, setEditandoPerfil] = useState(false);
@@ -347,7 +359,7 @@ export default function PerfilUsuario() {
     pais: 'España',
     alias: '',
   });
-  const [formErrors, setFormErrors] = useState<FormErrors>({}); // Nuevo estado para errores
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
 
   const planesSuscripcion = [
     {
@@ -393,7 +405,6 @@ export default function PerfilUsuario() {
   }, [user]);
 
   useEffect(() => {
-    // Limpiar errores al cambiar visibilidad del form
     if (!mostrarFormularioNuevo) setFormErrors({});
   }, [mostrarFormularioNuevo]);
 
@@ -404,11 +415,13 @@ export default function PerfilUsuario() {
     }
   }, [authLoading, isAuthenticated, navigate]);
 
+  // Carga de datos según la pestaña activa
   useEffect(() => {
     if (isAuthenticated && user?.id) {
       if (tabActual === 'entradas') cargarEntradas(user.id);
       else if (tabActual === 'fiscales') cargarDatosFiscales(user.id);
       else if (tabActual === 'compras') cargarHistorialCompras(user.id);
+      else if (tabActual === 'monedero') cargarMonederoYMovimientos(user.id);
     }
   }, [tabActual, isAuthenticated, user]);
 
@@ -423,6 +436,7 @@ export default function PerfilUsuario() {
       setDataLoading(false);
     }
   };
+
   const cargarDatosFiscales = async (id: number) => {
     setDataLoading(true);
     try {
@@ -433,6 +447,7 @@ export default function PerfilUsuario() {
       setDataLoading(false);
     }
   };
+
   const cargarHistorialCompras = async (id: number) => {
     setDataLoading(true);
     try {
@@ -444,23 +459,49 @@ export default function PerfilUsuario() {
     }
   };
 
+  const cargarMonederoYMovimientos = async (id: number) => {
+    setDataLoading(true);
+    try {
+      const datosMonedero = await obtenerMonedero(id);
+      setMonedero(datosMonedero);
+      const datosMovimientos = await obtenerMovimientosMonedero(id);
+      setMovimientos(datosMovimientos);
+    } catch (error) {
+      console.error(error);
+      toast.error('Error al cargar información del monedero');
+    } finally {
+      setDataLoading(false);
+    }
+  };
+
   // --- HANDLERS (Perfil, Pdf, Monedero) ---
-  const handleRecargarSaldo = async (e: React.FormEvent) => {
+
+  const handleRecargarSaldo = (e: React.FormEvent) => {
     e.preventDefault();
     const cantidad = parseFloat(recargaCantidad);
-    if (isNaN(cantidad) || cantidad <= 0) return toast.error('Cantidad inválida');
-    const promise = new Promise((resolve) => setTimeout(resolve, 2000));
-    toast.promise(promise, {
-      loading: 'Procesando pago seguro...',
-      success: () => {
-        setSaldo((prev) => prev + cantidad);
-        setShowRecargaForm(false);
-        setRecargaCantidad('');
-        return `¡Recarga de ${cantidad.toFixed(2)}€ completada!`;
-      },
-      error: 'Error en el pago',
-    });
+
+    if (isNaN(cantidad) || cantidad <= 0) {
+      toast.error('Cantidad inválida');
+      return;
+    }
+
+    // Configurar y abrir el modal de Stripe
+    setAmountToPay(cantidad);
+    setShowStripeModal(true);
   };
+
+  const handlePaymentSuccess = useCallback(async () => {
+    if (user?.id) {
+      // Refrescar datos del backend tras el pago exitoso
+      await cargarMonederoYMovimientos(user.id);
+      toast.success('¡Saldo recargado correctamente!');
+    }
+
+    // Limpiar estados de UI
+    setShowRecargaForm(false);
+    setRecargaCantidad('');
+    setShowStripeModal(false);
+  }, [user]);
 
   const handleDescargarPdf = async (id: number) => {
     if (!user?.id) return;
@@ -505,17 +546,14 @@ export default function PerfilUsuario() {
     toast.success('Sesión cerrada correctamente');
   };
 
-  // --- HANDLERS DATOS FISCALES (ACTUALIZADOS) ---
+  // --- HANDLERS DATOS FISCALES ---
   const handleGuardarDatos = async () => {
     if (!user?.id) return;
 
-    // --- 1. Validación Inline ---
+    // Validación Inline
     const newErrors: FormErrors = {};
     let hasError = false;
 
-    if (!formularioDatos.alias?.trim()) {
-      // Opcional
-    }
     if (!formularioDatos.nif?.trim()) {
       newErrors.nif = 'El NIF es obligatorio';
       hasError = true;
@@ -548,10 +586,7 @@ export default function PerfilUsuario() {
 
     setFormErrors(newErrors);
 
-    if (hasError) {
-      // No mostramos toast, los errores salen en rojo en el formulario
-      return;
-    }
+    if (hasError) return;
 
     try {
       const toastId = toast.loading('Guardando datos...');
@@ -565,7 +600,6 @@ export default function PerfilUsuario() {
       toast.dismiss(toastId);
       toast.success('Datos guardados correctamente');
 
-      // Limpieza
       setMostrarFormularioNuevo(false);
       setFormularioDatos({
         nif: '',
@@ -579,15 +613,14 @@ export default function PerfilUsuario() {
       setModoEdicion(null);
       setFormErrors({});
       cargarDatosFiscales(user.id);
-    } catch (error: unknown) {
+    } catch (error) {
       console.error(error);
       toast.dismiss();
       const msg =
-        (error as { response?: { data?: { message?: string; error?: string } } }).response?.data
-          ?.message ||
-        (error as { response?: { data?: { message?: string; error?: string } } }).response?.data
-          ?.error ||
-        'Error al guardar';
+        error instanceof Error && 'response' in error
+          ? (error as { response?: { data?: { message?: string } } }).response?.data?.message ||
+            'Error al guardar'
+          : 'Error al guardar';
       toast.error(msg);
     }
   };
@@ -735,6 +768,8 @@ export default function PerfilUsuario() {
           ))}
         </TabsList>
 
+        {/* ... TABS DE ENTRADAS, COMPRAS Y FISCALES IGUALES ... */}
+
         <TabsContent
           value="entradas"
           className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12"
@@ -844,11 +879,11 @@ export default function PerfilUsuario() {
           </Card>
         </TabsContent>
 
-        {/* --- 3. DATOS FISCALES (ACTUALIZADO) --- */}
         <TabsContent
           value="fiscales"
           className="animate-in fade-in slide-in-from-bottom-4 duration-500"
         >
+          {/* ... Contenido Fiscales (sin cambios estructurales mayores, solo integración de servicios) ... */}
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">
               Mis Direcciones de Facturación
@@ -882,8 +917,6 @@ export default function PerfilUsuario() {
                 {modoEdicion ? <Edit2 size={18} /> : <Plus size={18} />}
                 {modoEdicion ? 'Editar Dirección' : 'Nueva Dirección Fiscal'}
               </h3>
-
-              {/* FORMULARIO MEJORADO CON ERRORES INLINE */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <FormField
                   label="Alias (Opcional)"
@@ -903,7 +936,6 @@ export default function PerfilUsuario() {
                   placeholder="12345678A"
                   className="col-span-1"
                 />
-
                 <FormField
                   label="Nombre / Razón Social *"
                   value={formularioDatos.nombreCompleto}
@@ -915,7 +947,6 @@ export default function PerfilUsuario() {
                   error={formErrors.nombreCompleto}
                   className="md:col-span-2"
                 />
-
                 <FormField
                   label="Dirección *"
                   value={formularioDatos.direccion}
@@ -927,7 +958,6 @@ export default function PerfilUsuario() {
                   error={formErrors.direccion}
                   className="md:col-span-2"
                 />
-
                 <FormField
                   label="Ciudad *"
                   value={formularioDatos.ciudad}
@@ -937,7 +967,6 @@ export default function PerfilUsuario() {
                   }}
                   error={formErrors.ciudad}
                 />
-
                 <FormField
                   label="C. Postal *"
                   value={formularioDatos.codigoPostal}
@@ -949,7 +978,6 @@ export default function PerfilUsuario() {
                   error={formErrors.codigoPostal}
                 />
               </div>
-
               <div className="flex justify-end gap-3 pt-2 border-t border-slate-200 dark:border-slate-800">
                 <Button
                   variant="outline"
@@ -1031,26 +1059,100 @@ export default function PerfilUsuario() {
           className="animate-in fade-in slide-in-from-bottom-4 duration-500"
         >
           {!showRecargaForm ? (
-            <Card className="p-12 text-center border-dashed bg-slate-50/50 dark:bg-slate-900/50">
-              <div className="inline-flex p-5 bg-green-100 dark:bg-green-900/20 rounded-full mb-6 ring-8 ring-green-50 dark:ring-green-900/10">
-                <Wallet className="w-12 h-12 text-[#00753e]" />
-              </div>
-              <h3 className="text-4xl font-bold mb-2 text-slate-900 dark:text-white">
-                {saldo.toFixed(2)} €
-              </h3>
-              <p className="text-gray-500 mb-8">Saldo disponible.</p>
-              <Button
-                onClick={() => setShowRecargaForm(true)}
-                className="bg-[#00753e] hover:bg-[#005a2e] text-white px-8 h-12 text-lg"
-              >
-                Recargar Saldo
-              </Button>
-            </Card>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Tarjeta de Saldo */}
+              <Card className="lg:col-span-1 p-8 text-center border-dashed bg-slate-50/50 dark:bg-slate-900/50 h-fit">
+                <div className="inline-flex p-5 bg-green-100 dark:bg-green-900/20 rounded-full mb-6 ring-8 ring-green-50 dark:ring-green-900/10">
+                  <Wallet className="w-12 h-12 text-[#00753e]" />
+                </div>
+                <h3 className="text-4xl font-bold mb-2 text-slate-900 dark:text-white">
+                  {monedero ? (
+                    formatearSaldo(monedero)
+                  ) : (
+                    <Loader2 className="animate-spin inline" />
+                  )}
+                </h3>
+                <p className="text-gray-500 mb-8">Saldo disponible.</p>
+                <Button
+                  onClick={() => setShowRecargaForm(true)}
+                  className="bg-[#00753e] hover:bg-[#005a2e] text-white px-8 h-12 text-lg w-full"
+                >
+                  Recargar Saldo
+                </Button>
+              </Card>
+
+              {/* Historial de Movimientos */}
+              <Card className="lg:col-span-2 p-6 bg-white dark:bg-slate-900">
+                <h3 className="font-bold text-lg mb-4 text-slate-900 dark:text-white">
+                  Movimientos Recientes
+                </h3>
+                {dataLoading ? (
+                  <div className="py-10 flex justify-center">
+                    <Loader2 className="animate-spin text-[#00A651]" />
+                  </div>
+                ) : movimientos.length === 0 ? (
+                  <p className="text-slate-500 text-center py-8">No hay movimientos recientes.</p>
+                ) : (
+                  <div className="space-y-4">
+                    {movimientos.map((mov) => {
+                      // 1. Normalizamos la lógica: Es ingreso si el tipo es 'ABONO'
+                      const esIngreso = mov.tipo === 'ABONO';
+
+                      return (
+                        <div
+                          key={mov.id}
+                          className="flex items-center justify-between p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`p-2 rounded-full ${
+                                esIngreso
+                                  ? 'bg-green-100 text-green-600'
+                                  : 'bg-red-100 text-red-600'
+                              }`}
+                            >
+                              {esIngreso ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
+                            </div>
+                            <div>
+                              <p className="font-medium text-slate-900 dark:text-white">
+                                {/* Usamos 'referencia' en lugar de 'descripcion' */}
+                                {mov.referencia ||
+                                  (esIngreso ? 'Recarga de saldo' : 'Pago de entrada')}
+                              </p>
+                              <p className="text-xs text-slate-500">
+                                {new Date(mov.fecha).toLocaleDateString()} •{' '}
+                                {new Date(mov.fecha).toLocaleTimeString()}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* AQUÍ ESTABA EL ERROR: Cambiamos mov.monto por mov.importe */}
+                          <span
+                            className={`font-bold ${
+                              esIngreso ? 'text-green-600' : 'text-slate-900 dark:text-white'
+                            }`}
+                          >
+                            {esIngreso ? '+' : '-'}
+                            {/* Protección adicional: si importe es null, muestra 0 */}
+                            {mov.importe ? mov.importe.toFixed(2) : '0.00'}€
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </Card>
+            </div>
           ) : (
             <div className="max-w-lg mx-auto bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 shadow-xl animate-in fade-in zoom-in-95">
               <div className="flex justify-between items-center mb-8">
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white">Añadir Saldo</h2>
-                <Button variant="ghost" size="sm" onClick={() => setShowRecargaForm(false)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowRecargaForm(false)}
+                  className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                >
                   Cancelar
                 </Button>
               </div>
@@ -1064,15 +1166,15 @@ export default function PerfilUsuario() {
                     <Input
                       type="number"
                       step="1"
-                      min="0"
+                      min="5"
                       value={recargaCantidad}
                       onChange={(e) => {
                         const val = parseFloat(e.target.value);
                         if (!isNaN(val) && val < 0) return;
                         setRecargaCantidad(e.target.value);
                       }}
-                      className="pl-10 h-14 text-2xl font-bold"
-                      placeholder="0.00"
+                      className="pl-10 h-14 text-2xl font-bold [&::-webkit-inner-spin-button]:cursor-pointer [&::-webkit-outer-spin-button]:cursor-pointer"
+                      placeholder="5.00"
                       autoFocus
                     />
                   </div>
@@ -1085,7 +1187,7 @@ export default function PerfilUsuario() {
                         key={amt}
                         type="button"
                         onClick={() => setRecargaCantidad(amt.toString())}
-                        className={`py-3 rounded-lg border ${recargaCantidad === amt.toString() ? 'border-[#00753e] bg-[#00753e] text-white' : 'border-slate-200 bg-white'}`}
+                        className={`py-3 rounded-lg border cursor-pointer transition-all ${recargaCantidad === amt.toString() ? 'border-[#00753e] bg-[#00753e] text-white' : 'border-slate-200 bg-white text-slate-900 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 hover:border-[#00753e] dark:hover:border-[#00753e]'}`}
                       >
                         {amt}€
                       </button>
@@ -1094,9 +1196,9 @@ export default function PerfilUsuario() {
                 </div>
                 <Button
                   type="submit"
-                  className="w-full h-14 text-lg font-bold bg-[#00753e] text-white"
+                  className="w-full h-14 text-lg font-bold bg-[#00753e] text-white hover:bg-[#005a2e]"
                 >
-                  Pagar
+                  Pagar con Tarjeta (Stripe)
                 </Button>
               </form>
             </div>
@@ -1107,6 +1209,7 @@ export default function PerfilUsuario() {
           value="suscripcion"
           className="animate-in fade-in slide-in-from-bottom-4 duration-500"
         >
+          {/* ... (Contenido suscripción igual) ... */}
           <div className="space-y-10">
             <div className="text-center max-w-2xl mx-auto py-4">
               <h2 className="text-3xl font-bold mb-3 text-slate-900 dark:text-white">
@@ -1162,42 +1265,6 @@ export default function PerfilUsuario() {
                 </div>
               ))}
             </div>
-            <Card className="mt-12 p-8 border border-slate-200 bg-slate-50/50 dark:bg-slate-900/50">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div>
-                  <h3 className="font-bold text-xl mb-1 text-slate-900 dark:text-white">
-                    Tu Suscripción Activa
-                  </h3>
-                  <p className="text-slate-500 text-sm">Gestiona tu método de pago y renovación.</p>
-                </div>
-                <div className="flex gap-4 text-sm">
-                  <div className="px-4 py-2 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-                    <span className="block text-slate-400 text-xs font-bold uppercase mb-1">
-                      Próxima cuota
-                    </span>
-                    <span className="font-semibold text-slate-900 dark:text-white">
-                      15 Enero, 2025
-                    </span>
-                  </div>
-                  <div className="px-4 py-2 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-                    <span className="block text-slate-400 text-xs font-bold uppercase mb-1">
-                      Pago
-                    </span>
-                    <span className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                      <CreditCard size={14} /> •••• 4242
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 flex justify-end">
-                <Button
-                  variant="ghost"
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/10"
-                >
-                  Cancelar suscripción
-                </Button>
-              </div>
-            </Card>
           </div>
         </TabsContent>
       </Tabs>
@@ -1206,6 +1273,17 @@ export default function PerfilUsuario() {
         <DetallesCompraModal
           compra={compraSeleccionada}
           onClose={() => setCompraSeleccionada(null)}
+        />
+      )}
+
+      {/* --- INTEGRACIÓN STRIPE --- */}
+      {showStripeModal && user?.id && (
+        <StripePaymentModal
+          isOpen={showStripeModal}
+          onClose={() => setShowStripeModal(false)}
+          usuarioId={user.id}
+          amount={amountToPay}
+          onSuccess={handlePaymentSuccess}
         />
       )}
     </div>
