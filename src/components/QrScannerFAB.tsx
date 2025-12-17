@@ -20,8 +20,8 @@ export const QrScannerFAB = ({ onClick }: QrScannerFABProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Verificar si el usuario es personal de evento (staff)
-  const isStaff = user?.roles?.includes('PERSONAL_EVENTO');
+  // Verificar si el usuario es personal de evento (staff) - Soporte para roles array y rol string
+  const isStaff = user?.roles?.includes('PERSONAL_EVENTO') || user?.rol === 'PERSONAL_EVENTO';
 
   // No mostrar el FAB si no es staff
   if (!isStaff) {
