@@ -136,35 +136,49 @@ const ListaEventos = () => {
     fetchEventos();
   }, []);
 
-  const handlePublish = async (id: number) => {
-    // Mostrar diálogo de confirmación
-    const confirmar = window.confirm('¿Estás seguro de que deseas publicar este evento? Una vez publicado, será visible para todos los usuarios.');
-
-    if (!confirmar) {
-      return;
-    }
-
+  const confirmPublish = async (id: number) => {
     setPublishingId(id);
+    const toastId = toast.loading('Publicando evento...');
 
     try {
+      console.log('Iniciando publicación de evento:', id);
       // Llamada real al backend para publicar el evento
       await publicarEvento(id);
+
+      console.log('Evento publicado exitosamente:', id);
 
       // Recargar la lista de eventos para obtener el estado actualizado
       const data = await getEventos();
       setEventos(data);
 
       toast.success('¡Evento publicado!', {
+        id: toastId,
         description: 'El evento ahora es visible para todos los usuarios.',
       });
     } catch (err) {
       console.error('Error al publicar evento:', err);
       toast.error('Error al publicar evento', {
+        id: toastId,
         description: 'Por favor, inténtalo de nuevo.',
       });
     } finally {
       setPublishingId(null);
     }
+  };
+
+  const handlePublish = (id: number) => {
+    console.log('Click en publicar evento:', id);
+    toast('¿Publicar este evento?', {
+      description: 'Será visible para todos los usuarios.',
+      action: {
+        label: 'Confirmar',
+        onClick: () => confirmPublish(id),
+      },
+      cancel: {
+        label: 'Cancelar',
+        onClick: () => console.log('Publicación cancelada'),
+      },
+    });
   };
 
   if (loading) {

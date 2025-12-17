@@ -1,20 +1,21 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { CartProvider } from './context/CartContext';
 import { Toaster } from 'sonner';
 import MainLayout from './components/layout/MainLayout';
 import AuthPage from './features/auth/AuthPage';
 import { PrivateRoute } from './components/PrivateRoute';
 import AdminDashboard from './features/admin/AdminDashboard';
-import AdminLayout from './features/admin/AdminLayout';
 import CrearEvento from './features/admin/CrearEvento';
-import Dashboard from './features/dashboard/Dashboard';
+import GestionAsientos from './features/admin/GestionAsientos';
+import EditorMapaAsientos from './features/admin/EditorMapaAsientos';
+import VisorMapaAsientos from './features/admin/VisorMapaAsientos';
+import PerfilUsuario from './pages/PerfilUsuario';
 
 // Páginas públicas
 import DetalleEvento from './pages/public/DetallesEvento';
 import Checkout from './pages/public/Checkout';
-import SandboxSeatMap from './pages/public/SandboxSeatMap';
-import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
 import { HomeInvitado } from './pages/public/homeInvitado/HomeInvitado';
 import { InfoEventoInvitado } from './pages/public/infoEventoInvitado/InfoEventoInvitado';
 import { HomeEventoLogeado } from './pages/public/homeEventoLogeado/HomeEventoLogeado';
@@ -27,8 +28,10 @@ import { CreacionDeEventos } from './pages/private/creaciondeeventos/CreacionDeE
 import { EditarEntrada } from './pages/private/editarEntrada/EditarEntrada';
 import { TiposDeEntrada } from './pages/private/tiposentrada/TiposDeEntrada';
 
-// Componentes temporales
-const EventStaffDashboard = () => <div>Dashboard (Personal Evento)</div>;
+// Componentes del Dashboard Staff (Restaurados)
+import Dashboard from './features/dashboard/Dashboard';
+import DashboardHome from './features/dashboard/DashboardHome';
+import ScannerView from './features/dashboard/ScannerView';
 
 /**
  * RedirectIfAuthenticated - Redirige a home si ya está logueado
@@ -58,74 +61,77 @@ function App() {
     <BrowserRouter>
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <AuthProvider>
-          <Toaster position="top-right" richColors />
-          <Routes>
-            {/* Rutas públicas con MainLayout */}
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<HomeInvitado />} />
-              <Route path="evento/:id" element={<DetalleEvento />} />
-              <Route path="eventos" element={<Eventos />} />
-            </Route>
+          <CartProvider>
+            <Toaster position="top-right" richColors />
+            <Routes>
+              {/* Rutas públicas con MainLayout */}
+              <Route path="/" element={<MainLayout />}>
+                <Route index element={<HomeInvitado />} />
+                <Route path="evento/:id" element={<DetalleEvento />} />
+                <Route path="eventos" element={<Eventos />} />
 
-            {/* === RUTAS PÚBLICAS SIN MAINLAYOUT === */}
-            <Route path="/home-invitado" element={<HomeInvitado />} />
-            <Route path="/evento-invitado" element={<InfoEventoInvitado />} />
-            <Route path="/home-logeado" element={<HomeEventoLogeado />} />
-            <Route path="/info-evento-logeado" element={<InfoEventoLogeado />} />
-            <Route path="/eventos-logeado" element={<EventoLogeado />} />
-            <Route path="/creacion-eventos" element={<CreacionDeEventos />} />
-            <Route path="/editar-entrada" element={<EditarEntrada />} />
-            <Route path="/tipos-entrada" element={<TiposDeEntrada />} />
+                {/* Rutas Protegidas dentro del Layout */}
+                <Route element={<PrivateRoute />}>
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/dashboard" element={<PerfilUsuario />} />
+                </Route>
+              </Route>
 
-
-            {/* === RUTA DE DESARROLLO - SANDBOX === */}
-            <Route path="/dev/mapa" element={<SandboxSeatMap />} />
-            <Route path="/dev/mapa/editor" element={<SandboxSeatMapEditor />} />
-
-            {/* Admin Dashboard - Público (sin protección de rol) */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="eventos" element={<AdminDashboard />} />
-              <Route path="eventos/crear" element={<CrearEvento />} />
-            </Route>
-
-            {/* Rutas de autenticación (redirige si ya está logueado) */}
-            <Route
-              path="/login"
-              element={
-                <RedirectIfAuthenticated>
-                  <AuthPage />
-                </RedirectIfAuthenticated>
-              }
-            />
-            <Route
-              path="/registro"
-              element={
-                <RedirectIfAuthenticated>
-                  <AuthPage />
-                </RedirectIfAuthenticated>
-              }
-            />
-
-            {/* Rutas protegidas - Checkout */}
-            <Route element={<PrivateRoute />}>
-              <Route path="/checkout" element={<Checkout />} />
-            </Route>
+              {/* === RUTAS PÚBLICAS SIN MAINLAYOUT === */}
+              <Route path="/home-invitado" element={<HomeInvitado />} />
+              <Route path="/evento-invitado" element={<InfoEventoInvitado />} />
+              <Route path="/home-logeado" element={<HomeEventoLogeado />} />
+              <Route path="/info-evento-logeado" element={<InfoEventoLogeado />} />
+              <Route path="/eventos-logeado" element={<EventoLogeado />} />
+              <Route path="/creacion-eventos" element={<CreacionDeEventos />} />
+              <Route path="/editar-entrada" element={<EditarEntrada />} />
+              <Route path="/tipos-entrada" element={<TiposDeEntrada />} />
 
 
-            {/* Rutas protegidas por rol - Comprador */}
-            <Route element={<PrivateRoute requiredRole="COMPRADOR" />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-            </Route>
+              {/* Admin Dashboard - Público (sin protección de rol) -> Protegido ahora */}
+              <Route element={<PrivateRoute requiredRole="ADMINISTRADOR" />}>
+                <Route path="/admin" element={<Dashboard />}>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="eventos" element={<AdminDashboard />} />
+                  <Route path="asientos" element={<GestionAsientos />} />
+                  <Route path="asientos/editor/:eventoId" element={<EditorMapaAsientos />} />
+                  <Route path="asientos/visor/:eventoId" element={<VisorMapaAsientos />} />
+                  <Route path="crear-evento" element={<CrearEvento />} />
+                </Route>
+              </Route>
 
-            {/* Rutas protegidas por rol - Personal de Evento */}
-            <Route element={<PrivateRoute requiredRole="PERSONAL_EVENTO" />}>
-              <Route path="/staff" element={<EventStaffDashboard />} />
-            </Route>
+              {/* Rutas de autenticación (redirige si ya está logueado) */}
+              <Route
+                path="/login"
+                element={
+                  <RedirectIfAuthenticated>
+                    <AuthPage />
+                  </RedirectIfAuthenticated>
+                }
+              />
+              <Route
+                path="/registro"
+                element={
+                  <RedirectIfAuthenticated>
+                    <AuthPage />
+                  </RedirectIfAuthenticated>
+                }
+              />
 
-            {/* Redirección por defecto */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+
+
+              {/* Rutas protegidas por rol - Personal de Evento */}
+              <Route element={<PrivateRoute requiredRole="PERSONAL_EVENTO" />}>
+                <Route path="/staff" element={<Dashboard />}>
+                  <Route index element={<DashboardHome />} />
+                  <Route path="scanner" element={<ScannerView />} />
+                </Route>
+              </Route>
+
+              {/* Redirección por defecto */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </CartProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

@@ -34,22 +34,22 @@ export const SeatMapViewer: React.FC<SeatMapViewerProps> = ({
     const asientosBounds =
       asientos.length > 0
         ? {
-            minX: Math.min(...asientos.map((a) => a.x)),
-            maxX: Math.max(...asientos.map((a) => a.x)),
-            minY: Math.min(...asientos.map((a) => a.y)),
-            maxY: Math.max(...asientos.map((a) => a.y)),
-          }
+          minX: Math.min(...asientos.map((a) => a.x)),
+          maxX: Math.max(...asientos.map((a) => a.x)),
+          minY: Math.min(...asientos.map((a) => a.y)),
+          maxY: Math.max(...asientos.map((a) => a.y)),
+        }
         : null;
 
     // Calcular bounds de objetos decorativos
     const objetosBounds =
       objetosDecorativos.length > 0
         ? {
-            minX: Math.min(...objetosDecorativos.map((o) => o.x - o.ancho / 2)),
-            maxX: Math.max(...objetosDecorativos.map((o) => o.x + o.ancho / 2)),
-            minY: Math.min(...objetosDecorativos.map((o) => o.y - o.alto / 2)),
-            maxY: Math.max(...objetosDecorativos.map((o) => o.y + o.alto / 2)),
-          }
+          minX: Math.min(...objetosDecorativos.map((o) => o.x - o.ancho / 2)),
+          maxX: Math.max(...objetosDecorativos.map((o) => o.x + o.ancho / 2)),
+          minY: Math.min(...objetosDecorativos.map((o) => o.y - o.alto / 2)),
+          maxY: Math.max(...objetosDecorativos.map((o) => o.y + o.alto / 2)),
+        }
         : null;
 
     // Combinar bounds
@@ -399,11 +399,10 @@ export const SeatMapViewer: React.FC<SeatMapViewerProps> = ({
                       {renderSeatShape(seat)}
                       <text
                         x={seat.x}
-                        y={seat.y}
-                        dy={4}
+                        y={seat.y + 4}
+                        dominantBaseline="middle"
                         textAnchor="middle"
                         className={classes.text}
-                        style={{ pointerEvents: 'none' }}
                       >
                         {seat.etiqueta}
                       </text>

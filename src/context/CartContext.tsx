@@ -20,6 +20,7 @@ export interface CartItem {
 interface CartContextType {
   items: CartItem[];
   addItem: (item: Omit<CartItem, 'cantidad'>) => void;
+  addItemWithSeat: (item: Omit<CartItem, 'cantidad'>) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, cantidad: number) => void;
   clearCart: () => void;
@@ -51,6 +52,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  // Añadir item con asiento específico (no permite duplicados de asiento)
+  const addItemWithSeat = (newItem: Omit<CartItem, 'cantidad'>) => {
+    setItems((prev) => {
+      // Verificar si el asiento ya está en el carrito
+      const existingWithSeat = prev.find(
+        (item) => item.asientoId && item.asientoId === newItem.asientoId
+      );
+
+      if (existingWithSeat) {
+        toast.error(`El asiento ${newItem.asientoEtiqueta} ya está en el carrito`);
+        return prev;
+      }
+
+      toast.success(`Asiento ${newItem.asientoEtiqueta} añadido al carrito`);
+      return [...prev, { ...newItem, cantidad: 1 }];
+    });
+  };
+
   const removeItem = (id: string) => {
     setItems((prev) => prev.filter((item) => item.id !== id));
     toast.success('Entrada eliminada del carrito');
@@ -77,6 +96,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       value={{
         items,
         addItem,
+        addItemWithSeat,
         removeItem,
         updateQuantity,
         clearCart,

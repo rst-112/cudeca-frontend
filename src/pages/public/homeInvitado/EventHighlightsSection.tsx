@@ -2,11 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getEventos } from "../../../services/eventos.service";
 import type { Evento } from "../../../types/api.types";
+import logoFallback from "../../../assets/ImagenLogoCudecaLigth.png";
 
 export const EventHighlightsSection = (): JSX.Element => {
   const navigate = useNavigate();
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [loading, setLoading] = useState(true);
+  const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
+
+  const colors = ['from-emerald-500 to-emerald-700', 'from-blue-500 to-blue-700', 'from-purple-500 to-purple-700', 'from-orange-500 to-orange-700', 'from-pink-500 to-pink-700', 'from-red-500 to-red-700'];
 
   useEffect(() => {
     const fetchEventos = async () => {
@@ -66,12 +70,13 @@ export const EventHighlightsSection = (): JSX.Element => {
               key={evento.id}
               className="flex flex-col gap-3 p-0 bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-lg transition-all"
             >
-              <div className="w-full h-48 bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-5xl relative">
-                {evento.imagenUrl ? (
+              <div className={`w-full h-48 bg-gradient-to-br ${colors[evento.id % colors.length]} flex items-center justify-center text-5xl relative`}>
+                {evento.imagenUrl && !failedImages.has(evento.id) ? (
                   <img
                     src={evento.imagenUrl}
                     alt={evento.nombre}
                     className="w-full h-full object-cover"
+                    onError={() => setFailedImages(prev => new Set(prev).add(evento.id))}
                   />
                 ) : (
                   <span className="text-white/30">🎭</span>

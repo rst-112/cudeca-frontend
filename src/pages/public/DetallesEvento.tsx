@@ -1,20 +1,29 @@
 import { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { getEventoById } from '../../services/eventos.service';
+import { getMapaAsientosByEventoId } from '../../services/asientos.service';
 import type { Evento } from '../../types/api.types';
-import { useAuth } from '../../context/AuthContext';
+import type { MapaAsientos, Asiento } from '../../types/seatmap.types';
+import { useCart } from '../../context/CartContext';
 import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
-import { Checkbox } from '../../components/ui/Checkbox';
-import { Calendar, MapPin, Clock } from 'lucide-react';
+import SelectorAsientos from '../../components/SelectorAsientos';
+import { Calendar, MapPin, Clock, ShoppingCart, Ticket } from 'lucide-react';
 import { Badge } from '../../components/ui/Badge';
+import { toast } from 'sonner';
 
 const DetallesEvento = () => {
   const { id } = useParams<{ id: string }>();
-  const { isAuthenticated } = useAuth();
   const [evento, setEvento] = useState<Evento | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Estados para selector de asientos
+  const [selectorAbierto, setSelectorAbierto] = useState(false);
+  const [mapaAsientos, setMapaAsientos] = useState<MapaAsientos | null>(null);
+  const [tipoEntradaSeleccionado, setTipoEntradaSeleccionado] = useState<number | null>(null);
+  const [cantidad, setCantidad] = useState(1);
+
+  const { addItem, addItemWithSeat } = useCart();
 
   useEffect(() => {
     const fetchEvento = async () => {
@@ -23,6 +32,11 @@ const DetallesEvento = () => {
         setLoading(true);
         const data = await getEventoById(Number(id));
         setEvento(data);
+
+        // Cargar mapa de asientos si existe
+        const mapa = await getMapaAsientosByEventoId(Number(id));
+        setMapaAsientos(mapa);
+
       } catch (err) {
         setError('No se pudo cargar el evento.');
         console.error(err);
@@ -34,6 +48,74 @@ const DetallesEvento = () => {
     fetchEvento();
   }, [id]);
 
+  const handleComprar = () => {
+    if (!tipoEntradaSeleccionado || !evento) {
+      toast.error('Selecciona un tipo de entrada');
+      return;
+    }
+
+    const tipoEntrada = evento.tiposEntrada?.find(t => t.id === tipoEntradaSeleccionado);
+
+    if (!tipoEntrada) {
+      toast.error('No se encontró el tipo de entrada seleccionado');
+      return;
+    }
+
+    // Si hay mapa de asientos, abrir selector
+    if (mapaAsientos) {
+      // Usar setTimeout para evitar que el click se propague al backdrop del modal
+      setTimeout(() => {
+        setSelectorAbierto(true);
+      }, 0);
+    } else {
+      // Si no hay mapa, añadir directo al carrito (entrada general sin asiento)
+      try {
+        for (let i = 0; i < cantidad; i++) {
+          addItem({
+            id: `evento-${evento.id}-tipo-${tipoEntradaSeleccionado}-${Date.now()}-${i}`,
+            eventoId: evento.id,
+            eventoNombre: evento.nombre,
+            eventoImagen: evento.imagenUrl,
+            eventoFecha: evento.fechaInicio,
+            tipoEntradaId: tipoEntradaSeleccionado,
+            tipoEntradaNombre: tipoEntrada.nombre,
+            precio: tipoEntrada.costeBase + tipoEntrada.donacionImplicita,
+          });
+        }
+        toast.success(`${cantidad} entrada(s) añadida(s) al carrito`);
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        toast.error('Error al añadir al carrito');
+      }
+    }
+  };
+
+  const handleConfirmarAsientos = (asientos: Asiento[]) => {
+    if (!evento || !tipoEntradaSeleccionado) return;
+
+    const tipoEntrada = evento.tiposEntrada?.find(t => t.id === tipoEntradaSeleccionado);
+    if (!tipoEntrada) return;
+
+    // Añadir cada asiento al carrito
+    asientos.forEach((asiento) => {
+      addItemWithSeat({
+        id: `evento - ${evento.id} -asiento - ${asiento.id} `,
+        eventoId: evento.id,
+        eventoNombre: evento.nombre,
+        eventoImagen: evento.imagenUrl,
+        eventoFecha: evento.fechaInicio,
+        tipoEntradaId: tipoEntradaSeleccionado,
+        tipoEntradaNombre: tipoEntrada.nombre,
+        asientoId: asiento.id,
+        asientoEtiqueta: asiento.etiqueta,
+        precio: tipoEntrada.costeBase + tipoEntrada.donacionImplicita,
+      });
+    });
+
+    setSelectorAbierto(false);
+    toast.success(`${asientos.length} asiento(s) añadido(s) al carrito`);
+  };
+
   if (loading) {
     return <div className="container mx-auto text-center py-24">Cargando evento...</div>;
   }
@@ -42,130 +124,251 @@ const DetallesEvento = () => {
     return <div className="container mx-auto text-center py-24 text-red-500">{error || 'Evento no encontrado.'}</div>;
   }
 
+  // Calcular precio total y tipo de entrada seleccionado
+  const tipoEntrada = evento.tiposEntrada?.find(t => t.id === tipoEntradaSeleccionado);
+  const precioTotal = tipoEntrada ? (tipoEntrada.costeBase + tipoEntrada.donacionImplicita) * cantidad : 0;
+
   return (
-    <div className="bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto py-12 px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Columna Izquierda: Detalles del Evento */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Encabezado */}
-            <div>
-              <h1 className="text-4xl font-bold text-gray-800 dark:text-white">{evento.nombre}</h1>
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-4 text-gray-600 dark:text-gray-400">
-                <div className="flex items-center gap-2"><Calendar size={18} /> {new Date(evento.fechaInicio).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
-                <div className="flex items-center gap-2"><Clock size={18} /> {new Date(evento.fechaInicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}h</div>
-                <div className="flex items-center gap-2"><MapPin size={18} /> {evento.lugar}</div>
-              </div>
-            </div>
+    <>
+      <div className="bg-gray-50 dark:bg-gray-900">
+        <div className="container mx-auto py-12 px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            {/* Columna Izquierda: Detalles del Evento */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Imagen */}
+              {evento.imagenUrl && (
+                <img
+                  src={evento.imagenUrl}
+                  alt={evento.nombre}
+                  className="w-full h-96 object-cover rounded-xl shadow-lg"
+                />
+              )}
 
-            {/* Objetivo de Recaudación */}
-            {evento.objetivoRecaudacion && evento.objetivoRecaudacion > 0 && (
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-semibold">Objetivo de recaudación</h3>
-                  <span className="font-bold text-green-600">
-                    {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(evento.objetivoRecaudacion)}
-                  </span>
+              {/* Encabezado */}
+              <div>
+                <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                  {evento.nombre}
+                </h1>
+                <Badge variant={evento.estado === 'PUBLICADO' ? 'default' : 'secondary'}>
+                  {evento.estado}
+                </Badge>
+              </div>
+
+              {/* Información básica */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                  <Calendar className="h-5 w-5" />
+                  <span>{new Date(evento.fechaInicio).toLocaleDateString('es-ES')}</span>
                 </div>
-                <p className="text-center mt-4 text-gray-600 dark:text-gray-400">¡Ayúdanos a llegar a la meta para cuidados paliativos!</p>
+                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                  <Clock className="h-5 w-5" />
+                  <span>{new Date(evento.fechaInicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                  <MapPin className="h-5 w-5" />
+                  <span>{evento.lugar}</span>
+                </div>
               </div>
-            )}
 
-            {/* Sobre el evento */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-              <h2 className="text-2xl font-bold mb-4">Sobre el evento</h2>
-              <div className="prose dark:prose-invert max-w-none">
-                <p>Esta noche mágica contará con una cena de gala, actuaciones en vivo, subastas solidarias y la oportunidad de conocer las historias inspiradoras de quienes se benefician directamente de tu generosidad. Cada entrada vendida y cada euro donado representa esperanza, dignidad y acompañamiento en los momentos más difíciles.</p>
-                <h3 className="font-semibold">¿Por qué asistir?</h3>
-                <ul>
-                  <li><strong>Impacto directo:</strong> El 100% de los fondos recaudados se destinan a cuidados paliativos domiciliarios.</li>
-                  <li><strong>Velada inolvidable:</strong> Disfruta de una cena gourmet, música en vivo y un ambiente elegante.</li>
-                  <li><strong>Comunidad solidaria:</strong> Conecta con personas que comparten tu pasión por marcar la diferencia.</li>
-                  <li><strong>Subastas exclusivas:</strong> Participa en subastas de arte, experiencias únicas y artículos de colección.</li>
-                </ul>
-                <p><strong>Tu presencia importa.</strong> Cada asiento ocupado es un paso más hacia nuestro objetivo.</p>
+              {/* Descripción */}
+              <div>
+                <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Sobre este evento</h2>
+                <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">{evento.descripcion}</p>
               </div>
+
+              {/* Progreso de Recaudación */}
+              {evento.objetivoRecaudacion && evento.objetivoRecaudacion > 0 && (
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border-2 border-green-200 dark:border-green-800">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <span className="text-2xl">🎯</span>
+                    Objetivo de Recaudación
+                  </h3>
+
+                  {/* Barra de progreso */}
+                  <div className="mb-4">
+                    <div className="flex justify-between items-end mb-2">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        Recaudado
+                      </span>
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        {(((evento.recaudacionActual || 0) / evento.objetivoRecaudacion) * 100).toFixed(0)}%
+                      </span>
+                    </div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-green-500 to-emerald-600 transition-all duration-500 rounded-full"
+                        style={{ width: `${Math.min(((evento.recaudacionActual || 0) / evento.objetivoRecaudacion) * 100, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Estadísticas */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Recaudado</p>
+                      <p className="text-xl font-bold text-green-600 dark:text-green-500">
+                        {new Intl.NumberFormat('es-ES', {
+                          style: 'currency',
+                          currency: 'EUR',
+                          maximumFractionDigits: 0
+                        }).format(evento.recaudacionActual || 0)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Objetivo</p>
+                      <p className="text-xl font-bold text-gray-900 dark:text-white">
+                        {new Intl.NumberFormat('es-ES', {
+                          style: 'currency',
+                          currency: 'EUR',
+                          maximumFractionDigits: 0
+                        }).format(evento.objetivoRecaudacion)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
 
-          {/* Columna Derecha: Entradas y Donación */}
-          <div className="sticky top-24 h-fit">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-              <img src={evento.imagenUrl} alt={evento.nombre} className="w-full h-56 object-cover rounded-lg mb-6" />
+            {/* Columna Derecha: Compra */}
+            <div className="lg:col-span-1">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sticky top-6 space-y-6">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Comprar Entradas</h3>
 
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold">Selecciona tu entrada</h2>
-                {/* Tipos de entrada dinámicos */}
-                <div className="space-y-4">
-                  {evento.tiposEntrada && evento.tiposEntrada.length > 0 ? (
-                    evento.tiposEntrada.map((tipo) => {
-                      const isAgotado = tipo.cantidadVendida >= tipo.cantidadTotal;
-                      const precioTotal = tipo.costeBase + tipo.donacionImplicita;
+                {/* Tipos de Entrada */}
+                {evento.tiposEntrada && evento.tiposEntrada.length > 0 ? (
+                  <div className="space-y-3">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                      <Ticket className="h-4 w-4" />
+                      Selecciona el tipo de entrada
+                    </label>
+                    {evento.tiposEntrada.map((tipo) => (
+                      <div
+                        key={tipo.id}
+                        className={`relative border-2 rounded-xl p-5 cursor-pointer transition-all duration-200 ${tipoEntradaSeleccionado === tipo.id
+                          ? 'border-green-600 bg-green-50 dark:bg-green-900/20 shadow-md ring-2 ring-green-600 ring-offset-2 dark:ring-offset-gray-800'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-green-400 hover:shadow-sm'
+                          }`}
+                        onClick={() => setTipoEntradaSeleccionado(tipo.id)}
+                      >
+                        {/* Checkmark cuando está seleccionado */}
+                        {tipoEntradaSeleccionado === tipo.id && (
+                          <div className="absolute -top-2 -right-2 bg-green-600 rounded-full p-1 shadow-lg">
+                            <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                        )}
 
-                      return (
-                        <div
-                          key={tipo.id}
-                          className={`flex justify-between items-center p-4 border rounded-lg ${isAgotado ? 'bg-gray-100 dark:bg-gray-700 opacity-60' : 'border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 cursor-pointer transition-colors'}`}
-                        >
-                          <div>
-                            <p className="font-bold">{tipo.nombre}</p>
-                            <p className="text-sm text-gray-500">
-                              {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(tipo.costeBase)} Base + {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(tipo.donacionImplicita)} Donación
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex-1">
+                            <p className="font-bold text-lg text-gray-900 dark:text-white">{tipo.nombre}</p>
+                            <div className="flex gap-2 mt-1 text-xs text-gray-600 dark:text-gray-400">
+                              <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">
+                                Coste: {tipo.costeBase}€
+                              </span>
+                              <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded">
+                                + Donación: {tipo.donacionImplicita}€
+                              </span>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-2xl font-bold text-green-600 dark:text-green-500">
+                              {tipo.costeBase + tipo.donacionImplicita}€
                             </p>
                           </div>
-                          <div className="flex flex-col items-end">
-                            {isAgotado ? (
-                              <Badge variant="destructive">Agotado</Badge>
-                            ) : (
-                              <p className="text-xl font-bold text-green-700 dark:text-green-400">
-                                {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(precioTotal)}
-                              </p>
-                            )}
-                          </div>
                         </div>
-                      );
-                    })
-                  ) : (
-                    <div className="p-4 border border-dashed rounded-lg text-center text-gray-500">
-                      No hay tipos de entrada disponibles para este evento actualmente.
-                    </div>
-                  )}
-                </div>
 
-                {/* Donación adicional */}
-                <div className="space-y-4 pt-6 border-t">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="donacion" />
-                    <label htmlFor="donacion" className="font-semibold">Añadir donación adicional</label>
+                        {/* Disponibilidad */}
+                        <div className="flex items-center gap-2 text-sm">
+                          <div className={`flex-1 h-2 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700`}>
+                            <div
+                              className="h-full bg-green-500 transition-all"
+                              style={{ width: `${((tipo.cantidadTotal - tipo.cantidadVendida) / tipo.cantidadTotal) * 100}%` }}
+                            />
+                          </div>
+                          <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                            {tipo.cantidadTotal - tipo.cantidadVendida} disponibles
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Input type="number" placeholder="0" className="w-24" />
-                    <span>€</span>
-                    <Button variant="outline" size="sm">+5€</Button>
-                    <Button variant="outline" size="sm">+10€</Button>
+                ) : (
+                  <p className="text-gray-500">No hay entradas disponibles</p>
+                )}
+
+                {/* Cantidad - Siempre mostrar cuando hay tipo seleccionado */}
+                {tipoEntradaSeleccionado && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                      Cantidad de entradas
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-10 w-10 p-0"
+                        onClick={() => setCantidad(Math.max(1, cantidad - 1))}
+                      >
+                        -
+                      </Button>
+                      <span className="text-xl font-bold w-16 text-center text-gray-900 dark:text-white">{cantidad}</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-10 w-10 p-0"
+                        onClick={() => {
+                          const tipoEnt = evento.tiposEntrada?.find(t => t.id === tipoEntradaSeleccionado);
+                          if (tipoEnt && cantidad < (tipoEnt.cantidadTotal - tipoEnt.cantidadVendida)) {
+                            setCantidad(cantidad + 1);
+                          }
+                        }}
+                      >
+                        +
+                      </Button>
+                    </div>
+                    {mapaAsientos && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        💺 Podrás elegir tus asientos en el siguiente paso
+                      </p>
+                    )}
                   </div>
-                </div>
+                )}
 
                 {/* Total y Comprar */}
                 <div className="space-y-4 pt-6 border-t">
                   <div className="flex justify-between items-center text-xl font-bold">
                     <span>Total</span>
-                    <span>20€</span>
+                    <span>{precioTotal.toFixed(2)}€</span>
                   </div>
-                  {isAuthenticated ? (
-                    <Button size="lg" className="w-full bg-green-600 hover:bg-green-700">Comprar Entradas</Button>
-                  ) : (
-                    <Button size="lg" asChild className="w-full bg-green-600 hover:bg-green-700">
-                      <Link to="/login">Inicia sesión para comprar</Link>
-                    </Button>
-                  )}
+                  <Button
+                    size="lg"
+                    className="w-full bg-green-600 hover:bg-green-700 flex items-center justify-center gap-2"
+                    onClick={handleComprar}
+                    disabled={!tipoEntradaSeleccionado}
+                  >
+                    <ShoppingCart className="h-5 w-5" />
+                    {mapaAsientos ? 'Seleccionar Asientos' : 'Añadir al Carrito'}
+                  </Button>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Modal de Selector de Asientos */}
+      {mapaAsientos && tipoEntrada && (
+        <SelectorAsientos
+          isOpen={selectorAbierto}
+          onClose={() => setSelectorAbierto(false)}
+          mapaAsientos={mapaAsientos}
+          cantidadRequerida={cantidad}
+          onConfirmar={handleConfirmarAsientos}
+          tipoEntradaNombre={tipoEntrada.nombre}
+        />
+      )}
+    </>
   );
 };
 

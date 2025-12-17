@@ -11,6 +11,7 @@ import {
   Settings,
   Menu, // Icono para abrir menú
   X, // Icono para cerrar menú
+  Grid3x3, // Icono para gestión de asientos
 } from 'lucide-react';
 import { QrScannerFAB } from '../../components/QrScannerFAB';
 import { Navbar } from '../../components/ui/Navbar';
@@ -75,25 +76,24 @@ export default function Dashboard() {
 
           {/* Navegación */}
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-            <NavLink to="/dashboard" end className={getLinkClass} onClick={handleLinkClick}>
-              <HomeIcon size={20} /> Resumen
+            <NavLink
+              to={isAdmin ? '/admin' : '/staff'}
+              end
+              className={getLinkClass}
+              onClick={handleLinkClick}
+            >
+              <HomeIcon size={20} /> {isAdmin ? 'Gestión de Eventos' : 'Resumen'}
             </NavLink>
 
             {isAdmin && (
-              <NavLink to="/dashboard/events" className={getLinkClass} onClick={handleLinkClick}>
-                <Calendar size={20} /> Gestionar Eventos
+              <NavLink to="/admin/asientos" className={getLinkClass} onClick={handleLinkClick}>
+                <Grid3x3 size={20} /> Gestión de Asientos
               </NavLink>
             )}
 
-            {(isStaff || isAdmin) && (
-              <NavLink to="/dashboard/scanner" className={getLinkClass} onClick={handleLinkClick}>
+            {isStaff && (
+              <NavLink to="/staff/scanner" className={getLinkClass} onClick={handleLinkClick}>
                 <ScanLine size={20} /> Escáner QR
-              </NavLink>
-            )}
-
-            {isAdmin && (
-              <NavLink to="/admin/config" className={getLinkClass} onClick={handleLinkClick}>
-                <Settings size={20} /> Configuración
               </NavLink>
             )}
           </nav>
@@ -101,7 +101,7 @@ export default function Dashboard() {
           {/* Footer Sidebar */}
           <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2 bg-white dark:bg-slate-900">
             <Link
-              to="/perfil"
+              to="/dashboard"
               onClick={handleLinkClick}
               className="flex items-center gap-3 px-4 py-3 w-full text-slate-600 dark:text-slate-400 hover:text-[#00A651] hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
             >
@@ -131,9 +131,9 @@ export default function Dashboard() {
         {/* MAIN CONTENT */}
         <main className="flex-1 overflow-y-auto h-[calc(100vh-140px)] md:h-[calc(100vh-80px)] p-4 md:p-8 bg-slate-50 dark:bg-slate-950 w-full">
           <div className="md:hidden mb-6">
-            {location.pathname !== '/dashboard' && (
+            {location.pathname !== (isAdmin ? '/admin' : '/staff') && (
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate(isAdmin ? '/admin' : '/staff')}
                 className="flex items-center text-slate-500 hover:text-[#00A651] transition-colors"
               >
                 <ArrowLeft className="mr-2" size={20} /> Volver al menú
@@ -146,7 +146,7 @@ export default function Dashboard() {
         </main>
       </div>
 
-      {(isStaff || isAdmin) && <QrScannerFAB />}
+      {isStaff && <QrScannerFAB />}
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Calendar, MapPin, ArrowRight } from 'lucide-react';
-import { Button } from './ui/Button';
 import { getEventos } from '../services/eventos.service';
 import type { Evento } from '../types/api.types';
 
@@ -10,6 +9,11 @@ export function EventCarousel() {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [loading, setLoading] = useState(true);
+  // Cambiar a un Set de IDs para rastrear errores de imagen por evento
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
+
+  const colors = ['from-emerald-500 to-emerald-700', 'from-blue-500 to-blue-700', 'from-purple-500 to-purple-700', 'from-orange-500 to-orange-700', 'from-pink-500 to-pink-700'];
+  const getErrorColor = (id: number) => colors[id % colors.length];
 
   // Cargar eventos del backend
   useEffect(() => {
@@ -19,8 +23,8 @@ export function EventCarousel() {
         // Filtrar solo eventos PUBLICADOS, ordenar por fecha (más recientes primero) y tomar los primeros 5
         const eventosPublicados = data
           .filter(e => e.estado === 'PUBLICADO')
-          .sort((a, b) => new Date(b.fechaInicio).getTime() - new Date(a.fechaInicio).getTime())
-          .slice(0, 5); // Primeros 5 (más recientes)
+          .sort((a, b) => b.id - a.id)
+          .slice(0, 5); // Primeros 5 (más recientemente agregados)
         setEventos(eventosPublicados);
       } catch (error) {
         console.error('Error al cargar eventos:', error);
@@ -60,6 +64,11 @@ export function EventCarousel() {
     setIsAutoPlaying(false);
   };
 
+  // Función para marcar un evento con error de imagen
+  const handleImageError = (eventId: number) => {
+    setImageErrors(prev => new Set(prev).add(eventId));
+  };
+
   if (loading) {
     return (
       <div className="relative w-full max-w-7xl mx-auto rounded-2xl bg-white dark:bg-slate-800 h-[400px] md:h-[500px] flex items-center justify-center">
@@ -87,14 +96,15 @@ export function EventCarousel() {
           <div key={event.id} className="w-full flex-shrink-0 flex flex-col md:flex-row h-full">
             {/* Imagen */}
             <div className="w-full md:w-3/5 h-48 md:h-full relative overflow-hidden group">
-              {event.imagenUrl ? (
+              {event.imagenUrl && !imageErrors.has(event.id) ? (
                 <img
                   src={event.imagenUrl}
                   alt={event.nombre}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  onError={() => handleImageError(event.id)}
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center">
+                <div className={`w-full h-full bg-gradient-to-br ${getErrorColor(event.id)} flex items-center justify-center`}>
                   <Calendar size={120} className="text-white/20" />
                 </div>
               )}
@@ -137,11 +147,13 @@ export function EventCarousel() {
                 </div>
               )}
 
-              <Button asChild size="lg" className="self-start bg-green-600 hover:bg-green-700 text-white rounded-full px-8 h-12 text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                <Link to={`/evento/${event.id}`} className="flex items-center gap-2">
-                  Ver Detalles <ArrowRight className="h-5 w-5" />
-                </Link>
-              </Button>
+              {/* Link directo sin Button wrapper para evitar doble click */}
+              <Link
+                to={`/evento/${event.id}`}
+                className="self-start inline-flex items-center gap-2 px-8 h-12 bg-green-600 hover:bg-green-700 text-white rounded-full text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all font-medium"
+              >
+                Ver Detalles <ArrowRight className="h-5 w-5" />
+              </Link>
             </div>
           </div>
         ))}

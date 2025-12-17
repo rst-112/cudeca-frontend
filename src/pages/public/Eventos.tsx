@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { Search, ChevronDown, Calendar, MapPin } from 'lucide-react';
 import { getEventos } from '../../services/eventos.service';
 import type { Evento } from '../../types/api.types';
+import logoFallback from '../../assets/ImagenLogoCudecaLigth.png';
 
 const Eventos: React.FC = () => {
   const navigate = useNavigate();
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     const fetchEventos = async () => {
@@ -134,8 +136,13 @@ const Eventos: React.FC = () => {
               {eventosFiltrados.map((evento, index) => (
                 <div key={evento.id} className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all flex flex-col">
                   <div className={`w-full h-48 ${colors[index % colors.length]} flex items-center justify-center rounded-t-xl`}>
-                    {evento.imagenUrl ? (
-                      <img src={evento.imagenUrl} alt={evento.nombre} className="w-full h-full object-cover rounded-t-xl" />
+                    {evento.imagenUrl && !failedImages.has(evento.id) ? (
+                      <img
+                        src={evento.imagenUrl}
+                        alt={evento.nombre}
+                        className="w-full h-full object-cover rounded-t-xl"
+                        onError={() => setFailedImages(prev => new Set(prev).add(evento.id))}
+                      />
                     ) : (
                       <Calendar size={64} className="text-white/30" />
                     )}
