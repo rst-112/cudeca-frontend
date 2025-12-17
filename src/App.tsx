@@ -7,11 +7,11 @@ import { ScrollToTop } from './components/ScrollToTop';
 import MainLayout from './components/layout/MainLayout';
 import AuthPage from './features/auth/AuthPage';
 import { PrivateRoute } from './components/PrivateRoute';
+import AdminLayout from './features/admin/AdminLayout';
 import AdminDashboard from './features/admin/AdminDashboard';
+import CrearEvento from './features/admin/CrearEvento';
 import ForgotPasswordPage from './features/auth/ForgotPasswordPage';
 import ResetPasswordPage from './features/auth/ResetPasswordPage';
-
-// Dashboard (Backoffice SOLO para Staff/Admin)
 import Dashboard from './features/dashboard/Dashboard';
 import DashboardHome from './features/dashboard/DashboardHome';
 import ScannerView from './features/dashboard/ScannerView';
@@ -19,6 +19,7 @@ import ScannerView from './features/dashboard/ScannerView';
 // Páginas públicas
 import Home from './pages/Home';
 import DetalleEvento from './pages/public/DetallesEvento';
+import Eventos from './pages/public/Eventos';
 
 // === PÁGINAS UNIFICADAS ===
 import Checkout from './pages/public/Checkout';
@@ -58,7 +59,7 @@ function App() {
               <Route path="/dev/mapa" element={<SandboxSeatMap />} />
               <Route path="/dev/mapa/editor" element={<SandboxSeatMapEditor />} />
 
-              {/* Redirecciones de compatibilidad (para no romper links antiguos) */}
+              {/* Redirecciones de compatibilidad */}
               <Route path="/dev/checkout-usuario" element={<Checkout />} />
               <Route path="/dev/checkout-invitado" element={<Checkout />} />
               <Route path="/dev/compra-invitado" element={<ConfirmationPage />} />
@@ -115,29 +116,28 @@ function App() {
                 }
               />
 
-              {/* === ADMIN GLOBAL === */}
+              {/* === ADMIN GLOBAL (Rutas protegidas) === */}
               <Route element={<PrivateRoute requiredRole="ADMINISTRADOR" />}>
-                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="eventos/crear" element={<CrearEvento />} />
+                  {/* Aquí irán más rutas de admin */}
+                </Route>
               </Route>
 
-              {/* === STAFF & ADMIN (Backoffice/Trabajo) === */}
-              {/* Solo tienen acceso Staff y Admins. Aquí gestionan el evento. */}
+              {/* === STAFF & ADMIN (Backoffice Operativo) === */}
               <Route element={<PrivateRoute requiredRole={['ADMINISTRADOR', 'PERSONAL_EVENTO']} />}>
                 <Route path="/dashboard" element={<Dashboard />}>
                   <Route index element={<DashboardHome />} />
                   <Route path="scanner" element={<ScannerView />} />
-                  <Route path="events" element={<div>Gestión de Eventos</div>} />
+                  <Route path="events" element={<div>Gestión de Eventos (Staff)</div>} />
                 </Route>
-              </Route>
-
-              {/* === STAFF (Ruta legacy, opcional si ya usan /dashboard) === */}
-              <Route element={<PrivateRoute requiredRole="PERSONAL_EVENTO" />}>
-                <Route path="/staff" element={<EventStaffDashboard />} />
               </Route>
 
               {/* === WEB PÚBLICA Y ZONA PERSONAL (Layout Principal) === */}
               <Route path="/" element={<MainLayout />}>
                 <Route index element={<Home />} />
+                <Route path="eventos" element={<Eventos />} />
                 <Route path="evento/:id" element={<DetalleEvento />} />
                 <Route path="checkout" element={<Checkout />} />
                 <Route path="confirmacion" element={<ConfirmationPage />} />

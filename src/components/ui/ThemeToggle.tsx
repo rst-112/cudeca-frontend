@@ -5,7 +5,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from './Dropdown-menu';
+} from './DropdownMenu';
 
 export function ThemeToggle() {
   const { setTheme } = useTheme();
@@ -14,7 +14,7 @@ export function ThemeToggle() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="relative p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-300 shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700 cursor-pointer"
+          className="relative p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-300 shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700"
           aria-label="Toggle theme"
         >
           <Sun className="h-5 w-5 rotate-0 scale-100 transition-all duration-300 dark:-rotate-90 dark:scale-0" />
