@@ -1,7 +1,15 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Scanner, type IDetectedBarcode } from '@yudiel/react-qr-scanner';
 import { toast } from 'sonner';
-import { CheckCircle2, XCircle, RotateCcw, Camera, Loader2, AlertCircle } from 'lucide-react';
+import {
+  CheckCircle2,
+  XCircle,
+  RotateCcw,
+  Camera,
+  Loader2,
+  AlertCircle,
+  UserX,
+} from 'lucide-react';
 import { qrService, type QrValidacionResponse } from '../services/qr.service';
 import { useAuth } from '../context/AuthContext';
 
@@ -54,6 +62,20 @@ const QrReaderComponent: React.FC = () => {
               duration: 4000,
             });
             setIsProcessing(false);
+            setIsPaused(false);
+            return;
+          }
+
+          // Validar que el usuario tenga permisos de staff
+          const isStaff =
+            user?.roles?.includes('PERSONAL_EVENTO') || user?.rol === 'PERSONAL_EVENTO';
+          if (!isStaff) {
+            toast.error('Permisos insuficientes', {
+              description: 'Solo el personal de evento puede validar entradas',
+              duration: 4000,
+            });
+            setIsProcessing(false);
+            setIsPaused(false);
             return;
           }
 
@@ -133,6 +155,13 @@ const QrReaderComponent: React.FC = () => {
   }, []);
 
   const startScanning = () => {
+    if (!canScan) {
+      toast.error('Acceso denegado', {
+        description: 'Solo el personal autorizado puede usar el escáner',
+      });
+      return;
+    }
+
     setIsReady(true);
     setIsPaused(false);
     setScanResult(null);
@@ -143,6 +172,37 @@ const QrReaderComponent: React.FC = () => {
     setIsProcessing(false);
     setIsPaused(false);
   };
+
+  // Verificar si el usuario tiene permisos para escanear
+  const canScan =
+    user && (user.roles?.includes('PERSONAL_EVENTO') || user.rol === 'PERSONAL_EVENTO');
+
+  // Si no está autenticado o no tiene permisos
+  if (!canScan) {
+    return (
+      <div className="flex flex-col items-center w-full gap-4 max-w-md mx-auto py-6 md:py-0">
+        <div className="w-full aspect-square relative rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950 shadow-2xl ring-1 ring-slate-200 dark:ring-slate-900/5">
+          <div className="absolute inset-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm flex flex-col items-center justify-center text-slate-900 dark:text-white z-30 p-6 rounded-xl">
+            <div className="bg-red-100 dark:bg-red-900/30 p-6 rounded-full mb-6 ring-4 ring-red-200 dark:ring-red-800/50">
+              <UserX className="w-16 h-16 text-red-500" strokeWidth={1.5} />
+            </div>
+            <h3 className="text-2xl font-bold mb-3 text-center">Acceso Restringido</h3>
+            <p className="text-slate-600 dark:text-slate-300 text-center max-w-xs leading-relaxed">
+              Solo el personal autorizado puede acceder al escáner de entradas.
+            </p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
+              Rol actual: {user?.rol || 'No autenticado'}
+            </p>
+            {user?.roles && user.roles.length > 0 && (
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
+                Roles: {user.roles.join(', ')}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center w-full gap-4 max-w-md mx-auto py-6 md:py-0">
@@ -183,7 +243,10 @@ const QrReaderComponent: React.FC = () => {
             </h3>
             <p className="text-slate-600 dark:text-slate-300 text-center text-sm mb-6 md:mb-8 max-w-xs leading-relaxed transition-all">
               Presiona el botón para activar la cámara y comenzar a escanear códigos QR
-            </p>
+            </p>{' '}
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 md:mb-8">
+              Validador: {user?.nombre || 'Usuario'}
+            </p>{' '}
             <button
               onClick={startScanning}
               className="flex items-center gap-2 md:gap-3 bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold py-3 px-6 md:py-4 md:px-8 rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-95 cursor-pointer"
