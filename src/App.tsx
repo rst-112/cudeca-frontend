@@ -121,19 +121,24 @@ function App() {
                   <Route index element={<AdminDashboard />} />
                   <Route path="eventos" element={<AdminDashboard />} />
                   <Route path="asientos" element={<GestionAsientos />} />
+                  <Route path="scanner" element={<ScannerView />} />
                 </Route>
                 <Route path="/creacion-eventos" element={<CrearEvento />} />
+                {/* Rutas de Editor y Visor FUERA del AdminLayout para pantalla completa */}
                 <Route path="/admin/asientos/editor/:eventoId" element={<EditorMapaAsientos />} />
                 <Route path="/admin/asientos/visor/:eventoId" element={<VisorMapaAsientos />} />
               </Route>
 
-              {/* === STAFF === */}
+              {/* === DASHBOARD/STAFF === */}
               <Route element={<PrivateRoute requiredRole={['ADMINISTRADOR', 'PERSONAL_EVENTO']} />}>
                 <Route path="/staff" element={<Dashboard />}>
                   <Route index element={<DashboardHome />} />
                   <Route path="scanner" element={<ScannerView />} />
                 </Route>
-                <Route path="/dashboard" element={<Navigate to="/staff" replace />} />
+                <Route path="/dashboard" element={<Dashboard />}>
+                  <Route index element={<DashboardHome />} />
+                  <Route path="scanner" element={<ScannerView />} />
+                </Route>
               </Route>
 
               {/* Fallback */}

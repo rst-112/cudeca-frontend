@@ -69,98 +69,63 @@ export default function CrearEvento() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/admin')}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Crear Nuevo Evento</h1>
-      </div>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 -m-8 p-8">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/admin')}
+            className="hover:bg-slate-200 dark:hover:bg-slate-800"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+              Crear Nuevo Evento
+            </h1>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              Completa la información para publicar un nuevo evento
+            </p>
+          </div>
+        </div>
 
-      {/* Tabs simplificadas */}
-      <div className="border-b border-slate-200 dark:border-slate-700 flex gap-8">
-        <button
-          onClick={() => setActiveTab('general')}
-          className={`py-3 px-1 font-medium transition-colors border-b-2 ${
-            activeTab === 'general'
-              ? 'border-[#00a651] text-[#00a651]'
-              : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400'
-          }`}
-        >
-          Información General
-        </button>
-        <button
-          onClick={() => {
-            toast.info('Guarda el evento primero para añadir entradas');
-          }}
-          className={`py-3 px-1 font-medium transition-colors border-b-2 border-transparent text-slate-400 cursor-not-allowed`}
-        >
-          Tipos de Entrada (Guardar primero)
-        </button>
-      </div>
+        {/* Tabs simplificadas */}
+        <div className="bg-white dark:bg-slate-900 rounded-t-2xl border-b border-slate-200 dark:border-slate-800 flex gap-8 px-6">
+          <button
+            onClick={() => setActiveTab('general')}
+            className={`py-4 px-1 font-semibold transition-colors border-b-2 ${
+              activeTab === 'general'
+                ? 'border-[#00a651] text-[#00a651]'
+                : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+            }`}
+          >
+            Información General
+          </button>
+          <button
+            onClick={() => {
+              toast.info('Guarda el evento primero para añadir entradas');
+            }}
+            className="py-4 px-1 font-semibold transition-colors border-b-2 border-transparent text-slate-400 dark:text-slate-600 cursor-not-allowed"
+          >
+            Tipos de Entrada (Guardar primero)
+          </button>
+        </div>
 
-      <div className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Columna Izquierda */}
-              <div className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="nombre"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nombre del evento</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Ej: Concierto Benéfico" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="descripcion"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Descripción</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Detalles del evento..."
-                          className="h-32"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="imagenUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>URL de imagen</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Columna Derecha */}
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-b-2xl shadow-lg border border-slate-200 dark:border-slate-800">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Columna Izquierda */}
+                <div className="space-y-6">
                   <FormField
                     control={form.control}
-                    name="fechaInicio"
+                    name="nombre"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Inicio</FormLabel>
+                        <FormLabel>Nombre del evento</FormLabel>
                         <FormControl>
-                          <Input type="datetime-local" {...field} />
+                          <Input placeholder="Ej: Concierto Benéfico" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -168,57 +133,114 @@ export default function CrearEvento() {
                   />
                   <FormField
                     control={form.control}
-                    name="fechaFin"
+                    name="descripcion"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Fin (Opcional)</FormLabel>
+                        <FormLabel>Descripción</FormLabel>
                         <FormControl>
-                          <Input type="datetime-local" {...field} />
+                          <Textarea
+                            placeholder="Detalles del evento..."
+                            className="h-32"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="imagenUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>URL de imagen</FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://..." {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-                <FormField
-                  control={form.control}
-                  name="lugar"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Lugar / Ubicación</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Ej: Palacio de Congresos" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="objetivoRecaudacion"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Objetivo (€)</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="5000" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
 
-            <div className="flex justify-end gap-4 pt-6 border-t dark:border-slate-700">
-              <Button type="button" variant="outline" onClick={() => navigate('/admin')}>
-                Cancelar
-              </Button>
-              <Button type="submit" className="bg-[#00a651] hover:bg-[#008a43]">
-                Crear Evento
-              </Button>
-            </div>
-          </form>
-        </Form>
+                {/* Columna Derecha */}
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="fechaInicio"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Inicio</FormLabel>
+                          <FormControl>
+                            <Input type="datetime-local" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="fechaFin"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Fin (Opcional)</FormLabel>
+                          <FormControl>
+                            <Input type="datetime-local" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="lugar"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Lugar / Ubicación</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ej: Palacio de Congresos" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="objetivoRecaudacion"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Objetivo (€)</FormLabel>
+                        <FormControl>
+                          <Input type="number" placeholder="5000" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-4 pt-8 border-t border-slate-200 dark:border-slate-800">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate('/admin')}
+                  className="px-6 h-11 font-semibold"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-[#00a651] hover:bg-[#008a43] px-8 h-11 font-semibold shadow-lg hover:shadow-xl"
+                >
+                  Crear Evento
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
     </div>
   );

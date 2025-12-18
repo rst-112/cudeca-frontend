@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { Progress } from '../../components/ui/Progress';
-import { Edit, Trash2, CheckCircle } from 'lucide-react';
+import { Edit, CheckCircle } from 'lucide-react';
 import { getEventos, publicarEvento } from '../../services/eventos.service';
 import type { Evento, EstadoEvento } from '../../types/api.types';
 import { toast } from 'sonner';
@@ -33,94 +32,113 @@ const EventoCard = ({ evento, onPublish }: { evento: Evento; onPublish: (id: num
     : 0;
 
   return (
-    <Card className="overflow-hidden transition-shadow hover:shadow-lg bg-white dark:bg-slate-800 border-0 dark:border-slate-700">
-      <CardContent className="p-0">
-        <div className="flex items-center gap-0 h-32">
-          {/* Imagen */}
+    <div className="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-[#00A651] dark:hover:border-[#00A651] transition-all hover:shadow-xl overflow-hidden">
+      <div className="flex items-center gap-0 h-40">
+        {/* Imagen mejorada */}
+        <div className="relative h-full w-56 shrink-0 overflow-hidden">
           <img
-            src={evento.imagenUrl || 'https://via.placeholder.com/160x128'}
+            src={evento.imagenUrl || 'https://via.placeholder.com/224x160'}
             alt={evento.nombre}
-            className="h-full w-40 object-cover shrink-0"
+            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
+          <div className="absolute inset-0 bg-linear-to-r from-transparent to-black/10 dark:to-black/30" />
+        </div>
 
-          {/* Contenido principal */}
-          <div className="flex-1 px-6 py-4 flex flex-col justify-center">
-            <h3 className="font-bold text-base text-slate-900 dark:text-white">{evento.nombre}</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              {new Date(evento.fechaInicio).toLocaleDateString('es-ES', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">📍 {evento.lugar}</p>
-          </div>
+        {/* Contenido principal mejorado */}
+        <div className="flex-1 px-6 py-4 flex flex-col justify-center gap-2">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-bold text-xl text-slate-900 dark:text-white truncate group-hover:text-[#00A651] dark:group-hover:text-[#00A651] transition-colors">
+                {evento.nombre}
+              </h3>
+              <div className="flex items-center gap-3 mt-2.5">
+                <p className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2">
+                  <span className="text-lg">📅</span>
+                  <span className="font-medium">
+                    {new Date(evento.fechaInicio).toLocaleDateString('es-ES', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </span>
+                  <span className="text-slate-400 dark:text-slate-500">·</span>
+                  <span>
+                    {new Date(evento.fechaInicio).toLocaleTimeString('es-ES', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
+                </p>
+                <span className="text-slate-300 dark:text-slate-600">|</span>
+                <p className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2 truncate">
+                  <span className="text-lg">📍</span>
+                  <span className="font-medium">{evento.lugar}</span>
+                </p>
+              </div>
+            </div>
 
-          {/* Badge de estado */}
-          <div className="shrink-0 px-4">
+            {/* Badge de estado mejorado */}
             <Badge
               variant="outline"
-              className={`font-semibold text-xs ${getBadgeVariant(evento.estado)}`}
+              className={`font-bold text-sm px-3 py-1 shrink-0 ${getBadgeVariant(evento.estado)}`}
             >
               {evento.estado}
             </Badge>
           </div>
 
-          {/* Progreso de recaudación */}
+          {/* Progreso de recaudación mejorado */}
           {evento.objetivoRecaudacion && evento.objetivoRecaudacion > 0 && (
-            <div className="shrink-0 w-56 px-4">
-              <div className="flex justify-between text-xs mb-2">
-                <span className="text-gray-600 dark:text-gray-300 font-medium">
+            <div className="mt-3 bg-slate-50 dark:bg-slate-900/50 rounded-lg p-3">
+              <div className="flex justify-between items-center text-sm mb-2">
+                <span className="text-slate-900 dark:text-slate-100 font-bold">
                   {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(
                     recaudadoActual,
                   )}
                 </span>
-                <span className="text-gray-400 dark:text-gray-500">
+                <span className="text-slate-600 dark:text-slate-400 font-medium">
+                  de{' '}
                   {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(
                     evento.objetivoRecaudacion,
                   )}
                 </span>
               </div>
-              <Progress value={progreso} className="h-2" />
+              <Progress value={progreso} className="h-2.5" />
+              <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 font-medium">
+                {progreso.toFixed(1)}% del objetivo alcanzado
+              </p>
             </div>
           )}
+        </div>
 
-          {/* Botones de acciones */}
-          <div className="shrink-0 px-4 flex items-center gap-2">
+        {/* Botones de acciones mejorados */}
+        <div className="shrink-0 px-6 flex items-center gap-2 border-l border-slate-200 dark:border-slate-700 h-full">
+          <div className="flex flex-col gap-2.5">
             <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:bg-gray-100 dark:hover:bg-slate-700"
+              variant="outline"
+              size="sm"
+              className="h-10 px-4 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500 group/btn font-semibold"
               title="Editar evento"
               onClick={() => navigate('/editar-entrada')}
             >
-              <Edit className="h-4 w-4 text-slate-600 dark:text-gray-400" />
+              <Edit className="h-4 w-4 text-slate-600 dark:text-slate-400 group-hover/btn:text-[#00A651] mr-2" />
+              Editar
             </Button>
             {evento.estado === 'BORRADOR' && (
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 hover:bg-green-100 dark:hover:bg-green-900/30"
+                variant="outline"
+                size="sm"
+                className="h-10 px-4 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-400 dark:hover:border-green-600 group/btn font-semibold border-green-300 dark:border-green-700"
                 title="Publicar evento"
                 onClick={() => onPublish(evento.id)}
               >
-                <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400 mr-2" />
+                <span className="text-green-600 dark:text-green-400">Publicar</span>
               </Button>
             )}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:bg-gray-100 dark:hover:bg-slate-700"
-              title="Eliminar evento"
-            >
-              <Trash2 className="h-4 w-4 text-red-500 dark:text-red-400" />
-            </Button>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
@@ -212,7 +230,7 @@ const ListaEventos = () => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {eventos.map((evento) => (
         <EventoCard key={evento.id} evento={evento} onPublish={handlePublish} />
       ))}
