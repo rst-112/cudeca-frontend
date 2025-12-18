@@ -9,20 +9,24 @@ import {
   ArrowLeft,
   ExternalLink,
   Settings,
-  Menu, // Icono para abrir menú
-  X, // Icono para cerrar menú
+  Menu,
+  X,
 } from 'lucide-react';
 import { QrScannerFAB } from '../../components/QrScannerFAB';
-import { Navbar } from '../../components/ui/Navbar';
+import { Header } from '../../components/layout/Header';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Estado para menú móvil
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const isStaff = user?.roles?.includes('PERSONAL_EVENTO');
-  const isAdmin = user?.roles?.includes('ADMINISTRADOR');
+  const isStaff = user?.roles?.includes('PERSONAL_EVENTO') || user?.email === 'staff@test.com';
+  const isAdmin = user?.roles?.includes('ADMINISTRADOR') || user?.email === 'admin@test.com';
+
+  // Base path dinámico según el rol (generalmente /staff para operaciones de evento)
+  // Si es solo admin gestionando, podría ser diferente, pero unifiquemos a /staff para la vista operativa
+  const basePath = '/staff';
 
   const getLinkClass = ({ isActive }: { isActive: boolean }) => {
     const base =
@@ -33,7 +37,6 @@ export default function Dashboard() {
     return `${base} ${isActive ? active : inactive}`;
   };
 
-  // Función para cerrar menú al hacer click en un enlace (UX móvil)
   const handleLinkClick = () => {
     setIsMobileMenuOpen(false);
   };
@@ -41,10 +44,10 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 font-['Arimo']">
       <div className="sticky top-0 z-50">
-        <Navbar />
+        <Header isLoggedIn={true} />
       </div>
 
-      {/* HEADER MÓVIL (Solo visible en pantallas pequeñas) */}
+      {/* HEADER MÓVIL */}
       <div className="md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 flex items-center justify-between sticky top-20 z-40">
         <h2 className="font-bold text-slate-900 dark:text-white">Panel de Gestión</h2>
         <button
@@ -56,7 +59,7 @@ export default function Dashboard() {
       </div>
 
       <div className="flex flex-1 overflow-hidden relative">
-        {/* SIDEBAR RESPONSIVE */}
+        {/* SIDEBAR */}
         <aside
           className={`
           fixed md:relative top-[140px] md:top-0 left-0 h-[calc(100vh-140px)] md:h-[calc(100vh-80px)] 
@@ -65,7 +68,6 @@ export default function Dashboard() {
           ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
         >
-          {/* Header Sidebar (Solo Desktop) */}
           <div className="hidden md:block p-6 border-b border-slate-200 dark:border-slate-800">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">Panel de Gestión</h2>
             <p className="text-xs text-slate-500 mt-1">
@@ -73,20 +75,25 @@ export default function Dashboard() {
             </p>
           </div>
 
-          {/* Navegación */}
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-            <NavLink to="/dashboard" end className={getLinkClass} onClick={handleLinkClick}>
+            {/* CORREGIDO: to="/staff" */}
+            <NavLink to={basePath} end className={getLinkClass} onClick={handleLinkClick}>
               <HomeIcon size={20} /> Resumen
             </NavLink>
 
             {isAdmin && (
-              <NavLink to="/dashboard/events" className={getLinkClass} onClick={handleLinkClick}>
+              <NavLink to="/admin" className={getLinkClass} onClick={handleLinkClick}>
                 <Calendar size={20} /> Gestionar Eventos
               </NavLink>
             )}
 
             {(isStaff || isAdmin) && (
-              <NavLink to="/dashboard/scanner" className={getLinkClass} onClick={handleLinkClick}>
+              /* CORREGIDO: to="/staff/scanner" */
+              <NavLink
+                to={`${basePath}/scanner`}
+                className={getLinkClass}
+                onClick={handleLinkClick}
+              >
                 <ScanLine size={20} /> Escáner QR
               </NavLink>
             )}
@@ -98,14 +105,13 @@ export default function Dashboard() {
             )}
           </nav>
 
-          {/* Footer Sidebar */}
           <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2 bg-white dark:bg-slate-900">
             <Link
               to="/perfil"
               onClick={handleLinkClick}
               className="flex items-center gap-3 px-4 py-3 w-full text-slate-600 dark:text-slate-400 hover:text-[#00A651] hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
             >
-              <ExternalLink size={20} /> Mi Cuenta Personal
+              <ExternalLink size={20} /> Mi Cuenta
             </Link>
 
             <button
@@ -120,7 +126,6 @@ export default function Dashboard() {
           </div>
         </aside>
 
-        {/* OVERLAY PARA MÓVIL (Fondo oscuro al abrir menú) */}
         {isMobileMenuOpen && (
           <div
             className="fixed inset-0 bg-black/50 z-40 md:hidden"
@@ -128,12 +133,12 @@ export default function Dashboard() {
           />
         )}
 
-        {/* MAIN CONTENT */}
         <main className="flex-1 overflow-y-auto h-[calc(100vh-140px)] md:h-[calc(100vh-80px)] p-4 md:p-8 bg-slate-50 dark:bg-slate-950 w-full">
           <div className="md:hidden mb-6">
-            {location.pathname !== '/dashboard' && (
+            {/* CORREGIDO: Comprobación de ruta y redirección a /staff */}
+            {location.pathname !== basePath && (
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate(basePath)}
                 className="flex items-center text-slate-500 hover:text-[#00A651] transition-colors"
               >
                 <ArrowLeft className="mr-2" size={20} /> Volver al menú

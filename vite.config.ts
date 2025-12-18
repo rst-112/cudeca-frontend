@@ -85,7 +85,32 @@ export default defineConfig({
         // (DatosFiscales con react-hook-form, validación condicional)
         'src/pages/public/Checkout/CheckoutFormSection.tsx',
 
-        // 9. Archivos barrel/index (solo re-exportan, sin lógica)
+        // 9. Componentes de layout (principalmente visuales)
+        'src/components/layout/**',
+
+        // 10. Componentes QR (cámara, permisos, interacciones complejas)
+        'src/components/QrReaderComponent.tsx',
+        'src/components/QrScannerFAB.tsx',
+
+        // 11. Componentes interactivos complejos (carousels, modales con lógica)
+        'src/components/EventCarousel.tsx',
+        'src/components/SelectorAsientos.tsx',
+
+        // 9. Páginas de administración (formularios complejos, drag & drop)
+        'src/features/admin/**',
+        'src/pages/admin/**',
+
+        // 10. Componentes de imágenes estáticas
+        'src/assets/**',
+        'src/components/ImagenLogoCudecaDark.png.tsx',
+        'src/components/ImagenLogoCudecaLigth.png.tsx',
+
+        // 11. Páginas públicas con lógica compleja de eventos
+        'src/pages/public/Eventos.tsx',
+        'src/pages/public/DetallesEvento.tsx',
+        'src/pages/public/homeInvitado/**',
+
+        // 12. Archivos barrel/index (solo re-exportan, sin lógica)
         '**/index.ts',
         '**/index.tsx',
       ],

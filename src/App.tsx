@@ -4,38 +4,44 @@ import { ThemeProvider } from './context/ThemeContext';
 import { CartProvider } from './context/CartContext';
 import { Toaster } from 'sonner';
 import { ScrollToTop } from './components/ScrollToTop';
+
+// Layouts
 import MainLayout from './components/layout/MainLayout';
+import AdminLayout from './features/admin/AdminLayout';
+
+// Auth Pages
 import AuthPage from './features/auth/AuthPage';
-import { PrivateRoute } from './components/PrivateRoute';
-import AdminDashboard from './features/admin/AdminDashboard';
 import ForgotPasswordPage from './features/auth/ForgotPasswordPage';
 import ResetPasswordPage from './features/auth/ResetPasswordPage';
 
-// Dashboard (Backoffice SOLO para Staff/Admin)
+// Admin Pages & Features
+import AdminDashboard from './features/admin/AdminDashboard';
+import CrearEvento from './features/admin/CrearEvento';
+import GestionAsientos from './features/admin/GestionAsientos';
+import EditorMapaAsientos from './features/admin/EditorMapaAsientos';
+import VisorMapaAsientos from './features/admin/VisorMapaAsientos';
+
+// Staff Pages
 import Dashboard from './features/dashboard/Dashboard';
 import DashboardHome from './features/dashboard/DashboardHome';
 import ScannerView from './features/dashboard/ScannerView';
 
-// Páginas públicas
-import Home from './pages/Home';
+// Public Pages
+import { HomeInvitado as HomePage } from './pages/public/homeInvitado/HomeInvitado';
+import Eventos from './pages/public/Eventos';
 import DetalleEvento from './pages/public/DetallesEvento';
-
-// === PÁGINAS UNIFICADAS ===
-import Checkout from './pages/public/Checkout';
+import Checkout from './pages/public/Checkout'; // Ahora accesible públicamente
 import ConfirmationPage from './pages/public/Confirmation';
+
+// Private User Pages
 import PerfilUsuario from './pages/PerfilUsuario';
 
-// === PÁGINAS LEGALES ===
+// Legal
 import Terms from './pages/legal/Terms';
 import Privacy from './pages/legal/Privacy';
 import Cookies from './pages/legal/Cookies';
 
-// Herramientas de Desarrollo
-import SandboxSeatMap from './pages/public/SandboxSeatMap';
-import SandboxSeatMapEditor from './pages/public/SandboxSeatMapEditor';
-
-// Componente temporal para staff
-const EventStaffDashboard = () => <div>Dashboard (Personal Evento)</div>;
+import { PrivateRoute } from './components/PrivateRoute';
 
 function RedirectIfAuthenticated({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -54,32 +60,26 @@ function App() {
           <CartProvider>
             <Toaster position="top-right" richColors />
             <Routes>
-              {/* === RUTAS DE DESARROLLO === */}
-              <Route path="/dev/mapa" element={<SandboxSeatMap />} />
-              <Route path="/dev/mapa/editor" element={<SandboxSeatMapEditor />} />
+              {/* === RUTAS PÚBLICAS (Layout Principal) === */}
+              <Route path="/" element={<MainLayout />}>
+                <Route index element={<HomePage />} />
+                <Route path="eventos" element={<Eventos />} />
+                <Route path="evento/:id" element={<DetalleEvento />} />
 
-              {/* Redirecciones de compatibilidad (para no romper links antiguos) */}
-              <Route path="/dev/checkout-usuario" element={<Checkout />} />
-              <Route path="/dev/checkout-invitado" element={<Checkout />} />
-              <Route path="/dev/compra-invitado" element={<ConfirmationPage />} />
-              <Route path="/dev/compra-usuario" element={<ConfirmationPage />} />
-              <Route path="/dev/perfil-usuario" element={<PerfilUsuario />} />
-              <Route
-                path="/dev/datos-fiscales"
-                element={<Navigate to="/perfil?tab=fiscales" replace />}
-              />
-              <Route
-                path="/dev/recarga-saldo"
-                element={<Navigate to="/perfil?tab=monedero" replace />}
-              />
-              <Route
-                path="/dev/suscripcion"
-                element={<Navigate to="/perfil?tab=suscripcion" replace />}
-              />
-              <Route
-                path="/dev/perfil-compras"
-                element={<Navigate to="/perfil?tab=compras" replace />}
-              />
+                {/* --- CAMBIO: CHECKOUT AHORA ES PÚBLICO --- */}
+                <Route path="checkout" element={<Checkout />} />
+                <Route path="confirmacion" element={<ConfirmationPage />} />
+
+                {/* Páginas Legales */}
+                <Route path="terminos" element={<Terms />} />
+                <Route path="privacidad" element={<Privacy />} />
+                <Route path="cookies" element={<Cookies />} />
+
+                {/* Rutas Protegidas de Usuario */}
+                <Route element={<PrivateRoute />}>
+                  <Route path="perfil" element={<PerfilUsuario />} />
+                </Route>
+              </Route>
 
               {/* === AUTH === */}
               <Route
@@ -115,44 +115,28 @@ function App() {
                 }
               />
 
-              {/* === ADMIN GLOBAL === */}
+              {/* === ADMIN (Layout Dedicado) === */}
               <Route element={<PrivateRoute requiredRole="ADMINISTRADOR" />}>
-                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="eventos" element={<AdminDashboard />} />
+                  <Route path="asientos" element={<GestionAsientos />} />
+                </Route>
+                <Route path="/creacion-eventos" element={<CrearEvento />} />
+                <Route path="/admin/asientos/editor/:eventoId" element={<EditorMapaAsientos />} />
+                <Route path="/admin/asientos/visor/:eventoId" element={<VisorMapaAsientos />} />
               </Route>
 
-              {/* === STAFF & ADMIN (Backoffice/Trabajo) === */}
-              {/* Solo tienen acceso Staff y Admins. Aquí gestionan el evento. */}
+              {/* === STAFF === */}
               <Route element={<PrivateRoute requiredRole={['ADMINISTRADOR', 'PERSONAL_EVENTO']} />}>
-                <Route path="/dashboard" element={<Dashboard />}>
+                <Route path="/staff" element={<Dashboard />}>
                   <Route index element={<DashboardHome />} />
                   <Route path="scanner" element={<ScannerView />} />
-                  <Route path="events" element={<div>Gestión de Eventos</div>} />
                 </Route>
+                <Route path="/dashboard" element={<Navigate to="/staff" replace />} />
               </Route>
 
-              {/* === STAFF (Ruta legacy, opcional si ya usan /dashboard) === */}
-              <Route element={<PrivateRoute requiredRole="PERSONAL_EVENTO" />}>
-                <Route path="/staff" element={<EventStaffDashboard />} />
-              </Route>
-
-              {/* === WEB PÚBLICA Y ZONA PERSONAL (Layout Principal) === */}
-              <Route path="/" element={<MainLayout />}>
-                <Route index element={<Home />} />
-                <Route path="evento/:id" element={<DetalleEvento />} />
-                <Route path="checkout" element={<Checkout />} />
-                <Route path="confirmacion" element={<ConfirmationPage />} />
-
-                {/* PÁGINAS LEGALES */}
-                <Route path="terminos" element={<Terms />} />
-                <Route path="privacidad" element={<Privacy />} />
-                <Route path="cookies" element={<Cookies />} />
-
-                {/* ZONA PERSONAL (Accesible para TODOS los roles) */}
-                <Route element={<PrivateRoute />}>
-                  <Route path="perfil" element={<PerfilUsuario />} />
-                </Route>
-              </Route>
-
+              {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </CartProvider>
