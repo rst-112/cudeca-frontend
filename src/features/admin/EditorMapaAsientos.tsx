@@ -24,22 +24,25 @@ export default function EditorMapaAsientos() {
   };
 
   return (
-    <div className="h-[calc(100vh-140px)] md:h-[calc(100vh-80px)] bg-slate-50 dark:bg-slate-950 flex flex-col">
+    <div className="fixed inset-0 bg-slate-950 flex flex-col">
       {/* Header */}
-      <div className="shrink-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4">
+      <div className="shrink-0 bg-slate-900 border-b border-slate-800 p-4">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={handleBack} className="gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            className="gap-2 text-white hover:text-[#00A651]"
+          >
             <ArrowLeft size={16} />
             Volver a Gestión de Asientos
           </Button>
-          <div className="h-6 w-px bg-slate-200 dark:bg-slate-700" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-            Editor de Mapa - Evento #{eventoId}
-          </h2>
+          <div className="h-6 w-px bg-slate-700" />
+          <h2 className="text-lg font-bold text-white">Editor de Mapa - Evento #{eventoId}</h2>
         </div>
       </div>
 
-      {/* Editor */}
+      {/* Editor - Ocupa TODO el resto de la pantalla */}
       <div className="flex-1 overflow-hidden">
         <SeatMapEditor onSave={handleSave} ancho={800} alto={600} />
       </div>
