@@ -10,6 +10,7 @@ export interface DatosFiscales {
   codigoPostal: string;
   pais: string;
   alias?: string;
+  esPrincipal?: boolean;
 }
 
 export interface AsientoSeleccionado {

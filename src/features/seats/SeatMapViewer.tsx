@@ -399,8 +399,9 @@ export const SeatMapViewer: React.FC<SeatMapViewerProps> = ({
                       {renderSeatShape(seat)}
                       <text
                         x={seat.x}
-                        y={seat.y}
-                        dy={4}
+                        y={seat.y + 4}
+                        dy={0}
+                        dominantBaseline="middle"
                         textAnchor="middle"
                         className={classes.text}
                         style={{ pointerEvents: 'none' }}

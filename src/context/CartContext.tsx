@@ -19,8 +19,9 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (item: Omit<CartItem, 'cantidad'>) => void;
-  removeItem: (id: string) => void;
+  addItem: (item: Omit<CartItem, 'cantidad'>, silent?: boolean) => void;
+  addItemWithSeat: (item: Omit<CartItem, 'cantidad'>, silent?: boolean) => void;
+  removeItem: (id: string, silent?: boolean) => void; // <--- Nuevo parámetro silent
   updateQuantity: (id: string, cantidad: number) => void;
   clearCart: () => void;
   getTotalItems: () => number;
@@ -39,21 +40,38 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('cudeca-cart', JSON.stringify(items));
   }, [items]);
 
-  const addItem = (newItem: Omit<CartItem, 'cantidad'>) => {
+  const addItem = (newItem: Omit<CartItem, 'cantidad'>, silent: boolean = false) => {
     setItems((prev) => {
       const existing = prev.find((item) => item.id === newItem.id);
       if (existing) {
-        toast.info('Entrada ya añadida al carrito');
+        if (!silent) toast.info('Entrada ya añadida al carrito');
         return prev;
       }
-      toast.success('Entrada añadida al carrito');
+      if (!silent) toast.success('Entrada añadida al carrito');
       return [...prev, { ...newItem, cantidad: 1 }];
     });
   };
 
-  const removeItem = (id: string) => {
+  const addItemWithSeat = (newItem: Omit<CartItem, 'cantidad'>, silent: boolean = false) => {
+    setItems((prev) => {
+      const existingWithSeat = prev.find(
+        (item) => item.asientoId && item.asientoId === newItem.asientoId,
+      );
+
+      if (existingWithSeat) {
+        if (!silent) toast.error(`El asiento ${newItem.asientoEtiqueta} ya está en el carrito`);
+        return prev;
+      }
+
+      if (!silent) toast.success(`Asiento ${newItem.asientoEtiqueta} añadido al carrito`);
+      return [...prev, { ...newItem, cantidad: 1 }];
+    });
+  };
+
+  // removeItem ahora acepta silent
+  const removeItem = (id: string, silent: boolean = false) => {
     setItems((prev) => prev.filter((item) => item.id !== id));
-    toast.success('Entrada eliminada del carrito');
+    if (!silent) toast.success('Entrada eliminada del carrito');
   };
 
   const updateQuantity = (id: string, cantidad: number) => {
@@ -77,6 +95,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       value={{
         items,
         addItem,
+        addItemWithSeat,
         removeItem,
         updateQuantity,
         clearCart,
