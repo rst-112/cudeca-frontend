@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -11,7 +11,7 @@ import {
   confirmarPago,
   obtenerDatosFiscalesUsuario,
 } from '../../services/checkout.service';
-import type { AsientoSeleccionado, DatosFiscales } from '../../types/checkout.types';
+import type { DatosFiscales } from '../../types/checkout.types';
 import {
   ShoppingCart,
   FileText,
@@ -19,467 +19,583 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
+  User,
+  Mail,
+  LogIn,
+  ShieldCheck,
+  Smartphone,
+  Wallet,
+  Trash2,
+  Ticket,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+
+// --- ARREGLO DEL ERROR ---
+// Importamos el hook normalmente
 import { useCart } from '../../context/CartContext';
+// Importamos la interfaz COMO TIPO explícitamente para que Vite no falle
+import type { CartItem } from '../../context/CartContext';
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
-  const { items: cartItems, clearCart } = useCart();
+  const { items: cartItems, clearCart, getTotalPrice, removeItem } = useCart();
 
-  const [asientosSeleccionados, setAsientosSeleccionados] = useState<AsientoSeleccionado[]>([]);
+  // Estados de Compra
   const [solicitarCertificado, setSolicitarCertificado] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<'resumen' | 'confirmado'>('resumen');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('tarjeta');
+
+  // Estados de Datos (Usuario Logueado)
   const [datosFiscales, setDatosFiscales] = useState<DatosFiscales[]>([]);
   const [datosFiscalesSeleccionado, setDatosFiscalesSeleccionado] = useState<number | null>(null);
   const [mostrarFormularioNuevo, setMostrarFormularioNuevo] = useState(false);
 
-  const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState<'resumen' | 'confirmado'>('resumen');
-
-  const [nuevosDatos, setNuevosDatos] = useState<DatosFiscales>({
-    nif: '',
+  // Estados de Datos (Invitado)
+  const [guestForm, setGuestForm] = useState({
     nombre: '',
+    email: '',
+    // DNI eliminado para invitado básico
     direccion: '',
     ciudad: '',
     codigoPostal: '',
     pais: 'España',
   });
 
-  // 1. Efecto de Protección de Ruta
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      toast.error('Debes iniciar sesión para realizar la compra');
-      navigate('/login?redirect=/checkout'); // Redirigir al login
-    }
-  }, [authLoading, isAuthenticated, navigate]);
+  // --- LÓGICA DE AGRUPACIÓN DE ITEMS ---
+  const groupedItems = useMemo(() => {
+    const groups: Record<
+      string,
+      CartItem & { count: number; originalIds: string[]; asientos: string[] }
+    > = {};
 
-  // 2. Efecto de Carga de Datos (Solo si hay usuario)
+    cartItems.forEach((item) => {
+      // Clave única para agrupar: Evento + TipoEntrada + Precio
+      const key = `${item.eventoId}-${item.tipoEntradaId}-${item.precio}`;
+
+      if (!groups[key]) {
+        groups[key] = {
+          ...item,
+          count: 0,
+          originalIds: [],
+          asientos: [],
+        };
+      }
+
+      groups[key].count += item.cantidad;
+      groups[key].originalIds.push(item.id);
+
+      // Si tiene asiento asignado, lo guardamos para mostrarlo
+      if (item.asientoEtiqueta) {
+        groups[key].asientos.push(item.asientoEtiqueta);
+      }
+    });
+
+    return Object.values(groups);
+  }, [cartItems]);
+
+  const removeGroup = (originalIds: string[]) => {
+    originalIds.forEach((id) => removeItem(id));
+  };
+
+  // --- EFECTOS ---
+
   useEffect(() => {
-    if (user?.id) {
+    // Si no hay items y no estamos en la pantalla de éxito, redirigir
+    if (cartItems.length === 0 && step !== 'confirmado') {
+      toast.error('No hay entradas en el carrito');
+      navigate('/eventos');
+      return;
+    }
+
+    if (isAuthenticated && user?.id) {
       cargarDatosFiscales(user.id);
     }
-
-    // Convertir items del carrito a asientos seleccionados
-    const asientos: AsientoSeleccionado[] = cartItems.map((item) => ({
-      id: item.id,
-      etiqueta: item.asientoEtiqueta || item.tipoEntradaNombre,
-      precio: item.precio,
-      zonaId: item.tipoEntradaId,
-      zonaNombre: item.zonaNombre || item.eventoNombre,
-    }));
-    setAsientosSeleccionados(asientos);
-
-    // Si el carrito está vacío, redirigir
-    if (cartItems.length === 0) {
-      toast.error('No hay entradas en el carrito');
-      navigate('/');
-    }
-  }, [user, cartItems, navigate]);
+  }, [cartItems, isAuthenticated, user, navigate, step]);
 
   const cargarDatosFiscales = async (usuarioId: number) => {
     try {
       const datos = await obtenerDatosFiscalesUsuario(usuarioId);
       setDatosFiscales(datos);
-
-      // Seleccionar el principal por defecto
-      const principal = datos.find((d: DatosFiscales) => d.esPrincipal);
-      if (principal?.id) {
-        setDatosFiscalesSeleccionado(principal.id);
-      }
+      const principal = datos.find((d) => d.esPrincipal);
+      if (principal?.id) setDatosFiscalesSeleccionado(principal.id);
     } catch (error) {
-      console.error('Error al cargar datos fiscales:', error);
-      toast.error('No se pudieron cargar tus datos fiscales');
+      console.error('Error cargando datos fiscales', error);
     }
   };
 
-  const calcularTotal = () => {
-    const subtotal = asientosSeleccionados.reduce((sum, asiento) => sum + asiento.precio, 0);
-    const comision = subtotal * 0.05; // 5% de comisión
-    return {
-      subtotal,
-      comision,
-      total: subtotal + comision,
-    };
+  // --- HANDLERS ---
+
+  const handleGuestChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setGuestForm({ ...guestForm, [e.target.name]: e.target.value });
   };
 
   const handleSolicitarCertificadoChange = (checked: boolean) => {
     setSolicitarCertificado(checked);
-
-    // Si no tiene datos fiscales guardados, mostrar formulario automáticamente
-    if (checked && datosFiscales.length === 0) {
+    if (isAuthenticated && checked && datosFiscales.length === 0) {
       setMostrarFormularioNuevo(true);
     }
   };
 
-  const validarDatosFiscales = (): boolean => {
-    if (!solicitarCertificado) return true;
-
-    if (mostrarFormularioNuevo) {
-      // Validar formulario de nuevos datos
-      if (
-        !nuevosDatos.nif ||
-        !nuevosDatos.nombre ||
-        !nuevosDatos.direccion ||
-        !nuevosDatos.ciudad ||
-        !nuevosDatos.codigoPostal
-      ) {
-        toast.error('Completa todos los campos de datos fiscales');
+  const validarFormulario = (): boolean => {
+    if (!isAuthenticated) {
+      // Validación simplificada Invitado: Solo Nombre y Email
+      if (!guestForm.nombre || !guestForm.email) {
+        toast.error('Por favor completa Nombre y Email');
         return false;
       }
-
-      // Validar formato NIF (básico)
-      const nifRegex = /^[0-9]{8}[A-Z]$/;
-      if (!nifRegex.test(nuevosDatos.nif)) {
-        toast.error('El NIF debe tener 8 números seguidos de una letra');
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(guestForm.email)) {
+        toast.error('Email inválido');
         return false;
       }
-
-      return true;
-    } else {
-      // Verificar que haya seleccionado datos fiscales existentes
-      if (!datosFiscalesSeleccionado) {
-        toast.error('Selecciona datos fiscales o crea unos nuevos');
-        return false;
-      }
-      return true;
     }
+
+    if (solicitarCertificado) {
+      if (!isAuthenticated || mostrarFormularioNuevo) {
+        // Si pide certificado, necesitamos dirección completa
+        if (!guestForm.direccion || !guestForm.ciudad || !guestForm.codigoPostal) {
+          toast.error('Para el certificado fiscal necesitamos tu dirección completa');
+          return false;
+        }
+      } else if (isAuthenticated && !datosFiscalesSeleccionado) {
+        toast.error('Selecciona una dirección fiscal guardada');
+        return false;
+      }
+    }
+
+    return true;
   };
 
   const handleConfirmarCompra = async () => {
-    if (!validarDatosFiscales()) return;
-    if (!user?.id) {
-      toast.error('Sesión no válida');
-      return;
-    }
+    if (!validarFormulario()) return;
 
     setLoading(true);
     try {
-      // 1. Procesar checkout (crear compra)
+      // Preparamos los items desagrupados para el backend
+      const itemsCheckout = cartItems.map((item) => ({
+        tipo: 'ENTRADA' as const,
+        referenciaId: parseInt(item.id) || 0,
+        cantidad: item.cantidad,
+        precio: item.precio,
+      }));
+
       const response = await procesarCheckout({
-        usuarioId: user.id,
-        // CORRECCIÓN AQUÍ: Mapear al formato correcto ItemCheckout
-        items: asientosSeleccionados.map((a) => ({
-          tipo: 'ENTRADA', // <--- Añadido
-          referenciaId: parseInt(a.id) || 0, // <--- Ahora es referenciaId, no asientoId
-          cantidad: 1, // <--- Añadido
-          precio: a.precio,
-        })),
+        usuarioId: user?.id || 0,
+        metodoPago: selectedPaymentMethod.toUpperCase(),
         donacionExtra: 0,
+        items: itemsCheckout,
         solicitarCertificado,
-        datosFiscalesId: mostrarFormularioNuevo
-          ? undefined
-          : (datosFiscalesSeleccionado ?? undefined),
+        datosFiscalesId:
+          isAuthenticated && !mostrarFormularioNuevo
+            ? datosFiscalesSeleccionado || undefined
+            : undefined,
       });
 
-      toast.success('Compra procesada correctamente');
+      // Simulación de espera de pago
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // 2. Simulación de Pago (En real aquí redirigirías a Stripe/Redsys)
-      // await iniciarPago(response.urlPago);
-
-      // Confirmación directa para demo
       await confirmarPago(response.compraId, {
         transaccionId: 'DEMO-' + Date.now(),
         estado: 'COMPLETADO',
       });
 
-      toast.success('¡Compra confirmada! Redirigiendo...');
       setStep('confirmado');
-      clearCart(); // Limpiar el carrito después de la compra exitosa
-
-      // Redirigir al perfil después de 3 segundos
-      setTimeout(() => {
-        navigate('/perfil?tab=entradas');
-      }, 3000);
+      clearCart();
+      toast.success('¡Compra realizada con éxito!');
     } catch (error) {
-      console.error('Error en checkout:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Error al procesar la compra';
-      toast.error(errorMessage);
+      console.error(error);
+      toast.error('Error al procesar la compra. Inténtalo de nuevo.');
     } finally {
       setLoading(false);
     }
   };
 
-  const totales = calcularTotal();
+  const total = getTotalPrice();
+  const comision = total * 0.05;
+  const totalFinal = total + comision;
 
-  // Mostrar spinner mientras verificamos autenticación
-  if (authLoading) {
+  if (authLoading)
     return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#00A651]" />
+      <div className="flex h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <Loader2 className="animate-spin text-[#00A651]" />
       </div>
     );
-  }
 
-  // Si no hay usuario (y el useEffect aún no redirigió), no renderizar nada sensible
-  if (!user) return null;
-
+  // --- VISTA ÉXITO ---
   if (step === 'confirmado') {
     return (
-      <div className="container mx-auto px-4 py-12 max-w-2xl animate-in fade-in zoom-in duration-500">
-        <Card className="p-8 text-center border-green-500/20 shadow-lg shadow-green-500/10">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+        <Card className="max-w-xl w-full p-10 text-center border-green-500/20 shadow-2xl shadow-green-500/10 bg-white dark:bg-slate-900 animate-in fade-in zoom-in duration-500">
           <div className="w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-500" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">
-            ¡Compra Confirmada!
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
+            ¡Gracias por tu apoyo!
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-8 text-lg">
-            Gracias por tu colaboración, <span className="font-semibold">{user.nombre}</span>.<br />
-            Hemos enviado las entradas a tu correo electrónico.
+          <p className="text-slate-600 dark:text-slate-300 mb-8 text-lg leading-relaxed">
+            Hemos enviado tus entradas a{' '}
+            <strong className="text-slate-900 dark:text-white">
+              {isAuthenticated ? user?.email : guestForm.email}
+            </strong>
+            .
+            <br />
+            Disfruta del evento.
           </p>
-          <Button
-            onClick={() => navigate('/perfil?tab=entradas')}
-            size="lg"
-            className="w-full sm:w-auto"
-          >
-            Ver mis entradas
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              onClick={() => navigate('/')}
+              variant="outline"
+              size="lg"
+              className="border-slate-300 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800"
+            >
+              Volver al inicio
+            </Button>
+            {isAuthenticated && (
+              <Button
+                onClick={() => navigate('/perfil?tab=entradas')}
+                size="lg"
+                className="bg-[#00A651] hover:bg-[#008a43] text-white"
+              >
+                Ver mis entradas
+              </Button>
+            )}
+          </div>
         </Card>
       </div>
     );
   }
 
+  // --- VISTA FORMULARIO ---
   return (
-    <div className="container mx-auto px-4 py-12 max-w-6xl">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">Checkout</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Completa tu compra y descarga tus entradas
-        </p>
-      </div>
+    <div className="bg-slate-50 dark:bg-slate-950 min-h-screen py-12 transition-colors duration-300">
+      <div className="container mx-auto px-4 max-w-6xl">
+        {/* Cabecera */}
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Finalizar Compra</h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-1">
+              Revisa tus entradas y completa el pago
+            </p>
+          </div>
+          {!isAuthenticated && (
+            <Button
+              variant="ghost"
+              className="text-[#00A651] hover:bg-[#00A651]/10 self-start sm:self-auto"
+              asChild
+            >
+              <Link to="/login?redirect=/checkout">
+                <LogIn className="w-4 h-4 mr-2" /> ¿Tienes cuenta? Inicia sesión
+              </Link>
+            </Button>
+          )}
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Columna Izquierda: Formulario */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Resumen de Asientos */}
-          <Card className="p-6">
-            <div className="flex items-center gap-2 mb-4 border-b border-gray-100 dark:border-slate-800 pb-3">
-              <ShoppingCart className="w-5 h-5 text-[#00A651]" />
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
-                Asientos Seleccionados
-              </h2>
-            </div>
-
-            <div className="space-y-3">
-              {asientosSeleccionados.map((asiento) => (
-                <div
-                  key={asiento.id}
-                  className="flex justify-between items-center p-4 bg-gray-50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700 rounded-lg"
-                >
-                  <div className="flex flex-col">
-                    <span className="font-bold text-gray-800 dark:text-white">
-                      {asiento.zonaNombre}
-                    </span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      Fila/Asiento: {asiento.etiqueta}
-                    </span>
-                  </div>
-                  <p className="font-bold text-[#00A651]">{asiento.precio.toFixed(2)} €</p>
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          {/* Datos Fiscales */}
-          <Card className="p-6">
-            <div className="flex items-center gap-2 mb-4 border-b border-gray-100 dark:border-slate-800 pb-3">
-              <FileText className="w-5 h-5 text-[#00A651]" />
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
-                Datos Fiscales
-              </h2>
-            </div>
-
-            {/* Toggle Solicitar Certificado */}
-            <div className="flex items-center justify-between p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/50 rounded-lg mb-6">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-500" />
-                <div className="flex flex-col">
-                  <Label
-                    htmlFor="certificado"
-                    className="cursor-pointer text-gray-800 dark:text-white font-medium"
-                  >
-                    Solicitar Certificado de Donación
-                  </Label>
-                  <span className="text-xs text-amber-700 dark:text-amber-500">
-                    Necesario para deducciones fiscales
-                  </span>
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* --- COLUMNA IZQUIERDA (Formularios) --- */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* 1. TUS DATOS */}
+            <Card className="p-6 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+              <div className="flex items-center gap-3 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <User className="w-5 h-5 text-[#00A651]" />
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Tus Datos</h2>
               </div>
-              <Switch
-                id="certificado"
-                checked={solicitarCertificado}
-                onCheckedChange={handleSolicitarCertificadoChange}
-              />
-            </div>
 
-            {/* Formulario de Datos Fiscales */}
-            {solicitarCertificado && (
-              <div className="space-y-4 animate-in slide-in-from-top-2 duration-300">
-                {datosFiscales.length > 0 && !mostrarFormularioNuevo && (
-                  <div className="bg-gray-50 dark:bg-slate-800 p-4 rounded-lg">
-                    <Label className="mb-2 block">Selecciona tus Datos Fiscales guardados:</Label>
-                    <select
-                      className="w-full p-2.5 border rounded-md bg-white dark:bg-slate-900 dark:border-slate-700 focus:ring-2 focus:ring-[#00A651] outline-none transition-all"
-                      value={datosFiscalesSeleccionado ?? ''}
-                      onChange={(e) => setDatosFiscalesSeleccionado(Number(e.target.value))}
-                    >
-                      <option value="">-- Selecciona --</option>
-                      {datosFiscales.map((datos) => (
-                        <option key={datos.id} value={datos.id}>
-                          {datos.alias ? datos.alias : datos.nombre} ({datos.nif})
-                        </option>
-                      ))}
-                    </select>
-
-                    <div className="mt-3 flex justify-end">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-[#00A651] hover:text-[#008a43] hover:bg-[#00A651]/10"
-                        onClick={() => setMostrarFormularioNuevo(true)}
-                      >
-                        + Añadir una dirección diferente
-                      </Button>
+              {isAuthenticated ? (
+                <div className="bg-green-50 dark:bg-green-900/10 p-4 rounded-xl border border-green-100 dark:border-green-900/30 flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-[#00A651] flex items-center justify-center text-white shrink-0">
+                    <span className="font-bold text-lg">{user?.nombre?.charAt(0)}</span>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-slate-900 dark:text-white truncate">
+                      {user?.nombre}
+                    </p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
+                      {user?.email}
+                    </p>
+                  </div>
+                  <div className="ml-auto shrink-0">
+                    <ShieldCheck className="text-[#00A651] w-5 h-5" />
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="g-nombre" className="text-slate-700 dark:text-slate-300">
+                        Nombre Completo
+                      </Label>
+                      <Input
+                        id="g-nombre"
+                        name="nombre"
+                        placeholder="Ej: María García"
+                        value={guestForm.nombre}
+                        onChange={handleGuestChange}
+                        className="bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-[#00A651]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="g-email" className="text-slate-700 dark:text-slate-300">
+                        Correo Electrónico
+                      </Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 " />
+                        <Input
+                          id="g-email"
+                          name="email"
+                          type="email"
+                          placeholder="maria@ejemplo.com"
+                          className="pl-10 bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-[#00A651]"
+                          value={guestForm.email}
+                          onChange={handleGuestChange}
+                        />
+                      </div>
+                      <p className="text-xs text-slate-500 dark:text-slate-500">
+                        Aquí enviaremos tus entradas.
+                      </p>
                     </div>
                   </div>
-                )}
+                </div>
+              )}
+            </Card>
 
-                {(mostrarFormularioNuevo || datosFiscales.length === 0) && (
-                  <div className="space-y-4 border-l-2 border-[#00A651] pl-4">
-                    <div className="flex justify-between items-center">
-                      <h3 className="font-semibold text-gray-700 dark:text-gray-300">
-                        Nuevos Datos
-                      </h3>
-                      {datosFiscales.length > 0 && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setMostrarFormularioNuevo(false)}
-                        >
-                          Cancelar
-                        </Button>
+            {/* 2. CERTIFICADO FISCAL */}
+            <Card className="p-6 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <FileText className="w-5 h-5 text-[#00A651]" />
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                    Certificado de Donación
+                  </h2>
+                </div>
+                <Switch
+                  checked={solicitarCertificado}
+                  onCheckedChange={handleSolicitarCertificadoChange}
+                />
+              </div>
+
+              <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg text-sm text-amber-800 dark:text-amber-400 flex gap-2 items-start mb-4 border border-amber-100 dark:border-amber-900/30">
+                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                <p>
+                  Activa esta opción si deseas recibir un certificado fiscal para desgravar esta
+                  donación.
+                </p>
+              </div>
+
+              {solicitarCertificado && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-top-2 pt-4 border-t border-slate-100 dark:border-slate-800">
+                  {isAuthenticated && datosFiscales.length > 0 && !mostrarFormularioNuevo ? (
+                    <div className="space-y-3">
+                      <Label className="text-slate-700 dark:text-slate-300">
+                        Dirección Fiscal Guardada
+                      </Label>
+                      <select
+                        className="w-full p-2.5 rounded-lg border bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[#00A651] cursor-pointer"
+                        value={datosFiscalesSeleccionado || ''}
+                        onChange={(e) => setDatosFiscalesSeleccionado(Number(e.target.value))}
+                      >
+                        {datosFiscales.map((d) => (
+                          <option key={d.id} value={d.id}>
+                            {d.direccion}, {d.ciudad} ({d.nif})
+                          </option>
+                        ))}
+                      </select>
+                      <Button
+                        variant="link"
+                        size="sm"
+                        onClick={() => setMostrarFormularioNuevo(true)}
+                        className="text-[#00A651] p-0 h-auto"
+                      >
+                        + Usar otra dirección
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="md:col-span-2 space-y-2">
+                        <Label className="text-slate-700 dark:text-slate-300">
+                          Dirección Fiscal
+                        </Label>
+                        <Input
+                          name="direccion"
+                          placeholder="Calle Mayor, 123"
+                          value={guestForm.direccion}
+                          onChange={handleGuestChange}
+                          className="bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-slate-700 dark:text-slate-300">Ciudad</Label>
+                        <Input
+                          name="ciudad"
+                          placeholder="Málaga"
+                          value={guestForm.ciudad}
+                          onChange={handleGuestChange}
+                          className="bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-slate-700 dark:text-slate-300">Código Postal</Label>
+                        <Input
+                          name="codigoPostal"
+                          placeholder="29000"
+                          value={guestForm.codigoPostal}
+                          onChange={handleGuestChange}
+                          className="bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white"
+                        />
+                      </div>
+                      {isAuthenticated && (
+                        <div className="md:col-span-2 flex justify-end">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setMostrarFormularioNuevo(false)}
+                            className="text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                          >
+                            Cancelar
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </Card>
+
+            {/* 3. PAGO */}
+            <Card className="p-6 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+              <div className="flex items-center gap-3 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <CreditCard className="w-5 h-5 text-[#00A651]" />
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Pago Seguro</h2>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div
+                  className={`cursor-pointer border-2 rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all ${selectedPaymentMethod === 'tarjeta' ? 'border-[#00A651] bg-[#00A651]/5 dark:bg-[#00A651]/10' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-950'}`}
+                  onClick={() => setSelectedPaymentMethod('tarjeta')}
+                >
+                  <CreditCard
+                    className={
+                      selectedPaymentMethod === 'tarjeta' ? 'text-[#00A651]' : 'text-slate-400'
+                    }
+                    size={28}
+                  />
+                  <span className="font-medium text-sm text-slate-900 dark:text-white">
+                    Tarjeta
+                  </span>
+                </div>
+                <div
+                  className={`cursor-pointer border-2 rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all ${selectedPaymentMethod === 'bizum' ? 'border-[#00A651] bg-[#00A651]/5 dark:bg-[#00A651]/10' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-950'}`}
+                  onClick={() => setSelectedPaymentMethod('bizum')}
+                >
+                  <Smartphone
+                    className={
+                      selectedPaymentMethod === 'bizum' ? 'text-[#00A651]' : 'text-slate-400'
+                    }
+                    size={28}
+                  />
+                  <span className="font-medium text-sm text-slate-900 dark:text-white">Bizum</span>
+                </div>
+                <div
+                  className={`cursor-pointer border-2 rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all ${selectedPaymentMethod === 'paypal' ? 'border-[#00A651] bg-[#00A651]/5 dark:bg-[#00A651]/10' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-950'}`}
+                  onClick={() => setSelectedPaymentMethod('paypal')}
+                >
+                  <Wallet
+                    className={
+                      selectedPaymentMethod === 'paypal' ? 'text-[#00A651]' : 'text-slate-400'
+                    }
+                    size={28}
+                  />
+                  <span className="font-medium text-sm text-slate-900 dark:text-white">PayPal</span>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* --- COLUMNA DERECHA (Resumen) --- */}
+          <div className="lg:col-span-1">
+            <Card className="p-6 sticky top-24 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-none">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
+                <ShoppingCart className="w-5 h-5 text-[#00A651]" />
+                Tu Pedido
+              </h3>
+
+              <div className="space-y-4 mb-6 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+                {groupedItems.map((group, idx) => (
+                  <div
+                    key={idx}
+                    className="flex gap-3 text-sm group p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-800"
+                  >
+                    {group.eventoImagen ? (
+                      <img
+                        src={group.eventoImagen}
+                        alt=""
+                        className="w-12 h-12 rounded object-cover shrink-0"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-slate-200 dark:bg-slate-700 rounded shrink-0 flex items-center justify-center">
+                        <Ticket size={20} className="text-slate-400" />
+                      </div>
+                    )}
+
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-slate-900 dark:text-white truncate max-w-[180px]">
+                        {group.count} x {group.tipoEntradaNombre}
+                      </p>
+                      <p className="text-slate-500 dark:text-slate-400 text-xs truncate">
+                        {group.eventoNombre}
+                      </p>
+                      {group.asientos.length > 0 && (
+                        <p className="text-[10px] text-[#00A651] mt-1 wrap-break-word leading-tight">
+                          Asientos: {group.asientos.join(', ')}
+                        </p>
                       )}
                     </div>
 
-                    <div>
-                      <Label htmlFor="nif">NIF / CIF *</Label>
-                      <Input
-                        id="nif"
-                        placeholder="12345678A"
-                        value={nuevosDatos.nif}
-                        onChange={(e) =>
-                          setNuevosDatos({ ...nuevosDatos, nif: e.target.value.toUpperCase() })
-                        }
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="nombre">Nombre Completo / Razón Social *</Label>
-                      <Input
-                        id="nombre"
-                        placeholder="Nombre Apellidos"
-                        value={nuevosDatos.nombre}
-                        onChange={(e) => setNuevosDatos({ ...nuevosDatos, nombre: e.target.value })}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="direccion">Dirección *</Label>
-                      <Input
-                        id="direccion"
-                        placeholder="Calle, Número, Piso..."
-                        value={nuevosDatos.direccion}
-                        onChange={(e) =>
-                          setNuevosDatos({ ...nuevosDatos, direccion: e.target.value })
-                        }
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="ciudad">Ciudad *</Label>
-                        <Input
-                          id="ciudad"
-                          placeholder="Málaga"
-                          value={nuevosDatos.ciudad}
-                          onChange={(e) =>
-                            setNuevosDatos({ ...nuevosDatos, ciudad: e.target.value })
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="codigoPostal">Código Postal *</Label>
-                        <Input
-                          id="codigoPostal"
-                          placeholder="29000"
-                          value={nuevosDatos.codigoPostal}
-                          onChange={(e) =>
-                            setNuevosDatos({ ...nuevosDatos, codigoPostal: e.target.value })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="pais">País *</Label>
-                      <Input
-                        id="pais"
-                        value={nuevosDatos.pais}
-                        onChange={(e) => setNuevosDatos({ ...nuevosDatos, pais: e.target.value })}
-                      />
+                    <div className="flex flex-col items-end justify-between">
+                      <span className="font-bold text-slate-900 dark:text-white">
+                        {(group.precio * group.count).toFixed(2)}€
+                      </span>
+                      <button
+                        onClick={() => removeGroup(group.originalIds)}
+                        className="text-slate-400 hover:text-red-500 transition-colors p-1 cursor-pointer"
+                        title="Eliminar todo"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
                   </div>
-                )}
+                ))}
               </div>
-            )}
-          </Card>
-        </div>
 
-        {/* Columna Derecha: Resumen de Compra */}
-        <div className="lg:col-span-1">
-          <Card className="p-6 sticky top-24 border-[#00A651]/20 shadow-lg">
-            <div className="flex items-center gap-2 mb-6 border-b border-gray-100 dark:border-slate-800 pb-3">
-              <CreditCard className="w-5 h-5 text-[#00A651]" />
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Resumen</h2>
-            </div>
-
-            <div className="space-y-3 mb-6">
-              <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                <span>Subtotal ({asientosSeleccionados.length} entradas)</span>
-                <span>{totales.subtotal.toFixed(2)} €</span>
-              </div>
-              <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                <span>Gastos de gestión (5%)</span>
-                <span>{totales.comision.toFixed(2)} €</span>
-              </div>
-              <div className="border-t border-gray-200 dark:border-slate-700 pt-3 mt-3">
-                <div className="flex justify-between text-2xl font-bold text-gray-800 dark:text-white">
+              <div className="space-y-3 py-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex justify-between text-slate-600 dark:text-slate-400 text-sm">
+                  <span>Subtotal</span>
+                  <span>{total.toFixed(2)}€</span>
+                </div>
+                <div className="flex justify-between text-slate-600 dark:text-slate-400 text-sm">
+                  <span>Gastos de gestión (5%)</span>
+                  <span>{comision.toFixed(2)}€</span>
+                </div>
+                <div className="flex justify-between font-bold text-xl text-slate-900 dark:text-white pt-2 border-t border-slate-100 dark:border-slate-800">
                   <span>Total</span>
-                  <span className="text-[#00A651]">{totales.total.toFixed(2)} €</span>
+                  <span className="text-[#00A651]">{totalFinal.toFixed(2)}€</span>
                 </div>
               </div>
-            </div>
 
-            <Button
-              className="w-full bg-[#00A651] hover:bg-[#008a43] h-12 text-lg shadow-lg hover:shadow-[#00A651]/20 transition-all"
-              size="lg"
-              onClick={handleConfirmarCompra}
-              disabled={loading}
-            >
-              {loading ? (
-                <div className="flex items-center gap-2">
-                  <Loader2 className="animate-spin" /> Procesando...
-                </div>
-              ) : (
-                'Confirmar y Pagar'
-              )}
-            </Button>
+              <Button
+                className="w-full mt-6 bg-[#00A651] hover:bg-[#008a43] text-white font-bold h-12 shadow-lg shadow-green-900/10 hover:shadow-green-900/20 transition-all rounded-xl"
+                onClick={handleConfirmarCompra}
+                disabled={loading}
+              >
+                {loading ? <Loader2 className="animate-spin" /> : `Pagar ${totalFinal.toFixed(2)}€`}
+              </Button>
 
-            <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-4">
-              Pagos procesados de forma segura. Al confirmar, aceptas nuestros términos de venta.
-            </p>
-          </Card>
+              <p className="text-xs text-center text-slate-400 dark:text-slate-500 mt-4 flex items-center justify-center gap-1">
+                <ShieldCheck size={12} /> Compra 100% segura
+              </p>
+            </Card>
+          </div>
         </div>
       </div>
     </div>

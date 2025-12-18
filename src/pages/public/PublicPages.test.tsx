@@ -43,6 +43,37 @@ vi.mock('../../services/checkout.service', () => ({
   confirmarPago: vi.fn(),
 }));
 
+vi.mock('../../services/eventos.service', () => ({
+  getEventoById: vi.fn().mockResolvedValue({
+    id: 123,
+    nombre: 'Evento Mock',
+    fechaInicio: '2024-12-25T20:00:00',
+    lugar: 'Lugar Mock',
+    estado: 'PUBLICADO',
+    tiposEntrada: [
+      {
+        id: 1,
+        nombre: 'General',
+        costeBase: 10,
+        donacionImplicita: 0,
+        cantidadTotal: 100,
+        cantidadVendida: 0,
+      },
+    ],
+  }),
+}));
+
+vi.mock('../../services/asientos.service', () => ({
+  getMapaAsientosByEventoId: vi.fn().mockResolvedValue(null),
+}));
+
+vi.mock('../../services/api', () => ({
+  api: {
+    get: vi.fn().mockResolvedValue({ data: { id: 123, nombre: 'Evento Mock' } }),
+    post: vi.fn(),
+  },
+}));
+
 // Mock assets
 vi.mock('../../assets/FotoLogin.png', () => ({ default: 'test-file-stub' }));
 vi.mock('../../assets/ImagenLogoCudecaLigth.png', () => ({ default: 'test-file-stub' }));
@@ -134,15 +165,19 @@ describe('Páginas Públicas (Cobertura)', () => {
     expect(container).toBeInTheDocument();
   });
 
-  it('renderiza el Detalle del Evento', () => {
+  it('renderiza el Detalle del Evento', async () => {
     render(
       <MemoryRouter initialEntries={['/evento/123']}>
-        <Routes>
-          <Route path="/evento/:id" element={<DetallesEvento />} />
-        </Routes>
+        <CartProvider>
+          <Routes>
+            <Route path="/evento/:id" element={<DetallesEvento />} />
+          </Routes>
+        </CartProvider>
       </MemoryRouter>,
     );
-    expect(screen.getByText(/Viendo evento con ID: 123/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Evento Mock')).toBeInTheDocument();
+    });
   });
 
   it('renderiza el Perfil de Usuario', async () => {

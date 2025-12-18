@@ -63,7 +63,7 @@ describe('Dashboard Layout', () => {
 
     expect(screen.getAllByText('Panel de Gestión')[0]).toBeInTheDocument();
     expect(screen.getByText('Resumen')).toBeInTheDocument(); // Sidebar link
-    expect(screen.getByText('Mi Cuenta Personal')).toBeInTheDocument();
+    expect(screen.getByText('Mi Cuenta')).toBeInTheDocument();
 
     // ScanLine link debería estar para admin
     expect(screen.getAllByText('Escáner QR')[0]).toBeInTheDocument();
